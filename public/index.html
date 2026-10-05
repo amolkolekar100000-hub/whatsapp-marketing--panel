@@ -2,139 +2,579 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WhatsApp Blast Panel</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
-body{background:#f3f6fa;color:#17202a}
-.sidebar{position:fixed;left:0;top:0;width:235px;height:100vh;background:#111827;color:#fff;padding:22px 15px}
-.logo{font-size:21px;font-weight:700;margin:5px 10px 30px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f7fb;
+  color:#17202a;
+}
+a{text-decoration:none;color:inherit}
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:235px;
+  height:100vh;
+  background:#111827;
+  color:white;
+  padding:22px 14px;
+}
+.logo{
+  font-size:21px;
+  font-weight:bold;
+  padding:8px 12px 28px;
+}
 .logo span{color:#25D366}
-.menu{padding:13px 15px;margin:5px 0;border-radius:9px;cursor:pointer;color:#d1d5db}
-.menu:hover,.menu.active{background:#25D366;color:#fff}
-.main{margin-left:235px;padding:28px}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
-.header h1{font-size:28px}
-.user{background:#fff;padding:10px 16px;border-radius:20px;box-shadow:0 2px 8px #00000010}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:25px}
-.card{background:#fff;padding:22px;border-radius:13px;box-shadow:0 2px 10px #0000000d}
-.card h3{font-size:13px;color:#6b7280;margin-bottom:10px}
-.number{font-size:28px;font-weight:bold}
+
+.menu{
+  display:block;
+  padding:13px 15px;
+  margin:5px 0;
+  border-radius:9px;
+  color:#d1d5db;
+}
+.menu:hover{
+  background:#25D366;
+  color:white;
+}
+
+.main{
+  margin-left:235px;
+  padding:28px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+.header h1{font-size:27px}
+.admin{
+  background:white;
+  padding:10px 16px;
+  border-radius:20px;
+  box-shadow:0 2px 8px #0001;
+}
+
+.page{display:none}
+#dashboard{display:block}
+
+:target{display:block}
+:target ~ #dashboard{display:none}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:24px;
+}
+.card{
+  background:white;
+  padding:22px;
+  border-radius:13px;
+  box-shadow:0 2px 10px #0000000d;
+}
+.card-title{
+  color:#6b7280;
+  font-size:13px;
+  margin-bottom:10px;
+}
+.number{
+  font-size:28px;
+  font-weight:bold;
+}
 .green{color:#16a34a}
 .blue{color:#2563eb}
 .orange{color:#ea580c}
 .red{color:#dc2626}
-.panel{background:#fff;padding:25px;border-radius:13px;margin-bottom:22px;box-shadow:0 2px 10px #0000000d}
+
+.panel{
+  background:white;
+  padding:24px;
+  border-radius:13px;
+  margin-bottom:22px;
+  box-shadow:0 2px 10px #0000000d;
+}
 .panel h2{margin-bottom:18px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-label{display:block;font-size:14px;font-weight:bold;margin-bottom:7px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;margin-bottom:15px}
-textarea{height:120px;resize:vertical}
-button{border:0;border-radius:8px;padding:12px 18px;cursor:pointer;font-weight:bold}
-.btn{background:#25D366;color:#fff}
-.btn2{background:#111827;color:#fff}
-.preview{border:1px solid #ddd;background:#eef7ee;border-radius:10px;padding:18px;min-height:180px}
-.wa{background:#d9fdd3;padding:13px;border-radius:9px;max-width:90%;white-space:pre-wrap}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:13px;border-bottom:1px solid #eee;text-align:left;font-size:14px}
-.badge{padding:5px 9px;border-radius:15px;background:#dcfce7;color:#15803d;font-size:12px}
-.hidden{display:none}
-.notice{padding:13px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;margin-bottom:18px;color:#9a3412}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  font-size:14px;
+  margin-bottom:7px;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  margin-bottom:16px;
+  font-size:14px;
+  background:white;
+}
+textarea{
+  min-height:130px;
+  resize:vertical;
+}
+
+button{
+  border:0;
+  padding:12px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.green-btn{
+  background:#25D366;
+  color:white;
+}
+.dark-btn{
+  background:#111827;
+  color:white;
+}
+
+.notice{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  padding:13px;
+  border-radius:8px;
+  color:#9a3412;
+  margin-bottom:18px;
+}
+
+.preview{
+  background:#e8f5e9;
+  border-radius:10px;
+  padding:18px;
+  min-height:160px;
+}
+.whatsapp-message{
+  background:#d9fdd3;
+  padding:14px;
+  border-radius:10px;
+  white-space:pre-wrap;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+}
+.table th,.table td{
+  padding:13px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  font-size:14px;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:15px;
+  background:#dcfce7;
+  color:#15803d;
+  font-size:12px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+
 @media(max-width:900px){
-.sidebar{width:70px;padding:15px 8px}.logo{font-size:0}.logo span{font-size:20px}
-.menu{font-size:0;text-align:center}.main{margin-left:70px;padding:18px}
-.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}
+  .sidebar{
+    width:70px;
+    padding:15px 8px;
+  }
+  .logo{
+    font-size:0;
+    text-align:center;
+  }
+  .logo span{font-size:20px}
+  .menu{
+    font-size:0;
+    text-align:center;
+  }
+  .main{
+    margin-left:70px;
+    padding:18px;
+  }
+  .cards,.stats{
+    grid-template-columns:1fr 1fr;
+  }
+  .grid{
+    grid-template-columns:1fr;
+  }
 }
 </style>
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
-<div class="logo">WhatsApp <span>Blast</span></div>
-<div class="menu active" onclick="show('dashboard',this)">📊 Dashboard</div>
-<div class="menu" onclick="show('campaigns',this)">📢 Campaigns</div>
-<div class="menu" onclick="show('leads',this)">👥 Leads</div>
-<div class="menu" onclick="show('templates',this)">📝 Templates</div>
-<div class="menu" onclick="show('media',this)">🖼 Media</div>
-<div class="menu" onclick="show('reports',this)">📈 Reports</div>
-<div class="menu" onclick="show('settings',this)">⚙ Settings</div>
+
+  <div class="logo">
+    WhatsApp <span>Blast</span>
+  </div>
+
+  <a class="menu" href="#dashboard">📊 Dashboard</a>
+  <a class="menu" href="#campaigns">📢 Campaigns</a>
+  <a class="menu" href="#leads">👥 Leads</a>
+  <a class="menu" href="#templates">📝 Templates</a>
+  <a class="menu" href="#media">🖼 Media</a>
+  <a class="menu" href="#reports">📈 Reports</a>
+  <a class="menu" href="#settings">⚙️ Settings</a>
+
 </div>
 
 <div class="main">
 
 <div class="header">
-<h1>WhatsApp Marketing Panel</h1>
-<div class="user">👤 Admin</div>
+  <h1>WhatsApp Marketing Panel</h1>
+  <div class="admin">👤 Admin</div>
 </div>
 
-<section id="dashboard">
-<div class="cards">
-<div class="card"><h3>Total Leads</h3><div class="number">0</div></div>
-<div class="card"><h3>Messages Sent</h3><div class="number blue">0</div></div>
-<div class="card"><h3>Delivered</h3><div class="number green">0</div></div>
-<div class="card"><h3>Replies</h3><div class="number orange">0</div></div>
-</div>
+<!-- DASHBOARD -->
+<section id="dashboard" class="page">
 
-<div class="panel">
-<h2>Quick Campaign</h2>
-<div class="notice">
-⚠️ Sending is currently in demo mode. Meta WhatsApp Cloud API will be connected after the panel UI is ready.
-</div>
-<button class="btn" onclick="show('campaigns')">+ Create Campaign</button>
-</div>
+  <div class="cards">
 
-<div class="panel">
-<h2>Recent Campaigns</h2>
-<table class="table">
-<tr><th>Campaign</th><th>Project</th><th>Status</th><th>Messages</th></tr>
-<tr><td>No campaigns yet</td><td>-</td><td>-</td><td>0</td></tr>
-</table>
-</div>
+    <div class="card">
+      <div class="card-title">Total Leads</div>
+      <div class="number">0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Messages Sent</div>
+      <div class="number blue">0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Delivered</div>
+      <div class="number green">0</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Replies</div>
+      <div class="number orange">0</div>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <h2>Quick Campaign</h2>
+
+    <div class="notice">
+      ⚠️ Demo mode. Meta WhatsApp Cloud API will be connected in the backend stage.
+    </div>
+
+    <a href="#campaigns">
+      <button class="green-btn">+ Create Campaign</button>
+    </a>
+  </div>
+
+  <div class="panel">
+    <h2>Recent Campaigns</h2>
+
+    <table class="table">
+      <tr>
+        <th>Campaign</th>
+        <th>Project</th>
+        <th>Status</th>
+        <th>Messages</th>
+      </tr>
+      <tr>
+        <td>No campaigns yet</td>
+        <td>-</td>
+        <td>-</td>
+        <td>0</td>
+      </tr>
+    </table>
+  </div>
+
 </section>
 
-<section id="campaigns" class="hidden">
-<div class="panel">
-<h2>🚀 Create WhatsApp Campaign</h2>
 
-<div class="grid">
-<div>
-<label>Campaign Name</label>
-<input id="campaignName" placeholder="Example: Godrej Thane Launch">
+<!-- CAMPAIGNS -->
+<section id="campaigns" class="page">
 
-<label>Project</label>
-<select id="project">
-<option>Godrej Thane</option>
-<option>Chembur Golfcrest</option>
-<option>Tata Ghansoli</option>
-<option>Adani Realty</option>
-<option>Other Project</option>
-</select>
+  <div class="panel">
 
-<label>WhatsApp Template</label>
-<select id="template">
-<option>property_launch</option>
-<option>property_offer</option>
-<option>site_visit</option>
-<option>follow_up</option>
-</select>
+    <h2>🚀 Create WhatsApp Campaign</h2>
 
-<label>Leads File</label>
-<input type="file" accept=".csv,.xlsx,.xls">
+    <div class="grid">
 
-<label>Media</label>
-<input type="file" accept="image/*,video/*,.pdf">
+      <div>
+
+        <label>Campaign Name</label>
+        <input placeholder="Example: Godrej Thane Launch">
+
+        <label>Project</label>
+        <select>
+          <option>Godrej Thane</option>
+          <option>Chembur Golfcrest</option>
+          <option>Tata Ghansoli</option>
+          <option>Adani Realty</option>
+          <option>Other Project</option>
+        </select>
+
+        <label>WhatsApp Template</label>
+        <select>
+          <option>property_launch</option>
+          <option>property_offer</option>
+          <option>site_visit</option>
+          <option>follow_up</option>
+        </select>
+
+        <label>Upload Leads</label>
+        <input type="file" accept=".csv,.xlsx,.xls">
+
+        <label>Upload Media</label>
+        <input type="file" accept="image/*,video/*,.pdf">
+
+      </div>
+
+      <div>
+
+        <label>Message</label>
+
+        <textarea placeholder="Enter your approved WhatsApp template message..."></textarea>
+
+        <label>Reply Button</label>
+
+        <select>
+          <option>Yes / No</option>
+          <option>Interested</option>
+          <option>Not Interested</option>
+          <option>Book Site Visit</option>
+          <option>Get Price</option>
+        </select>
+
+        <label>Message Preview</label>
+
+        <div class="preview">
+          <div class="whatsapp-message">
+            Your WhatsApp message preview will appear here.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <br>
+
+    <button class="green-btn">
+      Create Campaign
+    </button>
+
+    <button class="dark-btn">
+      Save Draft
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- LEADS -->
+<section id="leads" class="page">
+
+  <div class="panel">
+
+    <h2>👥 Leads Management</h2>
+
+    <div class="notice">
+      Upload your customer list using CSV/Excel. Only contacts with appropriate consent should be used for marketing.
+    </div>
+
+    <button class="green-btn">+ Add Lead</button>
+
+    <button class="dark-btn">Import Excel / CSV</button>
+
+    <br><br>
+
+    <table class="table">
+
+      <tr>
+        <th>Name</th>
+        <th>Mobile</th>
+        <th>Project</th>
+        <th>Status</th>
+      </tr>
+
+      <tr>
+        <td>No leads imported</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+<!-- TEMPLATES -->
+<section id="templates" class="page">
+
+  <div class="panel">
+
+    <h2>📝 WhatsApp Templates</h2>
+
+    <div class="notice">
+      Marketing messages should use Meta-approved WhatsApp templates.
+    </div>
+
+    <button class="green-btn">+ Add Template</button>
+
+    <br><br>
+
+    <table class="table">
+
+      <tr>
+        <th>Template</th>
+        <th>Category</th>
+        <th>Language</th>
+        <th>Status</th>
+      </tr>
+
+      <tr>
+        <td>property_launch</td>
+        <td>Marketing</td>
+        <td>English</td>
+        <td><span class="badge">Ready</span></td>
+      </tr>
+
+      <tr>
+        <td>site_visit</td>
+        <td>Marketing</td>
+        <td>English</td>
+        <td><span class="badge">Ready</span></td>
+      </tr>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+<!-- MEDIA -->
+<section id="media" class="page">
+
+  <div class="panel">
+
+    <h2>🖼 Media Library</h2>
+
+    <label>Project</label>
+
+    <select>
+      <option>Godrej Thane</option>
+      <option>Chembur Golfcrest</option>
+      <option>Tata Ghansoli</option>
+      <option>Adani Realty</option>
+    </select>
+
+    <label>Upload Image / Video / PDF</label>
+
+    <input type="file" accept="image/*,video/*,.pdf">
+
+    <br>
+
+    <button class="green-btn">
+      Upload Media
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- REPORTS -->
+<section id="reports" class="page">
+
+  <div class="panel">
+
+    <h2>📈 Campaign Reports</h2>
+
+    <div class="stats">
+
+      <div class="card">
+        <div class="card-title">Sent</div>
+        <div class="number blue">0</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Delivered</div>
+        <div class="number green">0</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Read</div>
+        <div class="number">0</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Failed</div>
+        <div class="number red">0</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- SETTINGS -->
+<section id="settings" class="page">
+
+  <div class="panel">
+
+    <h2>⚙️ WhatsApp API Settings</h2>
+
+    <div class="notice">
+      🔐 Meta API credentials must be stored securely on the backend. Never put access tokens inside this HTML file.
+    </div>
+
+    <label>WhatsApp Business Account</label>
+    <input placeholder="Will be connected securely">
+
+    <label>Phone Number ID</label>
+    <input placeholder="Will be connected securely">
+
+    <label>Webhook Status</label>
+    <select>
+      <option>Not Connected</option>
+      <option>Connected</option>
+    </select>
+
+    <button class="green-btn">
+      Save Settings
+    </button>
+
+  </div>
+
+</section>
+
 </div>
 
-<div>
-<label>Message Preview</label>
-<textarea id="message" oninput="preview()"
-placeholder="Enter your approved WhatsApp template content..."></textarea>
-
-<label>Reply Button</label>
-<select>
-<option>Yes / No</option>
-<option>Interested</option>
-<option>Not Interested</option>
-<option>Book
+</body>
+</html>
