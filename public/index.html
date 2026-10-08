@@ -25,6 +25,7 @@ body {
     background: #111827;
     color: white;
     padding: 25px 15px;
+    overflow-y: auto;
 }
 
 .logo {
@@ -40,7 +41,8 @@ body {
     cursor: pointer;
 }
 
-.menu:hover {
+.menu:hover,
+.menu.active {
     background: #374151;
 }
 
@@ -110,7 +112,8 @@ label {
 }
 
 input,
-textarea {
+textarea,
+select {
     width: 100%;
     padding: 13px;
     border: 1px solid #d1d5db;
@@ -130,7 +133,7 @@ button {
     border: none;
     padding: 13px 25px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     cursor: pointer;
 }
 
@@ -141,6 +144,22 @@ button:hover {
 button:disabled {
     background: #9ca3af;
     cursor: not-allowed;
+}
+
+.secondary {
+    background: #2563eb;
+}
+
+.secondary:hover {
+    background: #1d4ed8;
+}
+
+.danger {
+    background: #dc2626;
+}
+
+.danger:hover {
+    background: #b91c1c;
 }
 
 .status {
@@ -168,6 +187,54 @@ button:disabled {
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 20px;
+}
+
+.file-box {
+    border: 2px dashed #cbd5e1;
+    padding: 25px;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.file-box input {
+    border: none;
+    margin: 10px 0;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+th {
+    background: #f8fafc;
+}
+
+.empty {
+    text-align: center;
+    color: #6b7280;
+    padding: 25px;
+}
+
+.small-btn {
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+.hidden {
+    display: none;
 }
 
 @media(max-width: 900px) {
@@ -209,15 +276,36 @@ button:disabled {
         WhatsApp Panel
     </div>
 
-    <div class="menu">Dashboard</div>
-    <div class="menu">Send Message</div>
-    <div class="menu">Campaigns</div>
-    <div class="menu">Contacts</div>
-    <div class="menu">Templates</div>
-    <div class="menu">Reports</div>
-    <div class="menu">Settings</div>
+    <div class="menu active" onclick="showSection('dashboard')">
+        Dashboard
+    </div>
+
+    <div class="menu" onclick="showSection('send')">
+        Send Message
+    </div>
+
+    <div class="menu" onclick="showSection('leads')">
+        Leads
+    </div>
+
+    <div class="menu">
+        Campaigns
+    </div>
+
+    <div class="menu">
+        Templates
+    </div>
+
+    <div class="menu">
+        Reports
+    </div>
+
+    <div class="menu">
+        Settings
+    </div>
 
 </div>
+
 
 <div class="main">
 
@@ -231,235 +319,902 @@ button:disabled {
 
     </div>
 
-    <div class="cards">
 
-        <div class="card">
-            <h3>Total Sent</h3>
-            <div class="number" id="sentCount">0</div>
+    <!-- DASHBOARD -->
+
+    <div id="dashboardSection">
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Total Leads</h3>
+                <div class="number" id="leadCount">0</div>
+            </div>
+
+            <div class="card">
+                <h3>Total Sent</h3>
+                <div class="number" id="sentCount">0</div>
+            </div>
+
+            <div class="card">
+                <h3>Delivered</h3>
+                <div class="number">0</div>
+            </div>
+
+            <div class="card">
+                <h3>Failed</h3>
+                <div class="number" id="failedCount">0</div>
+            </div>
+
         </div>
 
-        <div class="card">
-            <h3>Delivered</h3>
-            <div class="number">0</div>
-        </div>
+        <div class="panel">
 
-        <div class="card">
-            <h3>Read</h3>
-            <div class="number">0</div>
-        </div>
+            <h2>WhatsApp Marketing Dashboard</h2>
 
-        <div class="card">
-            <h3>Failed</h3>
-            <div class="number" id="failedCount">0</div>
+            <div class="note">
+                Your WhatsApp Cloud API connection is active.
+            </div>
+
+            <button onclick="showSection('leads')">
+                👥 Manage Leads
+            </button>
+
+            <button
+                class="secondary"
+                onclick="showSection('send')"
+                style="margin-left:10px;"
+            >
+                💬 Send Message
+            </button>
+
         </div>
 
     </div>
 
-    <div class="panel">
 
-        <h2>Send WhatsApp Message</h2>
+    <!-- SEND MESSAGE -->
 
-        <div class="note">
-            Enter WhatsApp number with country code.
-            Example: <b>919833363074</b>
+    <div id="sendSection" class="hidden">
+
+        <div class="panel">
+
+            <h2>Send WhatsApp Message</h2>
+
+            <div class="note">
+                Enter WhatsApp number with country code.
+                Example: <b>919833363074</b>
+            </div>
+
+            <label>Select Lead</label>
+
+            <select id="leadSelect" onchange="selectLead()">
+
+                <option value="">
+                    -- Select Lead --
+                </option>
+
+            </select>
+
+            <label>Recipient WhatsApp Number</label>
+
+            <input
+                type="text"
+                id="phone"
+                placeholder="919833363074"
+            >
+
+            <label>Message</label>
+
+            <textarea
+                id="message"
+                placeholder="Type your WhatsApp message here..."
+            ></textarea>
+
+            <button
+                id="sendBtn"
+                onclick="sendMessage()"
+            >
+                Send Message
+            </button>
+
+            <div
+                id="status"
+                class="status"
+            ></div>
+
         </div>
 
-        <label>Recipient WhatsApp Number</label>
+    </div>
 
-        <input
-            type="text"
-            id="phone"
-            placeholder="919833363074"
-        >
 
-        <label>Message</label>
+    <!-- LEADS -->
 
-        <textarea
-            id="message"
-            placeholder="Type your WhatsApp message here..."
-        ></textarea>
+    <div id="leadsSection" class="hidden">
 
-        <button id="sendBtn" onclick="sendMessage()">
-            Send Message
-        </button>
+        <div class="panel">
 
-        <div id="status" class="status"></div>
+            <h2>👥 Leads Management</h2>
+
+            <div class="note">
+                CSV file should contain columns like:
+                <b>Name, Phone</b>
+            </div>
+
+            <div class="file-box">
+
+                <strong>
+                    Import Leads from CSV
+                </strong>
+
+                <br>
+
+                <input
+                    type="file"
+                    id="csvFile"
+                    accept=".csv"
+                >
+
+                <br>
+
+                <button
+                    class="secondary"
+                    onclick="importCSV()"
+                >
+                    Import CSV
+                </button>
+
+            </div>
+
+            <label>Lead Name</label>
+
+            <input
+                type="text"
+                id="leadName"
+                placeholder="Example: Rahul"
+            >
+
+            <label>WhatsApp Number</label>
+
+            <input
+                type="text"
+                id="leadPhone"
+                placeholder="919833363074"
+            >
+
+            <button onclick="addLead()">
+                + Add Lead
+            </button>
+
+            <div
+                id="leadStatus"
+                class="status"
+            ></div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <h2>Lead List</h2>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>WhatsApp Number</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="leadTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
 
     </div>
 
 </div>
+
 
 <script>
 
 const API_BASE =
 "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
 
-async function sendMessage() {
 
-    const phoneInput =
-        document.getElementById("phone");
+/* =========================
+   STORAGE
+========================= */
 
-    const messageInput =
-        document.getElementById("message");
+function getLeads() {
 
-    const sendBtn =
-        document.getElementById("sendBtn");
+    return JSON.parse(
+        localStorage.getItem("whatsappLeads") || "[]"
+    );
+}
 
-    const status =
-        document.getElementById("status");
+
+function saveLeads(leads) {
+
+    localStorage.setItem(
+        "whatsappLeads",
+        JSON.stringify(leads)
+    );
+}
+
+
+/* =========================
+   SECTION NAVIGATION
+========================= */
+
+function showSection(section) {
+
+    document.getElementById(
+        "dashboardSection"
+    ).classList.add("hidden");
+
+    document.getElementById(
+        "sendSection"
+    ).classList.add("hidden");
+
+    document.getElementById(
+        "leadsSection"
+    ).classList.add("hidden");
+
+
+    if (section === "dashboard") {
+
+        document.getElementById(
+            "dashboardSection"
+        ).classList.remove("hidden");
+
+    }
+
+    if (section === "send") {
+
+        document.getElementById(
+            "sendSection"
+        ).classList.remove("hidden");
+
+        loadLeadSelect();
+
+    }
+
+    if (section === "leads") {
+
+        document.getElementById(
+            "leadsSection"
+        ).classList.remove("hidden");
+
+        renderLeads();
+
+    }
+}
+
+
+/* =========================
+   ADD LEAD
+========================= */
+
+function addLead() {
+
+    const name =
+        document.getElementById(
+            "leadName"
+        ).value.trim();
 
     let phone =
-        phoneInput.value.trim();
+        document.getElementById(
+            "leadPhone"
+        ).value.trim();
 
-    const message =
-        messageInput.value.trim();
 
-    status.className = "status";
-    status.innerText = "";
+    const status =
+        document.getElementById(
+            "leadStatus"
+        );
 
-    if (!phone) {
 
-        status.className = "status error";
-        status.innerText =
-            "Please enter WhatsApp number.";
-
-        return;
-    }
-
-    if (!message) {
-
-        status.className = "status error";
-        status.innerText =
-            "Please enter message.";
-
-        return;
-    }
-
-    phone = phone
-        .replace(/\s/g, "")
-        .replace(/-/g, "")
-        .replace(/\+/g, "");
-
-    sendBtn.disabled = true;
-    sendBtn.innerText = "Sending...";
-
-    try {
-
-        const response =
-            await fetch(
-                API_BASE + "/send",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        to: phone,
-                        text: message
-                    })
-                }
-            );
-
-        const result =
-            await response.json();
-
-        if (response.ok && result.success) {
-
-            status.className =
-                "status success";
-
-            status.innerText =
-                "✅ WhatsApp message sent successfully.";
-
-            let count =
-                Number(
-                    localStorage.getItem(
-                        "sentCount"
-                    ) || 0
-                );
-
-            count++;
-
-            localStorage.setItem(
-                "sentCount",
-                count
-            );
-
-            document.getElementById(
-                "sentCount"
-            ).innerText = count;
-
-            messageInput.value = "";
-
-        } else {
-
-            status.className =
-                "status error";
-
-            status.innerText =
-                "❌ Message failed: " +
-                (
-                    result?.result?.error?.message ||
-                    result?.error ||
-                    "Unknown error"
-                );
-
-            let failed =
-                Number(
-                    localStorage.getItem(
-                        "failedCount"
-                    ) || 0
-                );
-
-            failed++;
-
-            localStorage.setItem(
-                "failedCount",
-                failed
-            );
-
-            document.getElementById(
-                "failedCount"
-            ).innerText = failed;
-        }
-
-    } catch (error) {
+    if (!name || !phone) {
 
         status.className =
             "status error";
 
         status.innerText =
-            "❌ Connection error: " +
-            error.message;
+            "Please enter name and WhatsApp number.";
+
+        return;
     }
 
-    sendBtn.disabled = false;
-    sendBtn.innerText = "Send Message";
-}
 
-function loadCounts() {
+    phone = normalizePhone(phone);
 
-    const sent =
-        localStorage.getItem("sentCount") || 0;
 
-    const failed =
-        localStorage.getItem("failedCount") || 0;
+    const leads = getLeads();
+
+
+    const exists =
+        leads.some(
+            lead => lead.phone === phone
+        );
+
+
+    if (exists) {
+
+        status.className =
+            "status error";
+
+        status.innerText =
+            "This number already exists.";
+
+        return;
+    }
+
+
+    leads.push({
+        name: name,
+        phone: phone
+    });
+
+
+    saveLeads(leads);
+
 
     document.getElementById(
-        "sentCount"
-    ).innerText = sent;
+        "leadName"
+    ).value = "";
 
     document.getElementById(
-        "failedCount"
-    ).innerText = failed;
+        "leadPhone"
+    ).value = "";
+
+
+    status.className =
+        "status success";
+
+    status.innerText =
+        "✅ Lead added successfully.";
+
+
+    renderLeads();
+
+    updateLeadCount();
+
+    loadLeadSelect();
 }
 
-loadCounts();
 
-</script>
+/* =========================
+   NORMALIZE PHONE
+========================= */
 
-</body>
-</html>
+function normalizePhone(phone) {
+
+    return phone
+        .replace(/\s/g, "")
+        .replace(/-/g, "")
+        .replace(/\+/g, "");
+}
+
+
+/* =========================
+   RENDER LEADS
+========================= */
+
+function renderLeads() {
+
+    const leads = getLeads();
+
+    const table =
+        document.getElementById(
+            "leadTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (leads.length === 0) {
+
+        table.innerHTML =
+            `
+            <tr>
+                <td colspan="4" class="empty">
+                    No leads added yet.
+                </td>
+            </tr>
+            `;
+
+        return;
+    }
+
+
+    leads.forEach(
+        (lead, index) => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML =
+
+                `
+                <td>${index + 1}</td>
+
+                <td>${escapeHTML(
+                    lead.name
+                )}</td>
+
+                <td>${escapeHTML(
+                    lead.phone
+                )}</td>
+
+                <td>
+                    <button
+                        class="small-btn danger"
+                        onclick="deleteLead(${index})"
+                    >
+                        Delete
+                    </button>
+                </td>
+                `;
+
+
+            table.appendChild(row);
+
+        }
+    );
+}
+
+
+/* =========================
+   DELETE LEAD
+========================= */
+
+function deleteLead(index) {
+
+    const leads = getLeads();
+
+    leads.splice(index, 1);
+
+    saveLeads(leads);
+
+    renderLeads();
+
+    updateLeadCount();
+
+    loadLeadSelect();
+}
+
+
+/* =========================
+   LEAD COUNT
+========================= */
+
+function updateLeadCount() {
+
+    document.getElementById(
+        "leadCount"
+    ).innerText =
+        getLeads().length;
+}
+
+
+/* =========================
+   LEAD SELECT
+========================= */
+
+function loadLeadSelect() {
+
+    const select =
+        document.getElementById(
+            "leadSelect"
+        );
+
+    const leads = getLeads();
+
+
+    select.innerHTML =
+        `<option value="">
+            -- Select Lead --
+        </option>`;
+
+
+    leads.forEach(
+        (lead, index) => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value = index;
+
+            option.textContent =
+                lead.name +
+                " - " +
+                lead.phone;
+
+            select.appendChild(option);
+
+        }
+    );
+}
+
+
+/* =========================
+   SELECT LEAD
+========================= */
+
+function selectLead() {
+
+    const select =
+        document.getElementById(
+            "leadSelect"
+        );
+
+    const index =
+        select.value;
+
+
+    if (index === "") {
+        return;
+    }
+
+
+    const leads = getLeads();
+
+    const lead =
+        leads[index];
+
+
+    document.getElementById(
+        "phone"
+    ).value = lead.phone;
+}
+
+
+/* =========================
+   CSV IMPORT
+========================= */
+
+function importCSV() {
+
+    const fileInput =
+        document.getElementById(
+            "csvFile"
+        );
+
+    const status =
+        document.getElementById(
+            "leadStatus"
+        );
+
+
+    if (
+        !fileInput.files ||
+        !fileInput.files[0]
+    ) {
+
+        status.className =
+            "status error";
+
+        status.innerText =
+            "Please select a CSV file.";
+
+        return;
+    }
+
+
+    const file =
+        fileInput.files[0];
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = function(event) {
+
+        const text =
+            event.target.result;
+
+
+        const rows =
+            parseCSV(text);
+
+
+        if (rows.length < 2) {
+
+            status.className =
+                "status error";
+
+            status.innerText =
+                "CSV file is empty or invalid.";
+
+            return;
+        }
+
+
+        const headers =
+            rows[0].map(
+                h => h.trim().toLowerCase()
+            );
+
+
+        const nameIndex =
+            findHeader(
+                headers,
+                [
+                    "name",
+                    "full name",
+                    "customer name"
+                ]
+            );
+
+
+        const phoneIndex =
+            findHeader(
+                headers,
+                [
+                    "phone",
+                    "mobile",
+                    "mobile number",
+                    "whatsapp",
+                    "whatsapp number",
+                    "phone number"
+                ]
+            );
+
+
+        if (
+            phoneIndex === -1
+        ) {
+
+            status.className =
+                "status error";
+
+            status.innerText =
+                "Phone column not found. Use Phone or WhatsApp Number.";
+
+            return;
+        }
+
+
+        const leads =
+            getLeads();
+
+
+        let imported = 0;
+
+
+        for (
+            let i = 1;
+            i < rows.length;
+            i++
+        ) {
+
+            const row = rows[i];
+
+
+            if (!row || row.length === 0) {
+                continue;
+            }
+
+
+            let name =
+                nameIndex >= 0
+                    ? (row[nameIndex] || "").trim()
+                    : "Lead " + i;
+
+
+            let phone =
+                (row[phoneIndex] || "").trim();
+
+
+            if (!phone) {
+                continue;
+            }
+
+
+            phone =
+                normalizePhone(phone);
+
+
+            const exists =
+                leads.some(
+                    lead =>
+                        lead.phone === phone
+                );
+
+
+            if (
+                !exists
+            ) {
+
+                leads.push({
+                    name:
+                        name || "Lead " + i,
+                    phone: phone
+                });
+
+                imported++;
+            }
+        }
+
+
+        saveLeads(leads);
+
+        renderLeads();
+
+        updateLeadCount();
+
+        loadLeadSelect();
+
+
+        status.className =
+            "status success";
+
+        status.innerText =
+            "✅ " +
+            imported +
+            " leads imported successfully.";
+
+        fileInput.value = "";
+    };
+
+
+    reader.readAsText(file);
+}
+
+
+/* =========================
+   CSV PARSER
+========================= */
+
+function parseCSV(text) {
+
+    const lines =
+        text
+            .replace(/\r/g, "")
+            .split("\n")
+            .filter(
+                line => line.trim() !== ""
+            );
+
+
+    return lines.map(
+        line => {
+
+            const result = [];
+
+            let current = "";
+
+            let insideQuotes = false;
+
+
+            for (
+                let i = 0;
+                i < line.length;
+                i++
+            ) {
+
+                const char =
+                    line[i];
+
+
+                if (
+                    char === '"'
+                ) {
+
+                    if (
+                        insideQuotes &&
+                        line[i + 1] === '"'
+                    ) {
+
+                        current += '"';
+
+                        i++;
+
+                    } else {
+
+                        insideQuotes =
+                            !insideQuotes;
+                    }
+
+                } else if (
+                    char === "," &&
+                    !insideQuotes
+                ) {
+
+                    result.push(
+                        current
+                    );
+
+                    current = "";
+
+                } else {
+
+                    current += char;
+                }
+            }
+
+
+            result.push(current);
+
+
+            return result;
+        }
+    );
+}
+
+
+/* =========================
+   FIND CSV HEADER
+========================= */
+
+function findHeader(
+    headers,
+    possibleNames
+) {
+
+    for (
+        const name of possibleNames
+    ) {
+
+        const index =
+            headers.indexOf(name);
+
+
+        if (index !== -1) {
+            return index;
+        }
+    }
+
+
+    return -1;
+}
+
+
+/* =========================
+   HTML SECURITY
+========================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================
+   SEND MESSAGE
+========================= */
+
+async function sendMessage() {
+
+    const phoneInput =
+        document.getElementById(
+            "phone"
+        );
+
+    const messageInput =
+        document.getE
