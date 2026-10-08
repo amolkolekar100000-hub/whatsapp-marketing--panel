@@ -7,12 +7,14 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
  margin:0;
  font-family:Arial,sans-serif;
  background:#f4f7fb;
  color:#172033;
 }
+
 .sidebar{
  position:fixed;
  left:0;
@@ -22,12 +24,15 @@ body{
  background:#111827;
  color:white;
  padding:20px 12px;
+ overflow-y:auto;
 }
+
 .logo{
  font-size:20px;
  font-weight:bold;
  padding:10px 12px 25px;
 }
+
 .nav{
  display:block;
  width:100%;
@@ -41,46 +46,57 @@ body{
  cursor:pointer;
  font-size:15px;
 }
-.nav:hover,.nav.active{
+
+.nav:hover,
+.nav.active{
  background:#2563eb;
  color:white;
 }
+
 .main{
  margin-left:230px;
  padding:25px;
 }
+
 .header{
  display:flex;
  justify-content:space-between;
  align-items:center;
  margin-bottom:25px;
 }
+
 .card-grid{
  display:grid;
  grid-template-columns:repeat(4,1fr);
  gap:18px;
 }
+
 .card{
  background:white;
  border-radius:12px;
  padding:20px;
  box-shadow:0 2px 10px #0000000d;
 }
+
 .card h3{
  margin:0 0 10px;
  font-size:14px;
  color:#64748b;
 }
+
 .number{
  font-size:28px;
  font-weight:bold;
 }
+
 .page{
  display:none;
 }
+
 .page.active{
  display:block;
 }
+
 .box{
  background:white;
  border-radius:12px;
@@ -88,6 +104,7 @@ body{
  box-shadow:0 2px 10px #0000000d;
  margin-top:20px;
 }
+
 input,textarea,select{
  width:100%;
  padding:12px;
@@ -96,6 +113,7 @@ input,textarea,select{
  margin:7px 0 15px;
  font-size:15px;
 }
+
 button.primary{
  background:#2563eb;
  color:white;
@@ -105,72 +123,165 @@ button.primary{
  cursor:pointer;
  font-size:15px;
 }
+
 button.primary:hover{
  background:#1d4ed8;
 }
+
+button.secondary{
+ background:#e5e7eb;
+ color:#172033;
+ border:0;
+ padding:12px 18px;
+ border-radius:8px;
+ cursor:pointer;
+ font-size:15px;
+}
+
+button.danger{
+ background:#dc2626;
+ color:white;
+ border:0;
+ padding:8px 12px;
+ border-radius:7px;
+ cursor:pointer;
+}
+
 table{
  width:100%;
  border-collapse:collapse;
  margin-top:15px;
 }
+
 th,td{
  padding:12px;
  border-bottom:1px solid #e5e7eb;
  text-align:left;
 }
+
 .success{
  color:#16a34a;
 }
+
+.muted{
+ color:#64748b;
+ font-size:14px;
+}
+
+.campaign-list{
+ max-height:400px;
+ overflow:auto;
+ border:1px solid #e5e7eb;
+ border-radius:8px;
+ padding:5px;
+}
+
+.campaign-row{
+ padding:12px;
+ border-bottom:1px solid #e5e7eb;
+}
+
+.campaign-row:last-child{
+ border-bottom:0;
+}
+
+.campaign-row label{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ cursor:pointer;
+}
+
+.campaign-row input[type="checkbox"]{
+ width:18px;
+ height:18px;
+ margin:0;
+}
+
+.selected-count{
+ font-size:18px;
+ font-weight:bold;
+ margin:15px 0;
+}
+
 @media(max-width:800px){
- .sidebar{width:190px}
- .main{margin-left:190px}
- .card-grid{grid-template-columns:repeat(2,1fr)}
+
+ .sidebar{
+   width:190px;
+ }
+
+ .main{
+   margin-left:190px;
+ }
+
+ .card-grid{
+   grid-template-columns:repeat(2,1fr);
+ }
+
 }
 </style>
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
+
 <div class="sidebar">
 
-<div class="logo">📱 WhatsApp Panel</div>
+<div class="logo">
+📱 WhatsApp Panel
+</div>
 
-<button class="nav active" onclick="showPage('dashboard',this)">
+<button class="nav active"
+onclick="showPage('dashboard',this)">
 📊 Dashboard
 </button>
 
-<button class="nav" onclick="showPage('send',this)">
+<button class="nav"
+onclick="showPage('send',this)">
 💬 Send Message
 </button>
 
-<button class="nav" onclick="showPage('leads',this)">
+<button class="nav"
+onclick="showPage('leads',this)">
 👥 Leads
 </button>
 
-<button class="nav" onclick="showPage('campaigns',this)">
+<button class="nav"
+onclick="showPage('campaigns',this)">
 📢 Campaigns
 </button>
 
-<button class="nav" onclick="showPage('templates',this)">
+<button class="nav"
+onclick="showPage('templates',this)">
 📝 Templates
 </button>
 
-<button class="nav" onclick="showPage('reports',this)">
+<button class="nav"
+onclick="showPage('reports',this)">
 📈 Reports
 </button>
 
-<button class="nav" onclick="showPage('settings',this)">
+<button class="nav"
+onclick="showPage('settings',this)">
 ⚙️ Settings
 </button>
 
 </div>
 
 
+<!-- MAIN -->
+
 <div class="main">
 
 <div class="header">
+
 <h1>New Launch Project</h1>
-<span class="success">● WhatsApp API Active</span>
+
+<span class="success">
+● WhatsApp API Active
+</span>
+
 </div>
 
 
@@ -205,17 +316,26 @@ th,td{
 </div>
 
 <div class="box">
+
 <h2>WhatsApp Marketing Dashboard</h2>
-<p>Your WhatsApp Cloud API connection is active.</p>
+
+<p>
+Your WhatsApp Cloud API connection is active.
+</p>
 
 <button class="primary"
-onclick="showPage('leads',document.querySelectorAll('.nav')[2])">
+onclick="openPage('leads')">
 👥 Manage Leads
 </button>
 
 <button class="primary"
-onclick="showPage('send',document.querySelectorAll('.nav')[1])">
+onclick="openPage('send')">
 💬 Send Message
+</button>
+
+<button class="primary"
+onclick="openPage('campaigns')">
+📢 Create Campaign
 </button>
 
 </div>
@@ -223,7 +343,7 @@ onclick="showPage('send',document.querySelectorAll('.nav')[1])">
 </div>
 
 
-<!-- SEND -->
+<!-- SEND MESSAGE -->
 
 <div id="send" class="page">
 
@@ -245,8 +365,12 @@ id="sendMessage"
 rows="6"
 placeholder="Type your WhatsApp message..."></textarea>
 
-<button class="primary" onclick="sendMessage()">
+<button
+class="primary"
+onclick="sendMessage()">
+
 🚀 Send Message
+
 </button>
 
 <p id="sendResult"></p>
@@ -276,8 +400,12 @@ id="leadPhone"
 type="text"
 placeholder="WhatsApp Number e.g. 919XXXXXXXXX">
 
-<button class="primary" onclick="addLead()">
+<button
+class="primary"
+onclick="addLead()">
+
 ➕ Add Lead
+
 </button>
 
 </div>
@@ -287,13 +415,21 @@ placeholder="WhatsApp Number e.g. 919XXXXXXXXX">
 
 <h3>Import CSV</h3>
 
+<p class="muted">
+CSV format: Name, WhatsApp Number
+</p>
+
 <input
 id="csvFile"
 type="file"
 accept=".csv">
 
-<button class="primary" onclick="importCSV()">
+<button
+class="primary"
+onclick="importCSV()">
+
 📥 Import CSV
+
 </button>
 
 </div>
@@ -306,11 +442,13 @@ accept=".csv">
 <table>
 
 <thead>
+
 <tr>
 <th>Name</th>
 <th>WhatsApp Number</th>
 <th>Action</th>
 </tr>
+
 </thead>
 
 <tbody id="leadTable"></tbody>
@@ -326,23 +464,90 @@ accept=".csv">
 
 <div id="campaigns" class="page">
 
-<h2>Campaigns</h2>
+<h2>Campaign Management</h2>
 
 <div class="box">
 
-<h3>Create Campaign</h3>
+<h3>Create WhatsApp Campaign</h3>
+
+<label>Campaign Name</label>
 
 <input
 id="campaignName"
-placeholder="Campaign Name">
+type="text"
+placeholder="Example: New Launch October">
 
-<textarea
-id="campaignMessage"
-rows="5"
-placeholder="Campaign message"></textarea>
+<h3>Select Recipients</h3>
 
-<button class="primary" onclick="createCampaign()">
-➕ Create Campaign
+<div>
+
+<button
+class="primary"
+type="button"
+onclick="selectAllLeads()">
+
+☑️ Select All Leads
+
+</button>
+
+<button
+class="secondary"
+type="button"
+onclick="clearSelectedLeads()"
+style="margin-left:8px">
+
+Clear Selection
+
+</button>
+
+</div>
+
+<div
+id="campaignLeadCount"
+class="selected-count">
+
+Selected Leads: 0
+
+</div>
+
+<div
+id="campaignLeadList"
+class="campaign-list">
+
+</div>
+
+
+<h3 style="margin-top:25px">
+WhatsApp Template
+</h3>
+
+<select id="campaignTemplate">
+
+<option value="">
+Select approved template
+</option>
+
+<option value="new_launch_project">
+New Launch Project
+</option>
+
+</select>
+
+<p class="muted">
+
+For business-initiated marketing messages,
+use a Meta-approved WhatsApp template and recipients
+who have provided the required opt-in.
+
+</p>
+
+<button
+class="primary"
+type="button"
+onclick="prepareCampaign()">
+
+📢 Prepare Campaign
+
 </button>
 
 <p id="campaignResult"></p>
@@ -360,10 +565,18 @@ placeholder="Campaign message"></textarea>
 
 <div class="box">
 
-<p>Approved Meta WhatsApp templates can be added here.</p>
+<h3>Approved Templates</h3>
 
-<button class="primary" onclick="alert('Template section ready')">
+<p class="muted">
+Templates approved in Meta will be connected here.
+</p>
+
+<button
+class="primary"
+onclick="templateMessage()">
+
 ➕ Add Template
+
 </button>
 
 </div>
@@ -381,9 +594,20 @@ placeholder="Campaign message"></textarea>
 
 <h3>Campaign Reports</h3>
 
-<p>Total Sent: <b id="reportSent">0</b></p>
-<p>Delivered: <b id="reportDelivered">0</b></p>
-<p>Failed: <b id="reportFailed">0</b></p>
+<p>
+Total Sent:
+<b id="reportSent">0</b>
+</p>
+
+<p>
+Delivered:
+<b id="reportDelivered">0</b>
+</p>
+
+<p>
+Failed:
+<b id="reportFailed">0</b>
+</p>
 
 </div>
 
@@ -404,7 +628,9 @@ placeholder="Campaign message"></textarea>
 ● API Connection Active
 </p>
 
-<p>Backend:</p>
+<p>
+Backend:
+</p>
 
 <code>
 https://whatsapp-marketinf-api.amolkolekar100000.workers.dev
@@ -423,19 +649,27 @@ const API_BASE =
 "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
 
 
-/* NAVIGATION */
+/* =========================
+   NAVIGATION
+========================= */
 
 function showPage(pageId,button){
 
- document.querySelectorAll(".page")
+ document
+ .querySelectorAll(".page")
  .forEach(page=>{
    page.classList.remove("active");
  });
 
- document.getElementById(pageId)
- .classList.add("active");
+ const page =
+ document.getElementById(pageId);
 
- document.querySelectorAll(".nav")
+ if(page){
+   page.classList.add("active");
+ }
+
+ document
+ .querySelectorAll(".nav")
  .forEach(btn=>{
    btn.classList.remove("active");
  });
@@ -444,11 +678,41 @@ function showPage(pageId,button){
    button.classList.add("active");
  }
 
+ if(pageId==="campaigns"){
+   renderCampaignLeads();
+ }
+
  window.scrollTo(0,0);
+
 }
 
 
-/* LEADS */
+function openPage(pageId){
+
+ const buttons =
+ document.querySelectorAll(".nav");
+
+ const map={
+   dashboard:0,
+   send:1,
+   leads:2,
+   campaigns:3,
+   templates:4,
+   reports:5,
+   settings:6
+ };
+
+ showPage(
+   pageId,
+   buttons[map[pageId]]
+ );
+
+}
+
+
+/* =========================
+   LEADS STORAGE
+========================= */
 
 function getLeads(){
 
@@ -469,49 +733,77 @@ function saveLeads(leads){
 }
 
 
-/* ADD LEAD */
+/* =========================
+   ADD LEAD
+========================= */
 
 function addLead(){
 
  const name =
- document.getElementById("leadName").value.trim();
+ document
+ .getElementById("leadName")
+ .value
+ .trim();
 
  const phone =
- document.getElementById("leadPhone").value.trim();
+ document
+ .getElementById("leadPhone")
+ .value
+ .trim();
 
  if(!name || !phone){
 
-   alert("Name आणि WhatsApp Number भरा.");
+   alert(
+   "Name आणि WhatsApp Number भरा."
+   );
 
    return;
+
  }
 
- const leads = getLeads();
+ const leads =
+ getLeads();
 
  leads.push({
+
    id:Date.now(),
+
    name:name,
+
    phone:phone
+
  });
 
  saveLeads(leads);
 
- document.getElementById("leadName").value="";
- document.getElementById("leadPhone").value="";
+ document
+ .getElementById("leadName")
+ .value="";
+
+ document
+ .getElementById("leadPhone")
+ .value="";
 
  renderLeads();
 
- alert("Lead successfully added.");
+ alert(
+ "Lead successfully added."
+ );
 
 }
 
 
-/* DELETE LEAD */
+/* =========================
+   DELETE LEAD
+========================= */
 
 function deleteLead(id){
 
  const leads =
- getLeads().filter(lead=>lead.id !== id);
+ getLeads()
+ .filter(
+   lead=>lead.id!==id
+ );
 
  saveLeads(leads);
 
@@ -520,14 +812,23 @@ function deleteLead(id){
 }
 
 
-/* DISPLAY LEADS */
+/* =========================
+   DISPLAY LEADS
+========================= */
 
 function renderLeads(){
 
  const table =
- document.getElementById("leadTable");
+ document.getElementById(
+   "leadTable"
+ );
 
- const leads = getLeads();
+ if(!table){
+   return;
+ }
+
+ const leads =
+ getLeads();
 
  table.innerHTML="";
 
@@ -538,16 +839,24 @@ function renderLeads(){
 
    row.innerHTML=`
 
-   <td>${escapeHtml(lead.name)}</td>
-
-   <td>${escapeHtml(lead.phone)}</td>
+   <td>
+   ${escapeHtml(lead.name)}
+   </td>
 
    <td>
+   ${escapeHtml(lead.phone)}
+   </td>
+
+   <td>
+
    <button
-   class="primary"
+   class="danger"
    onclick="deleteLead(${lead.id})">
+
    Delete
+
    </button>
+
    </td>
 
    `;
@@ -556,45 +865,64 @@ function renderLeads(){
 
  });
 
- document.getElementById("totalLeads")
+ document
+ .getElementById("totalLeads")
  .innerText=leads.length;
 
 }
 
 
-/* CSV */
+/* =========================
+   CSV IMPORT
+========================= */
 
 function importCSV(){
 
  const file =
- document.getElementById("csvFile").files[0];
+ document
+ .getElementById("csvFile")
+ .files[0];
 
  if(!file){
 
-   alert("CSV file select करा.");
+   alert(
+   "CSV file select करा."
+   );
 
    return;
+
  }
 
- const reader = new FileReader();
+ const reader =
+ new FileReader();
 
  reader.onload=function(e){
 
    const lines =
    e.target.result
    .split(/\r?\n/)
-   .filter(line=>line.trim());
+   .filter(
+     line=>line.trim()
+   );
 
-   if(lines.length < 2){
+   if(lines.length<2){
 
-     alert("CSV मध्ये data नाही.");
+     alert(
+     "CSV मध्ये data नाही."
+     );
 
      return;
+
    }
 
-   const leads=getLeads();
+   const leads =
+   getLeads();
 
-   for(let i=1;i<lines.length;i++){
+   for(
+     let i=1;
+     i<lines.length;
+     i++
+   ){
 
      const columns =
      lines[i].split(",");
@@ -602,17 +930,24 @@ function importCSV(){
      if(columns.length>=2){
 
        const name =
-       columns[0].trim();
+       columns[0]
+       .trim();
 
        const phone =
-       columns[1].trim();
+       columns[1]
+       .trim();
 
        if(name && phone){
 
          leads.push({
-           id:Date.now()+i,
+
+           id:
+           Date.now()+i,
+
            name:name,
+
            phone:phone
+
          });
 
        }
@@ -625,7 +960,11 @@ function importCSV(){
 
    renderLeads();
 
-   alert("CSV imported successfully.");
+   renderCampaignLeads();
+
+   alert(
+   "CSV imported successfully."
+   );
 
  };
 
@@ -634,20 +973,27 @@ function importCSV(){
 }
 
 
-/* SEND MESSAGE */
+/* =========================
+   SEND MESSAGE
+========================= */
 
 async function sendMessage(){
 
  const to =
- document.getElementById("sendNumber")
- .value.trim();
+ document
+ .getElementById("sendNumber")
+ .value
+ .trim();
 
  const text =
- document.getElementById("sendMessage")
- .value.trim();
+ document
+ .getElementById("sendMessage")
+ .value
+ .trim();
 
  const result =
- document.getElementById("sendResult");
+ document
+ .getElementById("sendResult");
 
  if(!to || !text){
 
@@ -655,27 +1001,32 @@ async function sendMessage(){
    "❌ Number आणि message भरा.";
 
    return;
+
  }
 
- result.innerText="⏳ Sending...";
+ result.innerText =
+ "⏳ Sending...";
 
  try{
 
    const response =
-   await fetch(API_BASE + "/send",{
+   await fetch(
+     API_BASE+"/send",
+     {
+       method:"POST",
 
-     method:"POST",
+       headers:{
+         "Content-Type":
+         "application/json"
+       },
 
-     headers:{
-       "Content-Type":"application/json"
-     },
-
-     body:JSON.stringify({
-       to:to,
-       text:text
-     })
-
-   });
+       body:
+       JSON.stringify({
+         to:to,
+         text:text
+       })
+     }
+   );
 
    const data =
    await response.json();
@@ -686,28 +1037,36 @@ async function sendMessage(){
      "✅ Message sent successfully.";
 
      let sent =
-     Number(localStorage.getItem("totalSent") || 0);
+     Number(
+       localStorage
+       .getItem("totalSent") || 0
+     );
 
      sent++;
 
-     localStorage.setItem("totalSent",sent);
+     localStorage.setItem(
+       "totalSent",
+       sent
+     );
 
      updateStats();
 
    }else{
 
      result.innerText =
-     "❌ Message failed: " +
-     (data.result?.error?.message ||
-      data.error ||
-      "Unknown error");
+     "❌ Message failed: "+
+     (
+       data.result?.error?.message ||
+       data.error ||
+       "Unknown error"
+     );
 
    }
 
  }catch(error){
 
    result.innerText =
-   "❌ Connection error: " +
+   "❌ Connection error: "+
    error.message;
 
  }
@@ -715,47 +1074,296 @@ async function sendMessage(){
 }
 
 
-/* CAMPAIGN */
+/* =========================
+   CAMPAIGN LEAD LIST
+========================= */
 
-function createCampaign(){
+function renderCampaignLeads(){
 
- const name =
- document.getElementById("campaignName").value.trim();
+ const container =
+ document.getElementById(
+   "campaignLeadList"
+ );
 
- const message =
- document.getElementById("campaignMessage").value.trim();
-
- if(!name || !message){
-
-   alert("Campaign name आणि message भरा.");
-
+ if(!container){
    return;
  }
 
- document.getElementById("campaignResult")
- .innerText =
- "✅ Campaign created successfully.";
+ const leads =
+ getLeads();
+
+ container.innerHTML="";
+
+ if(leads.length===0){
+
+   container.innerHTML=
+   "<p>No leads available. Import CSV first.</p>";
+
+   updateCampaignCount();
+
+   return;
+
+ }
+
+ leads.forEach(lead=>{
+
+   const row =
+   document.createElement("div");
+
+   row.className=
+   "campaign-row";
+
+   row.innerHTML=`
+
+   <label>
+
+   <input
+   type="checkbox"
+   class="campaign-lead"
+   value="${lead.id}"
+   onchange="updateCampaignCount()">
+
+   <span>
+
+   <b>
+   ${escapeHtml(lead.name)}
+   </b>
+
+   -
+   ${escapeHtml(lead.phone)}
+
+   </span>
+
+   </label>
+
+   `;
+
+   container.appendChild(row);
+
+ });
+
+ updateCampaignCount();
 
 }
 
 
-/* STATS */
+/* =========================
+   SELECT ALL
+========================= */
+
+function selectAllLeads(){
+
+ document
+ .querySelectorAll(
+   ".campaign-lead"
+ )
+ .forEach(box=>{
+
+   box.checked=true;
+
+ });
+
+ updateCampaignCount();
+
+}
+
+
+/* =========================
+   CLEAR SELECTION
+========================= */
+
+function clearSelectedLeads(){
+
+ document
+ .querySelectorAll(
+   ".campaign-lead"
+ )
+ .forEach(box=>{
+
+   box.checked=false;
+
+ });
+
+ updateCampaignCount();
+
+}
+
+
+/* =========================
+   SELECTED COUNT
+========================= */
+
+function updateCampaignCount(){
+
+ const selected =
+ document
+ .querySelectorAll(
+   ".campaign-lead:checked"
+ ).length;
+
+ const counter =
+ document.getElementById(
+   "campaignLeadCount"
+ );
+
+ if(counter){
+
+   counter.innerText =
+   "Selected Leads: "+selected;
+
+ }
+
+}
+
+
+/* =========================
+   PREPARE CAMPAIGN
+========================= */
+
+function prepareCampaign(){
+
+ const name =
+ document
+ .getElementById(
+   "campaignName"
+ )
+ .value
+ .trim();
+
+ const template =
+ document
+ .getElementById(
+   "campaignTemplate"
+ )
+ .value;
+
+ const selectedIds =
+ Array.from(
+   document.querySelectorAll(
+     ".campaign-lead:checked"
+   )
+ )
+ .map(
+   box=>Number(box.value)
+ );
+
+ if(!name){
+
+   alert(
+   "Campaign name भरा."
+   );
+
+   return;
+
+ }
+
+ if(selectedIds.length===0){
+
+   alert(
+   "किमान 1 lead select करा."
+   );
+
+   return;
+
+ }
+
+ if(!template){
+
+   alert(
+   "Approved WhatsApp template select करा."
+   );
+
+   return;
+
+ }
+
+ const selectedLeads =
+ getLeads()
+ .filter(
+   lead=>
+   selectedIds.includes(lead.id)
+ );
+
+ document
+ .getElementById(
+   "campaignResult"
+ )
+ .innerHTML=`
+
+ <span class="success">
+
+ ✅ Campaign Ready
+
+ </span>
+
+ <br><br>
+
+ Campaign:
+ <b>${escapeHtml(name)}</b>
+
+ <br>
+
+ Recipients:
+ <b>${selectedLeads.length}</b>
+
+ <br>
+
+ Template:
+ <b>${escapeHtml(template)}</b>
+
+ <br><br>
+
+ <span class="muted">
+
+ Next step: Meta-approved template
+ sending will be connected here.
+
+ </span>
+
+ `;
+
+}
+
+
+/* =========================
+   TEMPLATE
+========================= */
+
+function templateMessage(){
+
+ alert(
+ "Template section ready. Meta-approved templates will be connected here."
+ );
+
+}
+
+
+/* =========================
+   STATS
+========================= */
 
 function updateStats(){
 
  const sent =
- Number(localStorage.getItem("totalSent") || 0);
+ Number(
+   localStorage
+   .getItem("totalSent") || 0
+ );
 
- document.getElementById("totalSent")
+ document
+ .getElementById("totalSent")
  .innerText=sent;
 
- document.getElementById("reportSent")
+ document
+ .getElementById("reportSent")
  .innerText=sent;
 
 }
 
 
-/* SECURITY */
+/* =========================
+   SECURITY
+========================= */
 
 function escapeHtml(text){
 
@@ -769,11 +1377,15 @@ function escapeHtml(text){
 }
 
 
-/* INITIAL LOAD */
+/* =========================
+   INITIAL LOAD
+========================= */
 
 renderLeads();
 
 updateStats();
+
+renderCampaignLeads();
 
 </script>
 
