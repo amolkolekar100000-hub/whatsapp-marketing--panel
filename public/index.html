@@ -204,6 +204,176 @@ th,td{
  margin:15px 0;
 }
 
+
+/* =========================
+   INBOX
+========================= */
+
+.inbox-layout{
+ display:grid;
+ grid-template-columns:320px 1fr;
+ height:650px;
+ background:white;
+ border-radius:12px;
+ overflow:hidden;
+ box-shadow:0 2px 10px #0000000d;
+}
+
+.chat-list{
+ border-right:1px solid #e5e7eb;
+ overflow-y:auto;
+}
+
+.chat-search{
+ padding:15px;
+ border-bottom:1px solid #e5e7eb;
+}
+
+.chat-search input{
+ margin:0;
+}
+
+.chat-item{
+ padding:15px;
+ border-bottom:1px solid #e5e7eb;
+ cursor:pointer;
+}
+
+.chat-item:hover{
+ background:#f1f5f9;
+}
+
+.chat-item.active{
+ background:#eff6ff;
+}
+
+.chat-name{
+ font-weight:bold;
+ margin-bottom:5px;
+}
+
+.chat-number{
+ font-size:13px;
+ color:#64748b;
+}
+
+.chat-preview{
+ font-size:13px;
+ color:#475569;
+ margin-top:5px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+
+.chat-window{
+ display:flex;
+ flex-direction:column;
+ min-width:0;
+}
+
+.chat-header{
+ padding:16px;
+ border-bottom:1px solid #e5e7eb;
+ background:#fff;
+}
+
+.chat-header-name{
+ font-weight:bold;
+ font-size:17px;
+}
+
+.chat-header-number{
+ font-size:13px;
+ color:#64748b;
+ margin-top:4px;
+}
+
+.chat-messages{
+ flex:1;
+ padding:20px;
+ overflow-y:auto;
+ background:#f8fafc;
+}
+
+.message-row{
+ display:flex;
+ margin:8px 0;
+}
+
+.message-row.incoming{
+ justify-content:flex-start;
+}
+
+.message-row.outgoing{
+ justify-content:flex-end;
+}
+
+.message-bubble{
+ max-width:70%;
+ padding:11px 14px;
+ border-radius:12px;
+ word-wrap:break-word;
+ white-space:pre-wrap;
+}
+
+.incoming .message-bubble{
+ background:white;
+ border:1px solid #e5e7eb;
+}
+
+.outgoing .message-bubble{
+ background:#dbeafe;
+}
+
+.message-time{
+ font-size:10px;
+ color:#64748b;
+ margin-top:5px;
+ text-align:right;
+}
+
+.chat-reply{
+ padding:12px;
+ border-top:1px solid #e5e7eb;
+ background:white;
+ display:flex;
+ gap:10px;
+ align-items:flex-end;
+}
+
+.chat-reply textarea{
+ margin:0;
+ resize:none;
+ min-height:45px;
+}
+
+.chat-reply button{
+ white-space:nowrap;
+}
+
+.empty-chat{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ height:100%;
+ color:#64748b;
+ text-align:center;
+ padding:30px;
+}
+
+.inbox-topbar{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:15px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
 @media(max-width:800px){
 
  .sidebar{
@@ -216,6 +386,21 @@ th,td{
 
  .card-grid{
    grid-template-columns:repeat(2,1fr);
+ }
+
+ .inbox-layout{
+   grid-template-columns:1fr;
+   height:auto;
+ }
+
+ .chat-list{
+   max-height:250px;
+   border-right:0;
+   border-bottom:1px solid #e5e7eb;
+ }
+
+ .chat-window{
+   min-height:500px;
  }
 
 }
@@ -240,6 +425,11 @@ onclick="showPage('dashboard',this)">
 <button class="nav"
 onclick="showPage('send',this)">
 💬 Send Message
+</button>
+
+<button class="nav"
+onclick="showPage('inbox',this)">
+📥 Inbox
 </button>
 
 <button class="nav"
@@ -334,6 +524,11 @@ onclick="openPage('send')">
 </button>
 
 <button class="primary"
+onclick="openPage('inbox')">
+📥 Open Inbox
+</button>
+
+<button class="primary"
 onclick="openPage('campaigns')">
 📢 Create Campaign
 </button>
@@ -374,6 +569,108 @@ onclick="sendMessage()">
 </button>
 
 <p id="sendResult"></p>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     INBOX
+========================= -->
+
+<div id="inbox" class="page">
+
+<div class="inbox-topbar">
+
+<h2>📥 WhatsApp Inbox</h2>
+
+<button
+class="primary"
+onclick="loadInbox()">
+
+🔄 Refresh Chats
+
+</button>
+
+</div>
+
+<div class="inbox-layout">
+
+<!-- CHAT LIST -->
+
+<div class="chat-list">
+
+<div class="chat-search">
+
+<input
+id="chatSearch"
+type="text"
+placeholder="Search customer..."
+oninput="renderChatList()">
+
+</div>
+
+<div id="chatList">
+
+<div class="empty-chat">
+Loading chats...
+</div>
+
+</div>
+
+</div>
+
+
+<!-- CHAT WINDOW -->
+
+<div class="chat-window">
+
+<div id="chatHeader"
+class="chat-header">
+
+<div class="chat-header-name">
+Select a customer
+</div>
+
+<div class="chat-header-number">
+WhatsApp conversation
+</div>
+
+</div>
+
+
+<div
+id="chatMessages"
+class="chat-messages">
+
+<div class="empty-chat">
+
+👈 Select a customer to view messages
+
+</div>
+
+</div>
+
+
+<div class="chat-reply">
+
+<textarea
+id="replyText"
+rows="2"
+placeholder="Type your reply..."></textarea>
+
+<button
+class="primary"
+onclick="sendReply()">
+
+Send
+
+</button>
+
+</div>
+
+</div>
 
 </div>
 
@@ -650,6 +947,14 @@ const API_BASE =
 
 
 /* =========================
+   GLOBAL INBOX DATA
+========================= */
+
+let inboxMessages = [];
+let activeChat = null;
+
+
+/* =========================
    NAVIGATION
 ========================= */
 
@@ -682,6 +987,10 @@ function showPage(pageId,button){
    renderCampaignLeads();
  }
 
+ if(pageId==="inbox"){
+   loadInbox();
+ }
+
  window.scrollTo(0,0);
 
 }
@@ -695,11 +1004,12 @@ function openPage(pageId){
  const map={
    dashboard:0,
    send:1,
-   leads:2,
-   campaigns:3,
-   templates:4,
-   reports:5,
-   settings:6
+   inbox:2,
+   leads:3,
+   campaigns:4,
+   templates:5,
+   reports:6,
+   settings:7
  };
 
  showPage(
@@ -1051,6 +1361,14 @@ async function sendMessage(){
 
      updateStats();
 
+     if(
+       document
+       .getElementById("inbox")
+       .classList.contains("active")
+     ){
+       await loadInbox();
+     }
+
    }else{
 
      result.innerText =
@@ -1075,319 +1393,257 @@ async function sendMessage(){
 
 
 /* =========================
-   CAMPAIGN LEAD LIST
+   INBOX LOAD
 ========================= */
 
-function renderCampaignLeads(){
+async function loadInbox(){
 
- const container =
+ const list =
+ document.getElementById("chatList");
+
+ if(!list){
+   return;
+ }
+
+ list.innerHTML=
+ `<div class="empty-chat">
+ ⏳ Loading chats...
+ </div>`;
+
+ try{
+
+   const response =
+   await fetch(
+     API_BASE+"/messages"
+   );
+
+   const data =
+   await response.json();
+
+   if(!data.success){
+
+     throw new Error(
+       data.error || "Unable to load messages"
+     );
+
+   }
+
+   inboxMessages =
+   Array.isArray(data.messages)
+   ? data.messages
+   : [];
+
+   renderChatList();
+
+   if(activeChat){
+
+     const exists =
+     inboxMessages.some(
+       m=>m.wa_id===activeChat.wa_id
+     );
+
+     if(exists){
+
+       renderActiveChat();
+
+     }
+
+   }
+
+ }catch(error){
+
+   list.innerHTML=
+   `<div class="empty-chat">
+   ❌ Unable to load chats<br><br>
+   ${escapeHtml(error.message)}
+   </div>`;
+
+ }
+
+}
+
+
+/* =========================
+   CHAT LIST
+========================= */
+
+function getChats(){
+
+ const map = {};
+
+ inboxMessages.forEach(message=>{
+
+   if(!message.wa_id){
+     return;
+   }
+
+   if(!map[message.wa_id]){
+
+     map[message.wa_id]={
+       wa_id:message.wa_id,
+       name:message.name || message.wa_id,
+       messages:[]
+     };
+
+   }
+
+   map[message.wa_id]
+   .messages
+   .push(message);
+
+ });
+
+ return Object.values(map)
+ .sort((a,b)=>{
+
+   const aLast =
+   a.messages[a.messages.length-1];
+
+   const bLast =
+   b.messages[b.messages.length-1];
+
+   return Number(bLast.id || 0) -
+          Number(aLast.id || 0);
+
+ });
+
+}
+
+
+/* =========================
+   RENDER CHAT LIST
+========================= */
+
+function renderChatList(){
+
+ const list =
  document.getElementById(
-   "campaignLeadList"
+   "chatList"
  );
 
- if(!container){
+ if(!list){
    return;
  }
 
- const leads =
- getLeads();
+ const search =
+ (
+   document
+   .getElementById("chatSearch")
+   ?.value || ""
+ )
+ .toLowerCase()
+ .trim();
 
- container.innerHTML="";
+ let chats =
+ getChats();
 
- if(leads.length===0){
+ if(search){
 
-   container.innerHTML=
-   "<p>No leads available. Import CSV first.</p>";
+   chats =
+   chats.filter(chat=>
+     (
+       chat.name+
+       " "+
+       chat.wa_id
+     )
+     .toLowerCase()
+     .includes(search)
+   );
 
-   updateCampaignCount();
+ }
+
+ if(chats.length===0){
+
+   list.innerHTML=
+   `<div class="empty-chat">
+   No conversations found.
+   </div>`;
 
    return;
 
  }
 
- leads.forEach(lead=>{
+ list.innerHTML="";
 
-   const row =
+ chats.forEach(chat=>{
+
+   const last =
+   chat.messages[chat.messages.length-1];
+
+   const item =
    document.createElement("div");
 
-   row.className=
-   "campaign-row";
+   item.className=
+   "chat-item";
 
-   row.innerHTML=`
+   if(
+     activeChat &&
+     activeChat.wa_id===chat.wa_id
+   ){
 
-   <label>
+     item.classList.add("active");
 
-   <input
-   type="checkbox"
-   class="campaign-lead"
-   value="${lead.id}"
-   onchange="updateCampaignCount()">
+   }
 
-   <span>
+   item.onclick=()=>{
 
-   <b>
-   ${escapeHtml(lead.name)}
-   </b>
+     activeChat=chat;
 
-   -
-   ${escapeHtml(lead.phone)}
+     renderChatList();
 
-   </span>
+     renderActiveChat();
 
-   </label>
+   };
+
+   item.innerHTML=`
+
+   <div class="chat-name">
+   ${escapeHtml(chat.name)}
+   </div>
+
+   <div class="chat-number">
+   ${escapeHtml(chat.wa_id)}
+   </div>
+
+   <div class="chat-preview">
+   ${escapeHtml(last?.message || "")}
+   </div>
 
    `;
 
-   container.appendChild(row);
+   list.appendChild(item);
 
  });
-
- updateCampaignCount();
 
 }
 
 
 /* =========================
-   SELECT ALL
+   ACTIVE CHAT
 ========================= */
 
-function selectAllLeads(){
+function renderActiveChat(){
 
- document
- .querySelectorAll(
-   ".campaign-lead"
- )
- .forEach(box=>{
-
-   box.checked=true;
-
- });
-
- updateCampaignCount();
-
-}
-
-
-/* =========================
-   CLEAR SELECTION
-========================= */
-
-function clearSelectedLeads(){
-
- document
- .querySelectorAll(
-   ".campaign-lead"
- )
- .forEach(box=>{
-
-   box.checked=false;
-
- });
-
- updateCampaignCount();
-
-}
-
-
-/* =========================
-   SELECTED COUNT
-========================= */
-
-function updateCampaignCount(){
-
- const selected =
- document
- .querySelectorAll(
-   ".campaign-lead:checked"
- ).length;
-
- const counter =
+ const header =
  document.getElementById(
-   "campaignLeadCount"
+   "chatHeader"
  );
 
- if(counter){
-
-   counter.innerText =
-   "Selected Leads: "+selected;
-
- }
-
-}
-
-
-/* =========================
-   PREPARE CAMPAIGN
-========================= */
-
-function prepareCampaign(){
-
- const name =
- document
- .getElementById(
-   "campaignName"
- )
- .value
- .trim();
-
- const template =
- document
- .getElementById(
-   "campaignTemplate"
- )
- .value;
-
- const selectedIds =
- Array.from(
-   document.querySelectorAll(
-     ".campaign-lead:checked"
-   )
- )
- .map(
-   box=>Number(box.value)
+ const messagesBox =
+ document.getElementById(
+   "chatMessages"
  );
 
- if(!name){
-
-   alert(
-   "Campaign name भरा."
-   );
+ if(!activeChat){
 
    return;
 
  }
 
- if(selectedIds.length===0){
-
-   alert(
-   "किमान 1 lead select करा."
-   );
-
-   return;
-
- }
-
- if(!template){
-
-   alert(
-   "Approved WhatsApp template select करा."
-   );
-
-   return;
-
- }
-
- const selectedLeads =
- getLeads()
+ const messages =
+ inboxMessages
  .filter(
-   lead=>
-   selectedIds.includes(lead.id)
- );
-
- document
- .getElementById(
-   "campaignResult"
+   message=>
+   message.wa_id===activeChat.wa_id
  )
- .innerHTML=`
-
- <span class="success">
-
- ✅ Campaign Ready
-
- </span>
-
- <br><br>
-
- Campaign:
- <b>${escapeHtml(name)}</b>
-
- <br>
-
- Recipients:
- <b>${selectedLeads.length}</b>
-
- <br>
-
- Template:
- <b>${escapeHtml(template)}</b>
-
- <br><br>
-
- <span class="muted">
-
- Next step: Meta-approved template
- sending will be connected here.
-
- </span>
-
- `;
-
-}
-
-
-/* =========================
-   TEMPLATE
-========================= */
-
-function templateMessage(){
-
- alert(
- "Template section ready. Meta-approved templates will be connected here."
- );
-
-}
-
-
-/* =========================
-   STATS
-========================= */
-
-function updateStats(){
-
- const sent =
- Number(
-   localStorage
-   .getItem("totalSent") || 0
- );
-
- document
- .getElementById("totalSent")
- .innerText=sent;
-
- document
- .getElementById("reportSent")
- .innerText=sent;
-
-}
-
-
-/* =========================
-   SECURITY
-========================= */
-
-function escapeHtml(text){
-
- const div =
- document.createElement("div");
-
- div.textContent=text;
-
- return div.innerHTML;
-
-}
-
-
-/* =========================
-   INITIAL LOAD
-========================= */
-
-renderLeads();
-
-updateStats();
-
-renderCampaignLeads();
-
-</script>
-
-</body>
-</html>
+ .so
