@@ -7,666 +7,199 @@
 
 <style>
 *{box-sizing:border-box}
-
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:#f4f7fb;
- color:#172033;
-}
-
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
 .sidebar{
- position:fixed;
- left:0;
- top:0;
- bottom:0;
- width:230px;
- background:#111827;
- color:white;
- padding:20px 12px;
- overflow-y:auto;
+ position:fixed;left:0;top:0;bottom:0;width:240px;
+ background:#111827;color:white;padding:20px 12px;
 }
-
-.logo{
- font-size:20px;
- font-weight:bold;
- padding:10px 12px 25px;
-}
-
+.logo{font-size:21px;font-weight:bold;padding:10px 12px 25px}
 .nav{
- display:block;
- width:100%;
- padding:13px 14px;
- margin:5px 0;
- border:0;
- border-radius:8px;
- background:transparent;
- color:#d1d5db;
- text-align:left;
- cursor:pointer;
- font-size:15px;
+ width:100%;border:0;background:transparent;color:#d1d5db;
+ text-align:left;padding:13px 15px;margin:3px 0;
+ border-radius:8px;cursor:pointer;font-size:15px;
 }
-
-.nav:hover,
-.nav.active{
- background:#2563eb;
- color:white;
-}
-
-.main{
- margin-left:230px;
- padding:25px;
-}
-
-.header{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:25px;
-}
-
-.card-grid{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:18px;
-}
-
+.nav:hover,.nav.active{background:#25d366;color:white}
+.main{margin-left:240px;padding:25px}
+.page{display:none}
+.page.active{display:block}
+h1{margin-top:0}
 .card{
- background:white;
- border-radius:12px;
- padding:20px;
- box-shadow:0 2px 10px #0000000d;
+ background:white;border-radius:12px;padding:20px;
+ box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:20px
 }
-
-.card h3{
- margin:0 0 10px;
- font-size:14px;
- color:#64748b;
+.grid{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+ gap:15px
 }
-
-.number{
- font-size:28px;
- font-weight:bold;
-}
-
-.page{
- display:none;
-}
-
-.page.active{
- display:block;
-}
-
-.box{
- background:white;
- border-radius:12px;
- padding:22px;
- box-shadow:0 2px 10px #0000000d;
- margin-top:20px;
-}
-
+.stat{font-size:28px;font-weight:bold;margin-top:8px}
 input,textarea,select{
- width:100%;
- padding:12px;
- border:1px solid #d1d5db;
- border-radius:8px;
- margin:7px 0 15px;
- font-size:15px;
+ width:100%;padding:12px;border:1px solid #d1d5db;
+ border-radius:8px;margin:7px 0 15px;font-size:15px
 }
-
-button.primary{
- background:#2563eb;
- color:white;
- border:0;
- padding:12px 18px;
- border-radius:8px;
- cursor:pointer;
- font-size:15px;
+textarea{min-height:110px;resize:vertical}
+button{
+ border:0;border-radius:8px;padding:11px 17px;
+ cursor:pointer;font-weight:bold
 }
-
-button.primary:hover{
- background:#1d4ed8;
+.primary{background:#25d366;color:white}
+.secondary{background:#e5e7eb;color:#111827}
+.danger{background:#ef4444;color:white}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}
+.badge{padding:5px 9px;border-radius:15px;background:#dcfce7;color:#166534;font-size:12px}
+.chat-layout{
+ display:grid;grid-template-columns:300px 1fr;
+ min-height:500px;background:white;border-radius:12px;overflow:hidden
 }
-
-button.secondary{
- background:#e5e7eb;
- color:#172033;
- border:0;
- padding:12px 18px;
- border-radius:8px;
- cursor:pointer;
- font-size:15px;
-}
-
-button.danger{
- background:#dc2626;
- color:white;
- border:0;
- padding:8px 12px;
- border-radius:7px;
- cursor:pointer;
-}
-
-table{
- width:100%;
- border-collapse:collapse;
- margin-top:15px;
-}
-
-th,td{
- padding:12px;
- border-bottom:1px solid #e5e7eb;
- text-align:left;
-}
-
-.success{
- color:#16a34a;
-}
-
-.muted{
- color:#64748b;
- font-size:14px;
-}
-
-.campaign-list{
- max-height:400px;
- overflow:auto;
- border:1px solid #e5e7eb;
- border-radius:8px;
- padding:5px;
-}
-
-.campaign-row{
- padding:12px;
- border-bottom:1px solid #e5e7eb;
-}
-
-.campaign-row:last-child{
- border-bottom:0;
-}
-
-.campaign-row label{
- display:flex;
- align-items:center;
- gap:10px;
- cursor:pointer;
-}
-
-.campaign-row input[type="checkbox"]{
- width:18px;
- height:18px;
- margin:0;
-}
-
-.selected-count{
- font-size:18px;
- font-weight:bold;
- margin:15px 0;
-}
-
-
-/* =========================
-   INBOX
-========================= */
-
-.inbox-layout{
- display:grid;
- grid-template-columns:320px 1fr;
- height:650px;
- background:white;
- border-radius:12px;
- overflow:hidden;
- box-shadow:0 2px 10px #0000000d;
-}
-
-.chat-list{
- border-right:1px solid #e5e7eb;
- overflow-y:auto;
-}
-
-.chat-search{
- padding:15px;
- border-bottom:1px solid #e5e7eb;
-}
-
-.chat-search input{
- margin:0;
-}
-
+.chat-list{border-right:1px solid #ddd}
 .chat-item{
- padding:15px;
- border-bottom:1px solid #e5e7eb;
- cursor:pointer;
+ padding:15px;border-bottom:1px solid #eee;cursor:pointer
 }
-
-.chat-item:hover{
- background:#f1f5f9;
+.chat-item:hover,.chat-item.selected{background:#f0fdf4}
+.chat-name{font-weight:bold}
+.chat-number{font-size:12px;color:#777;margin-top:4px}
+.chat-window{display:flex;flex-direction:column}
+.chat-header{padding:15px;border-bottom:1px solid #ddd;font-weight:bold}
+.messages{
+ flex:1;padding:20px;min-height:330px;max-height:430px;
+ overflow-y:auto;background:#f7f7f7
 }
-
-.chat-item.active{
- background:#eff6ff;
+.msg{margin:8px 0;display:flex}
+.msg.incoming{justify-content:flex-start}
+.msg.outgoing{justify-content:flex-end}
+.bubble{
+ max-width:70%;padding:10px 13px;border-radius:10px;
+ background:white;box-shadow:0 1px 3px rgba(0,0,0,.08)
 }
-
-.chat-name{
- font-weight:bold;
- margin-bottom:5px;
-}
-
-.chat-number{
- font-size:13px;
- color:#64748b;
-}
-
-.chat-preview{
- font-size:13px;
- color:#475569;
- margin-top:5px;
- white-space:nowrap;
- overflow:hidden;
- text-overflow:ellipsis;
-}
-
-.chat-window{
- display:flex;
- flex-direction:column;
- min-width:0;
-}
-
-.chat-header{
- padding:16px;
- border-bottom:1px solid #e5e7eb;
- background:#fff;
-}
-
-.chat-header-name{
- font-weight:bold;
- font-size:17px;
-}
-
-.chat-header-number{
- font-size:13px;
- color:#64748b;
- margin-top:4px;
-}
-
-.chat-messages{
- flex:1;
- padding:20px;
- overflow-y:auto;
- background:#f8fafc;
-}
-
-.message-row{
- display:flex;
- margin:8px 0;
-}
-
-.message-row.incoming{
- justify-content:flex-start;
-}
-
-.message-row.outgoing{
- justify-content:flex-end;
-}
-
-.message-bubble{
- max-width:70%;
- padding:11px 14px;
- border-radius:12px;
- word-wrap:break-word;
- white-space:pre-wrap;
-}
-
-.incoming .message-bubble{
- background:white;
- border:1px solid #e5e7eb;
-}
-
-.outgoing .message-bubble{
- background:#dbeafe;
-}
-
-.message-time{
- font-size:10px;
- color:#64748b;
- margin-top:5px;
- text-align:right;
-}
-
-.chat-reply{
- padding:12px;
- border-top:1px solid #e5e7eb;
- background:white;
- display:flex;
- gap:10px;
- align-items:flex-end;
-}
-
-.chat-reply textarea{
- margin:0;
- resize:none;
- min-height:45px;
-}
-
-.chat-reply button{
- white-space:nowrap;
-}
-
-.empty-chat{
- display:flex;
- align-items:center;
- justify-content:center;
- height:100%;
- color:#64748b;
- text-align:center;
- padding:30px;
-}
-
-.inbox-topbar{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:15px;
-}
-
-
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:800px){
-
- .sidebar{
-   width:190px;
- }
-
- .main{
-   margin-left:190px;
- }
-
- .card-grid{
-   grid-template-columns:repeat(2,1fr);
- }
-
- .inbox-layout{
-   grid-template-columns:1fr;
-   height:auto;
- }
-
- .chat-list{
-   max-height:250px;
-   border-right:0;
-   border-bottom:1px solid #e5e7eb;
- }
-
- .chat-window{
-   min-height:500px;
- }
-
+.outgoing .bubble{background:#dcf8c6}
+.reply{padding:12px;border-top:1px solid #ddd}
+.empty{padding:30px;text-align:center;color:#777}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px}
+@media(max-width:700px){
+ .sidebar{width:190px}
+ .main{margin-left:190px;padding:15px}
+ .chat-layout{grid-template-columns:1fr}
+ .chat-list{max-height:220px;overflow:auto;border-right:0}
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
-
 <div class="sidebar">
 
-<div class="logo">
-📱 WhatsApp Panel
-</div>
+<div class="logo">📱 WhatsApp Panel</div>
 
-<button class="nav active"
-onclick="showPage('dashboard',this)">
-📊 Dashboard
-</button>
-
-<button class="nav"
-onclick="showPage('send',this)">
-💬 Send Message
-</button>
-
-<button class="nav"
-onclick="showPage('inbox',this)">
-📥 Inbox
-</button>
-
-<button class="nav"
-onclick="showPage('leads',this)">
-👥 Leads
-</button>
-
-<button class="nav"
-onclick="showPage('campaigns',this)">
-📢 Campaigns
-</button>
-
-<button class="nav"
-onclick="showPage('templates',this)">
-📝 Templates
-</button>
-
-<button class="nav"
-onclick="showPage('reports',this)">
-📈 Reports
-</button>
-
-<button class="nav"
-onclick="showPage('settings',this)">
-⚙️ Settings
-</button>
+<button class="nav active" onclick="showPage('dashboard',this)">🏠 Dashboard</button>
+<button class="nav" onclick="showPage('send',this)">📤 Send Message</button>
+<button class="nav" onclick="showPage('inbox',this)">💬 Inbox</button>
+<button class="nav" onclick="showPage('leads',this)">👥 Leads</button>
+<button class="nav" onclick="showPage('campaigns',this)">🚀 Campaigns</button>
+<button class="nav" onclick="showPage('templates',this)">📝 Templates</button>
+<button class="nav" onclick="showPage('reports',this)">📊 Reports</button>
+<button class="nav" onclick="showPage('settings',this)">⚙️ Settings</button>
 
 </div>
-
-
-<!-- MAIN -->
 
 <div class="main">
 
-<div class="header">
-
-<h1>New Launch Project</h1>
-
-<span class="success">
-● WhatsApp API Active
-</span>
-
-</div>
-
-
 <!-- DASHBOARD -->
+<section id="dashboard" class="page active">
 
-<div id="dashboard" class="page active">
-
-<h2>WhatsApp Marketing Dashboard</h2>
-
-<div class="card-grid">
-
-<div class="card">
-<h3>Total Leads</h3>
-<div class="number" id="totalLeads">0</div>
+<div class="topbar">
+<h1>Dashboard</h1>
+<span class="badge">API ACTIVE</span>
 </div>
 
+<div class="grid">
+
 <div class="card">
-<h3>Total Sent</h3>
-<div class="number" id="totalSent">0</div>
+<div>Total Leads</div>
+<div class="stat" id="dashLeads">0</div>
 </div>
 
 <div class="card">
-<h3>Delivered</h3>
-<div class="number" id="delivered">0</div>
+<div>Messages Sent</div>
+<div class="stat" id="dashSent">0</div>
 </div>
 
 <div class="card">
-<h3>Failed</h3>
-<div class="number" id="failed">0</div>
+<div>Inbox Messages</div>
+<div class="stat" id="dashInbox">0</div>
+</div>
+
+<div class="card">
+<div>Campaigns</div>
+<div class="stat" id="dashCampaigns">0</div>
 </div>
 
 </div>
 
-<div class="box">
-
-<h2>WhatsApp Marketing Dashboard</h2>
-
-<p>
-Your WhatsApp Cloud API connection is active.
-</p>
-
-<button class="primary"
-onclick="openPage('leads')">
-👥 Manage Leads
-</button>
-
-<button class="primary"
-onclick="openPage('send')">
-💬 Send Message
-</button>
-
-<button class="primary"
-onclick="openPage('inbox')">
-📥 Open Inbox
-</button>
-
-<button class="primary"
-onclick="openPage('campaigns')">
-📢 Create Campaign
-</button>
-
+<div class="card">
+<h2>WhatsApp Marketing Panel</h2>
+<p>Send messages, manage leads and handle incoming WhatsApp chats.</p>
+<button class="primary" onclick="showPage('inbox')">💬 Open Inbox</button>
+<button class="primary" onclick="showPage('send')">📤 Send Message</button>
 </div>
 
-</div>
+</section>
 
 
-<!-- SEND MESSAGE -->
+<!-- SEND -->
+<section id="send" class="page">
 
-<div id="send" class="page">
+<h1>Send Message</h1>
 
-<h2>Send WhatsApp Message</h2>
-
-<div class="box">
+<div class="card">
 
 <label>WhatsApp Number</label>
-
-<input
-id="sendNumber"
-type="text"
-placeholder="919XXXXXXXXX">
+<input id="sendNumber" placeholder="919XXXXXXXXX">
 
 <label>Message</label>
+<textarea id="sendText" placeholder="Type your message..."></textarea>
 
-<textarea
-id="sendMessage"
-rows="6"
-placeholder="Type your WhatsApp message..."></textarea>
+<button class="primary" onclick="sendMessage()">Send Message</button>
 
-<button
-class="primary"
-onclick="sendMessage()">
-
-🚀 Send Message
-
-</button>
-
-<p id="sendResult"></p>
+<div id="sendResult" style="margin-top:15px"></div>
 
 </div>
 
+</section>
+
+
+<!-- INBOX -->
+<section id="inbox" class="page">
+
+<div class="topbar">
+<h1>Inbox</h1>
+<button class="primary" onclick="loadInbox()">🔄 Refresh</button>
 </div>
 
+<div class="chat-layout">
 
-<!-- =========================
-     INBOX
-========================= -->
-
-<div id="inbox" class="page">
-
-<div class="inbox-topbar">
-
-<h2>📥 WhatsApp Inbox</h2>
-
-<button
-class="primary"
-onclick="loadInbox()">
-
-🔄 Refresh Chats
-
-</button>
-
+<div class="chat-list" id="chatList">
+<div class="empty">Loading chats...</div>
 </div>
-
-<div class="inbox-layout">
-
-<!-- CHAT LIST -->
-
-<div class="chat-list">
-
-<div class="chat-search">
-
-<input
-id="chatSearch"
-type="text"
-placeholder="Search customer..."
-oninput="renderChatList()">
-
-</div>
-
-<div id="chatList">
-
-<div class="empty-chat">
-Loading chats...
-</div>
-
-</div>
-
-</div>
-
-
-<!-- CHAT WINDOW -->
 
 <div class="chat-window">
 
-<div id="chatHeader"
-class="chat-header">
-
-<div class="chat-header-name">
+<div class="chat-header" id="chatHeader">
 Select a customer
 </div>
 
-<div class="chat-header-number">
-WhatsApp conversation
+<div class="messages" id="messages">
+<div class="empty">Select a chat from the left.</div>
 </div>
 
-</div>
+<div class="reply">
 
+<textarea id="replyText"
+placeholder="Type reply..."
+style="min-height:60px;margin-bottom:7px"></textarea>
 
-<div
-id="chatMessages"
-class="chat-messages">
+<button class="primary" onclick="sendReply()">Send Reply</button>
 
-<div class="empty-chat">
-
-👈 Select a customer to view messages
-
-</div>
-
-</div>
-
-
-<div class="chat-reply">
-
-<textarea
-id="replyText"
-rows="2"
-placeholder="Type your reply..."></textarea>
-
-<button
-class="primary"
-onclick="sendReply()">
-
-Send
-
-</button>
+<span id="replyResult" style="margin-left:10px"></span>
 
 </div>
 
@@ -674,78 +207,40 @@ Send
 
 </div>
 
-</div>
+</section>
 
 
 <!-- LEADS -->
+<section id="leads" class="page">
 
-<div id="leads" class="page">
+<h1>Leads</h1>
 
-<h2>Leads Management</h2>
+<div class="card">
 
-<div class="box">
+<input id="leadName" placeholder="Customer Name">
+<input id="leadPhone" placeholder="919XXXXXXXXX">
 
-<h3>Add New Lead</h3>
+<button class="primary" onclick="addLead()">Add Lead</button>
 
-<input
-id="leadName"
-type="text"
-placeholder="Lead Name">
-
-<input
-id="leadPhone"
-type="text"
-placeholder="WhatsApp Number e.g. 919XXXXXXXXX">
-
-<button
-class="primary"
-onclick="addLead()">
-
-➕ Add Lead
-
+<button class="secondary" onclick="document.getElementById('csvFile').click()">
+Import CSV
 </button>
+
+<input type="file" id="csvFile" accept=".csv"
+style="display:none" onchange="importCSV(event)">
 
 </div>
 
-
-<div class="box">
-
-<h3>Import CSV</h3>
-
-<p class="muted">
-CSV format: Name, WhatsApp Number
-</p>
-
-<input
-id="csvFile"
-type="file"
-accept=".csv">
-
-<button
-class="primary"
-onclick="importCSV()">
-
-📥 Import CSV
-
-</button>
-
-</div>
-
-
-<div class="box">
-
-<h3>Lead List</h3>
+<div class="card">
 
 <table>
 
 <thead>
-
 <tr>
 <th>Name</th>
-<th>WhatsApp Number</th>
+<th>WhatsApp</th>
 <th>Action</th>
 </tr>
-
 </thead>
 
 <tbody id="leadTable"></tbody>
@@ -754,896 +249,687 @@ onclick="importCSV()">
 
 </div>
 
-</div>
+</section>
 
 
 <!-- CAMPAIGNS -->
+<section id="campaigns" class="page">
 
-<div id="campaigns" class="page">
+<h1>Campaigns</h1>
 
-<h2>Campaign Management</h2>
+<div class="card">
 
-<div class="box">
-
-<h3>Create WhatsApp Campaign</h3>
+<h3>Create Campaign</h3>
 
 <label>Campaign Name</label>
+<input id="campaignName" placeholder="New Launch Campaign">
 
-<input
-id="campaignName"
-type="text"
-placeholder="Example: New Launch October">
-
-<h3>Select Recipients</h3>
-
-<div>
-
-<button
-class="primary"
-type="button"
-onclick="selectAllLeads()">
-
-☑️ Select All Leads
-
-</button>
-
-<button
-class="secondary"
-type="button"
-onclick="clearSelectedLeads()"
-style="margin-left:8px">
-
-Clear Selection
-
-</button>
-
-</div>
-
-<div
-id="campaignLeadCount"
-class="selected-count">
-
-Selected Leads: 0
-
-</div>
-
-<div
-id="campaignLeadList"
-class="campaign-list">
-
-</div>
-
-
-<h3 style="margin-top:25px">
-WhatsApp Template
-</h3>
+<label>Template</label>
 
 <select id="campaignTemplate">
-
-<option value="">
-Select approved template
-</option>
-
-<option value="new_launch_project">
-New Launch Project
-</option>
-
+<option value="new_launch_project">New Launch Project</option>
 </select>
 
-<p class="muted">
-
-For business-initiated marketing messages,
-use a Meta-approved WhatsApp template and recipients
-who have provided the required opt-in.
-
-</p>
-
-<button
-class="primary"
-type="button"
-onclick="prepareCampaign()">
-
-📢 Prepare Campaign
-
+<button class="primary" onclick="prepareCampaign()">
+Prepare Campaign
 </button>
 
-<p id="campaignResult"></p>
+<div id="campaignResult" style="margin-top:15px"></div>
 
 </div>
 
-</div>
+</section>
 
 
 <!-- TEMPLATES -->
+<section id="templates" class="page">
 
-<div id="templates" class="page">
+<h1>Templates</h1>
 
-<h2>WhatsApp Templates</h2>
+<div class="card">
 
-<div class="box">
+<h3>new_launch_project</h3>
 
-<h3>Approved Templates</h3>
-
-<p class="muted">
-Templates approved in Meta will be connected here.
+<p>
+WhatsApp approved template will appear here after Meta approval.
 </p>
 
-<button
-class="primary"
-onclick="templateMessage()">
-
-➕ Add Template
-
-</button>
+<span class="badge">Marketing</span>
 
 </div>
 
-</div>
+</section>
 
 
 <!-- REPORTS -->
+<section id="reports" class="page">
 
-<div id="reports" class="page">
+<h1>Reports</h1>
 
-<h2>Reports</h2>
+<div class="grid">
 
-<div class="box">
+<div class="card">
+Messages Sent
+<div class="stat" id="reportSent">0</div>
+</div>
 
-<h3>Campaign Reports</h3>
+<div class="card">
+Inbox Messages
+<div class="stat" id="reportInbox">0</div>
+</div>
 
-<p>
-Total Sent:
-<b id="reportSent">0</b>
-</p>
-
-<p>
-Delivered:
-<b id="reportDelivered">0</b>
-</p>
-
-<p>
-Failed:
-<b id="reportFailed">0</b>
-</p>
-
+<div class="card">
+Total Leads
+<div class="stat" id="reportLeads">0</div>
 </div>
 
 </div>
+
+</section>
 
 
 <!-- SETTINGS -->
+<section id="settings" class="page">
 
-<div id="settings" class="page">
+<h1>Settings</h1>
 
-<h2>Settings</h2>
+<div class="card">
 
-<div class="box">
+<h3>Backend API</h3>
 
-<h3>WhatsApp Cloud API</h3>
+<input
+value="https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"
+readonly>
 
-<p class="success">
-● API Connection Active
-</p>
+<p>Backend connection is configured.</p>
 
-<p>
-Backend:
-</p>
-
-<code>
-https://whatsapp-marketinf-api.amolkolekar100000.workers.dev
-</code>
+<span class="badge">Connected</span>
 
 </div>
 
-</div>
+</section>
 
 </div>
 
 
 <script>
 
-const API_BASE =
+const API =
 "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
 
+let leads =
+JSON.parse(localStorage.getItem("wa_leads") || "[]");
 
-/* =========================
-   GLOBAL INBOX DATA
-========================= */
-
-let inboxMessages = [];
-let activeChat = null;
+let selectedChat = null;
+let inboxData = [];
 
 
-/* =========================
-   NAVIGATION
-========================= */
+/* PAGE NAVIGATION */
 
-function showPage(pageId,button){
+function showPage(page, button){
 
- document
- .querySelectorAll(".page")
- .forEach(page=>{
-   page.classList.remove("active");
- });
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active");
+});
 
- const page =
- document.getElementById(pageId);
+const target=document.getElementById(page);
 
- if(page){
-   page.classList.add("active");
- }
+if(target){
+target.classList.add("active");
+}
 
- document
- .querySelectorAll(".nav")
- .forEach(btn=>{
-   btn.classList.remove("active");
- });
+document.querySelectorAll(".nav").forEach(n=>{
+n.classList.remove("active");
+});
 
- if(button){
-   button.classList.add("active");
- }
+if(button){
+button.classList.add("active");
+}
 
- if(pageId==="campaigns"){
-   renderCampaignLeads();
- }
+if(page==="inbox"){
+loadInbox();
+}
 
- if(pageId==="inbox"){
-   loadInbox();
- }
+if(page==="leads"){
+renderLeads();
+}
 
- window.scrollTo(0,0);
+updateStats();
 
 }
 
 
-function openPage(pageId){
-
- const buttons =
- document.querySelectorAll(".nav");
-
- const map={
-   dashboard:0,
-   send:1,
-   inbox:2,
-   leads:3,
-   campaigns:4,
-   templates:5,
-   reports:6,
-   settings:7
- };
-
- showPage(
-   pageId,
-   buttons[map[pageId]]
- );
-
-}
-
-
-/* =========================
-   LEADS STORAGE
-========================= */
-
-function getLeads(){
-
- return JSON.parse(
-   localStorage.getItem("whatsappLeads") || "[]"
- );
-
-}
-
-
-function saveLeads(leads){
-
- localStorage.setItem(
-   "whatsappLeads",
-   JSON.stringify(leads)
- );
-
-}
-
-
-/* =========================
-   ADD LEAD
-========================= */
-
-function addLead(){
-
- const name =
- document
- .getElementById("leadName")
- .value
- .trim();
-
- const phone =
- document
- .getElementById("leadPhone")
- .value
- .trim();
-
- if(!name || !phone){
-
-   alert(
-   "Name आणि WhatsApp Number भरा."
-   );
-
-   return;
-
- }
-
- const leads =
- getLeads();
-
- leads.push({
-
-   id:Date.now(),
-
-   name:name,
-
-   phone:phone
-
- });
-
- saveLeads(leads);
-
- document
- .getElementById("leadName")
- .value="";
-
- document
- .getElementById("leadPhone")
- .value="";
-
- renderLeads();
-
- alert(
- "Lead successfully added."
- );
-
-}
-
-
-/* =========================
-   DELETE LEAD
-========================= */
-
-function deleteLead(id){
-
- const leads =
- getLeads()
- .filter(
-   lead=>lead.id!==id
- );
-
- saveLeads(leads);
-
- renderLeads();
-
-}
-
-
-/* =========================
-   DISPLAY LEADS
-========================= */
-
-function renderLeads(){
-
- const table =
- document.getElementById(
-   "leadTable"
- );
-
- if(!table){
-   return;
- }
-
- const leads =
- getLeads();
-
- table.innerHTML="";
-
- leads.forEach(lead=>{
-
-   const row =
-   document.createElement("tr");
-
-   row.innerHTML=`
-
-   <td>
-   ${escapeHtml(lead.name)}
-   </td>
-
-   <td>
-   ${escapeHtml(lead.phone)}
-   </td>
-
-   <td>
-
-   <button
-   class="danger"
-   onclick="deleteLead(${lead.id})">
-
-   Delete
-
-   </button>
-
-   </td>
-
-   `;
-
-   table.appendChild(row);
-
- });
-
- document
- .getElementById("totalLeads")
- .innerText=leads.length;
-
-}
-
-
-/* =========================
-   CSV IMPORT
-========================= */
-
-function importCSV(){
-
- const file =
- document
- .getElementById("csvFile")
- .files[0];
-
- if(!file){
-
-   alert(
-   "CSV file select करा."
-   );
-
-   return;
-
- }
-
- const reader =
- new FileReader();
-
- reader.onload=function(e){
-
-   const lines =
-   e.target.result
-   .split(/\r?\n/)
-   .filter(
-     line=>line.trim()
-   );
-
-   if(lines.length<2){
-
-     alert(
-     "CSV मध्ये data नाही."
-     );
-
-     return;
-
-   }
-
-   const leads =
-   getLeads();
-
-   for(
-     let i=1;
-     i<lines.length;
-     i++
-   ){
-
-     const columns =
-     lines[i].split(",");
-
-     if(columns.length>=2){
-
-       const name =
-       columns[0]
-       .trim();
-
-       const phone =
-       columns[1]
-       .trim();
-
-       if(name && phone){
-
-         leads.push({
-
-           id:
-           Date.now()+i,
-
-           name:name,
-
-           phone:phone
-
-         });
-
-       }
-
-     }
-
-   }
-
-   saveLeads(leads);
-
-   renderLeads();
-
-   renderCampaignLeads();
-
-   alert(
-   "CSV imported successfully."
-   );
-
- };
-
- reader.readAsText(file);
-
-}
-
-
-/* =========================
-   SEND MESSAGE
-========================= */
+/* SEND MESSAGE */
 
 async function sendMessage(){
 
- const to =
- document
- .getElementById("sendNumber")
- .value
- .trim();
+const number =
+document.getElementById("sendNumber").value.trim();
 
- const text =
- document
- .getElementById("sendMessage")
- .value
- .trim();
+const text =
+document.getElementById("sendText").value.trim();
 
- const result =
- document
- .getElementById("sendResult");
+const result =
+document.getElementById("sendResult");
 
- if(!to || !text){
+if(!number || !text){
 
-   result.innerText =
-   "❌ Number आणि message भरा.";
+result.innerHTML =
+"❌ Number and message are required.";
 
-   return;
+return;
+}
 
- }
+result.innerHTML="Sending...";
 
- result.innerText =
- "⏳ Sending...";
+try{
 
- try{
+const response=await fetch(API+"/send",{
 
-   const response =
-   await fetch(
-     API_BASE+"/send",
-     {
-       method:"POST",
+method:"POST",
 
-       headers:{
-         "Content-Type":
-         "application/json"
-       },
+headers:{
+"Content-Type":"application/json"
+},
 
-       body:
-       JSON.stringify({
-         to:to,
-         text:text
-       })
-     }
-   );
+body:JSON.stringify({
+to:number,
+text:text
+})
 
-   const data =
-   await response.json();
+});
 
-   if(data.success){
+const data=await response.json();
 
-     result.innerText =
-     "✅ Message sent successfully.";
+if(response.ok && data.success){
 
-     let sent =
-     Number(
-       localStorage
-       .getItem("totalSent") || 0
-     );
+result.innerHTML=
+"✅ Message sent successfully.";
 
-     sent++;
+let sent =
+Number(localStorage.getItem("sentCount")||0)+1;
 
-     localStorage.setItem(
-       "totalSent",
-       sent
-     );
+localStorage.setItem("sentCount",sent);
 
-     updateStats();
+document.getElementById("sendText").value="";
 
-     if(
-       document
-       .getElementById("inbox")
-       .classList.contains("active")
-     ){
-       await loadInbox();
-     }
+}else{
 
-   }else{
+result.innerHTML=
+"❌ Message failed: "+
+(data.error || JSON.stringify(data.result || data));
 
-     result.innerText =
-     "❌ Message failed: "+
-     (
-       data.result?.error?.message ||
-       data.error ||
-       "Unknown error"
-     );
+}
 
-   }
+updateStats();
 
- }catch(error){
+}catch(error){
 
-   result.innerText =
-   "❌ Connection error: "+
-   error.message;
+result.innerHTML=
+"❌ Connection error: "+error.message;
 
- }
+}
 
 }
 
 
-/* =========================
-   INBOX LOAD
-========================= */
+/* INBOX */
 
 async function loadInbox(){
 
- const list =
- document.getElementById("chatList");
+const list=document.getElementById("chatList");
 
- if(!list){
-   return;
- }
+list.innerHTML=
+'<div class="empty">Loading chats...</div>';
 
- list.innerHTML=
- `<div class="empty-chat">
- ⏳ Loading chats...
- </div>`;
+try{
 
- try{
+const response=await fetch(API+"/messages");
 
-   const response =
-   await fetch(
-     API_BASE+"/messages"
-   );
+const data=await response.json();
 
-   const data =
-   await response.json();
+if(!response.ok || !data.success){
 
-   if(!data.success){
+throw new Error(data.error || "Unable to load messages");
 
-     throw new Error(
-       data.error || "Unable to load messages"
-     );
+}
 
-   }
+inboxData=data.messages || [];
 
-   inboxMessages =
-   Array.isArray(data.messages)
-   ? data.messages
-   : [];
+renderChatList();
 
-   renderChatList();
+updateStats();
 
-   if(activeChat){
+}catch(error){
 
-     const exists =
-     inboxMessages.some(
-       m=>m.wa_id===activeChat.wa_id
-     );
+list.innerHTML=
+'<div class="empty">❌ '+escapeHtml(error.message)+'</div>';
 
-     if(exists){
-
-       renderActiveChat();
-
-     }
-
-   }
-
- }catch(error){
-
-   list.innerHTML=
-   `<div class="empty-chat">
-   ❌ Unable to load chats<br><br>
-   ${escapeHtml(error.message)}
-   </div>`;
-
- }
+}
 
 }
 
 
-/* =========================
-   CHAT LIST
-========================= */
-
-function getChats(){
-
- const map = {};
-
- inboxMessages.forEach(message=>{
-
-   if(!message.wa_id){
-     return;
-   }
-
-   if(!map[message.wa_id]){
-
-     map[message.wa_id]={
-       wa_id:message.wa_id,
-       name:message.name || message.wa_id,
-       messages:[]
-     };
-
-   }
-
-   map[message.wa_id]
-   .messages
-   .push(message);
-
- });
-
- return Object.values(map)
- .sort((a,b)=>{
-
-   const aLast =
-   a.messages[a.messages.length-1];
-
-   const bLast =
-   b.messages[b.messages.length-1];
-
-   return Number(bLast.id || 0) -
-          Number(aLast.id || 0);
-
- });
-
-}
-
-
-/* =========================
-   RENDER CHAT LIST
-========================= */
+/* CHAT LIST */
 
 function renderChatList(){
 
- const list =
- document.getElementById(
-   "chatList"
- );
+const list=document.getElementById("chatList");
 
- if(!list){
-   return;
- }
+if(!inboxData.length){
 
- const search =
- (
-   document
-   .getElementById("chatSearch")
-   ?.value || ""
- )
- .toLowerCase()
- .trim();
+list.innerHTML=
+'<div class="empty">No messages yet.</div>';
 
- let chats =
- getChats();
+return;
+}
 
- if(search){
+const chats={};
 
-   chats =
-   chats.filter(chat=>
-     (
-       chat.name+
-       " "+
-       chat.wa_id
-     )
-     .toLowerCase()
-     .includes(search)
-   );
+inboxData.forEach(msg=>{
 
- }
+if(!chats[msg.wa_id]){
+chats[msg.wa_id]={
+wa_id:msg.wa_id,
+name:msg.name || msg.wa_id,
+messages:[]
+};
+}
 
- if(chats.length===0){
+chats[msg.wa_id].messages.push(msg);
 
-   list.innerHTML=
-   `<div class="empty-chat">
-   No conversations found.
-   </div>`;
+});
 
-   return;
+list.innerHTML="";
 
- }
+Object.values(chats).forEach(chat=>{
 
- list.innerHTML="";
+const div=document.createElement("div");
 
- chats.forEach(chat=>{
+div.className="chat-item";
 
-   const last =
-   chat.messages[chat.messages.length-1];
+div.innerHTML=`
 
-   const item =
-   document.createElement("div");
+<div class="chat-name">
+${escapeHtml(chat.name)}
+</div>
 
-   item.className=
-   "chat-item";
+<div class="chat-number">
+${escapeHtml(chat.wa_id)}
+</div>
 
-   if(
-     activeChat &&
-     activeChat.wa_id===chat.wa_id
-   ){
+<div style="font-size:12px;color:#777;margin-top:5px">
+${chat.messages.length} message(s)
+</div>
 
-     item.classList.add("active");
+`;
 
-   }
+div.onclick=()=>openChat(chat);
 
-   item.onclick=()=>{
+list.appendChild(div);
 
-     activeChat=chat;
-
-     renderChatList();
-
-     renderActiveChat();
-
-   };
-
-   item.innerHTML=`
-
-   <div class="chat-name">
-   ${escapeHtml(chat.name)}
-   </div>
-
-   <div class="chat-number">
-   ${escapeHtml(chat.wa_id)}
-   </div>
-
-   <div class="chat-preview">
-   ${escapeHtml(last?.message || "")}
-   </div>
-
-   `;
-
-   list.appendChild(item);
-
- });
+});
 
 }
 
 
-/* =========================
-   ACTIVE CHAT
-========================= */
+/* OPEN CHAT */
 
-function renderActiveChat(){
+function openChat(chat){
 
- const header =
- document.getElementById(
-   "chatHeader"
- );
+selectedChat=chat;
 
- const messagesBox =
- document.getElementById(
-   "chatMessages"
- );
+document.getElementById("chatHeader").innerHTML=
+escapeHtml(chat.name)+" • "+escapeHtml(chat.wa_id);
 
- if(!activeChat){
+const box=document.getElementById("messages");
 
-   return;
+box.innerHTML="";
 
- }
+chat.messages
+.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
+.forEach(msg=>{
 
- const messages =
- inboxMessages
- .filter(
-   message=>
-   message.wa_id===activeChat.wa_id
- )
- .so
+const div=document.createElement("div");
+
+div.className=
+"msg "+
+(msg.direction==="outgoing" ? "outgoing":"incoming");
+
+div.innerHTML=`
+
+<div class="bubble">
+
+<div>${escapeHtml(msg.message || "")}</div>
+
+<div style="font-size:10px;color:#777;margin-top:5px">
+${msg.direction || ""}
+</div>
+
+</div>
+
+`;
+
+box.appendChild(div);
+
+});
+
+box.scrollTop=box.scrollHeight;
+
+}
+
+
+/* REPLY */
+
+async function sendReply(){
+
+if(!selectedChat){
+
+document.getElementById("replyResult").innerHTML=
+"❌ Select a customer first.";
+
+return;
+}
+
+const text=
+document.getElementById("replyText").value.trim();
+
+if(!text){
+
+document.getElementById("replyResult").innerHTML=
+"❌ Type a message.";
+
+return;
+}
+
+const result=document.getElementById("replyResult");
+
+result.innerHTML="Sending...";
+
+try{
+
+const response=await fetch(API+"/send",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+to:selectedChat.wa_id,
+text:text
+})
+
+});
+
+const data=await response.json();
+
+if(response.ok && data.success){
+
+result.innerHTML="✅ Sent";
+
+document.getElementById("replyText").value="";
+
+await loadInbox();
+
+const updated={
+wa_id:selectedChat.wa_id,
+name:selectedChat.name,
+messages:inboxData.filter(
+m=>m.wa_id===selectedChat.wa_id
+)
+};
+
+openChat(updated);
+
+}else{
+
+result.innerHTML=
+"❌ Failed";
+
+}
+
+}catch(error){
+
+result.innerHTML=
+"❌ "+error.message;
+
+}
+
+}
+
+
+/* LEADS */
+
+function addLead(){
+
+const name=
+document.getElementById("leadName").value.trim();
+
+const phone=
+document.getElementById("leadPhone").value.trim();
+
+if(!phone){
+
+alert("WhatsApp number required");
+
+return;
+}
+
+leads.push({
+name:name || phone,
+phone:phone
+});
+
+localStorage.setItem(
+"wa_leads",
+JSON.stringify(leads)
+);
+
+document.getElementById("leadName").value="";
+document.getElementById("leadPhone").value="";
+
+renderLeads();
+updateStats();
+
+}
+
+
+function renderLeads(){
+
+const table=document.getElementById("leadTable");
+
+if(!table)return;
+
+table.innerHTML="";
+
+leads.forEach((lead,index)=>{
+
+const tr=document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>${escapeHtml(lead.name)}</td>
+
+<td>${escapeHtml(lead.phone)}</td>
+
+<td>
+<button class="danger"
+onclick="deleteLead(${index})">
+Delete
+</button>
+</td>
+
+`;
+
+table.appendChild(tr);
+
+});
+
+}
+
+
+function deleteLead(index){
+
+leads.splice(index,1);
+
+localStorage.setItem(
+"wa_leads",
+JSON.stringify(leads)
+);
+
+renderLeads();
+updateStats();
+
+}
+
+
+/* CSV IMPORT */
+
+function importCSV(event){
+
+const file=event.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+const lines=e.target.result
+.split(/\r?\n/)
+.filter(x=>x.trim());
+
+lines.forEach((line,index)=>{
+
+if(index===0 && line.toLowerCase().includes("phone")){
+return;
+}
+
+const parts=line.split(",");
+
+if(parts.length>=1){
+
+const name=(parts[0]||"").trim();
+
+const phone=(parts[1]||parts[0]||"").trim();
+
+if(phone){
+
+leads.push({
+name:name || phone,
+phone:phone
+});
+
+}
+
+}
+
+});
+
+localStorage.setItem(
+"wa_leads",
+JSON.stringify(leads)
+);
+
+renderLeads();
+updateStats();
+
+alert("CSV imported successfully.");
+
+};
+
+reader.readAsText(file);
+
+}
+
+
+/* CAMPAIGN */
+
+function prepareCampaign(){
+
+const name=
+document.getElementById("campaignName").value.trim()
+||"New Campaign";
+
+const template=
+document.getElementById("campaignTemplate").value;
+
+document.getElementById("campaignResult").innerHTML=`
+
+<div class="card">
+
+<strong>Campaign Ready</strong>
+
+<p>Campaign: ${escapeHtml(name)}</p>
+
+<p>Template: ${escapeHtml(template)}</p>
+
+<p>Recipients: ${leads.length}</p>
+
+<span class="badge">
+Ready for Meta-approved template sending
+</span>
+
+</div>
+
+`;
+
+let campaigns=
+Number(localStorage.getItem("campaignCount")||0)+1;
+
+localStorage.setItem("campaignCount",campaigns);
+
+updateStats();
+
+}
+
+
+/* STATS */
+
+async function updateStats(){
+
+const sent=
+Number(localStorage.getItem("sentCount")||0);
+
+const campaigns=
+Number(localStorage.getItem("campaignCount")||0);
+
+const leadCount=leads.length;
+
+document.getElementById("dashLeads").innerText=leadCount;
+document.getElementById("dashSent").innerText=sent;
+document.getElementById("dashCampaigns").innerText=campaigns;
+
+document.getElementById("reportSent").innerText=sent;
+document.getElementById("reportLeads").innerText=leadCount;
+document.getElementById("dashInbox").innerText=inboxData.length;
+document.getElementById("reportInbox").innerText=inboxData.length;
+
+}
+
+
+/* HTML SECURITY */
+
+function escapeHtml(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* INITIAL LOAD */
+
+renderLeads();
+updateStats();
+
+</script>
+
+</body>
+</html>
