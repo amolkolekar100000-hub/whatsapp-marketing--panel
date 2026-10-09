@@ -1,46 +1,908 @@
-📱 WhatsApp Panel
-🏠 Dashboard 📤 Send Message 💬 Inbox 👥 Leads 🚀 Campaigns 📝 Templates 📊 Reports ⚙️ Settings 
-Dashboard
-API ACTIVE
-Total Leads
-0
-Messages Sent
-0
-Inbox Messages
-0
-Campaigns
-0
-WhatsApp Marketing Panel
-Send messages, manage leads and handle incoming WhatsApp chats.
-💬 Open Inbox 📤 Send Message 
-Send Message
-WhatsApp Number Message Send Message 
-Inbox
-🔔 Notifications 🔄 Refresh 
-New incoming messages move to the top. The chat will not open automatically. Press ESC to close an open chat.
-Loading chats...
-Select a customer
-Select a chat from the left.
-Send Reply 
-Leads
-Add Lead Import CSV 
-Name	WhatsApp	Action
-Campaigns
-Create Campaign
-Campaign Name Template New Launch Project Prepare Campaign 
-Templates
-new_launch_project
-WhatsApp approved template will appear here after Meta approval.
-Marketing 
-Reports
-Messages Sent
-0
-Inbox Messages
-0
-Total Leads
-0
-Settings
-Backend API
-Backend connection is configured.
-Connected 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp Marketing Panel</title>
 
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  background:#f4f7fb;
+  color:#17202a;
+}
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:235px;
+  height:100vh;
+  background:#111827;
+  color:white;
+  padding:22px 14px;
+}
+
+.logo{
+  font-size:21px;
+  font-weight:bold;
+  padding:8px 12px 28px;
+}
+
+.logo span{
+  color:#25D366;
+}
+
+.menu{
+  display:block;
+  padding:13px 15px;
+  margin:5px 0;
+  border-radius:9px;
+  color:#d1d5db;
+  cursor:pointer;
+}
+
+.menu:hover,
+.menu.active{
+  background:#25D366;
+  color:white;
+}
+
+.main{
+  margin-left:235px;
+  padding:28px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+.header h1{
+  font-size:27px;
+}
+
+.admin{
+  background:white;
+  padding:10px 16px;
+  border-radius:20px;
+  box-shadow:0 2px 8px #0001;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:24px;
+}
+
+.card{
+  background:white;
+  padding:22px;
+  border-radius:13px;
+  box-shadow:0 2px 10px #0000000d;
+}
+
+.card-title{
+  color:#6b7280;
+  font-size:13px;
+  margin-bottom:10px;
+}
+
+.number{
+  font-size:28px;
+  font-weight:bold;
+}
+
+.green{
+  color:#16a34a;
+}
+
+.blue{
+  color:#2563eb;
+}
+
+.orange{
+  color:#ea580c;
+}
+
+.red{
+  color:#dc2626;
+}
+
+.panel{
+  background:white;
+  padding:24px;
+  border-radius:13px;
+  margin-bottom:22px;
+  box-shadow:0 2px 10px #0000000d;
+}
+
+.panel h2{
+  margin-bottom:18px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  font-size:14px;
+  margin-bottom:7px;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  margin-bottom:16px;
+  font-size:14px;
+  background:white;
+}
+
+textarea{
+  min-height:130px;
+  resize:vertical;
+}
+
+button{
+  border:0;
+  padding:12px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.green-btn{
+  background:#25D366;
+  color:white;
+}
+
+.dark-btn{
+  background:#111827;
+  color:white;
+}
+
+button:disabled{
+  background:#9ca3af;
+  cursor:not-allowed;
+}
+
+.notice{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  padding:13px;
+  border-radius:8px;
+  color:#9a3412;
+  margin-bottom:18px;
+}
+
+.success{
+  background:#dcfce7;
+  color:#166534;
+  padding:12px;
+  border-radius:8px;
+  margin-top:15px;
+}
+
+.error{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:12px;
+  border-radius:8px;
+  margin-top:15px;
+}
+
+.preview{
+  background:#e8f5e9;
+  border-radius:10px;
+  padding:18px;
+  min-height:160px;
+}
+
+.whatsapp-message{
+  background:#d9fdd3;
+  padding:14px;
+  border-radius:10px;
+  white-space:pre-wrap;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.table th,
+.table td{
+  padding:13px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  font-size:14px;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:15px;
+  background:#dcfce7;
+  color:#15803d;
+  font-size:12px;
+}
+
+@media(max-width:900px){
+
+  .sidebar{
+    width:70px;
+    padding:15px 8px;
+  }
+
+  .logo{
+    font-size:0;
+    text-align:center;
+  }
+
+  .logo span{
+    font-size:20px;
+  }
+
+  .menu{
+    font-size:0;
+    text-align:center;
+  }
+
+  .main{
+    margin-left:70px;
+    padding:18px;
+  }
+
+  .cards{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:600px){
+
+  .cards{
+    grid-template-columns:1fr;
+  }
+
+  .header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+  <div class="logo">
+    WhatsApp <span>Blast</span>
+  </div>
+
+  <div class="menu active" onclick="showPage('dashboard',this)">
+    📊 Dashboard
+  </div>
+
+  <div class="menu" onclick="showPage('campaigns',this)">
+    📢 Campaigns
+  </div>
+
+  <div class="menu" onclick="showPage('leads',this)">
+    👥 Leads
+  </div>
+
+  <div class="menu" onclick="showPage('templates',this)">
+    📝 Templates
+  </div>
+
+  <div class="menu" onclick="showPage('media',this)">
+    🖼 Media
+  </div>
+
+  <div class="menu" onclick="showPage('reports',this)">
+    📈 Reports
+  </div>
+
+  <div class="menu" onclick="showPage('settings',this)">
+    ⚙️ Settings
+  </div>
+
+</div>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+  <div class="header">
+
+    <h1>WhatsApp Marketing Panel</h1>
+
+    <div class="admin">
+      👤 Admin
+    </div>
+
+  </div>
+
+
+  <!-- DASHBOARD -->
+
+  <section id="dashboard" class="page active">
+
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title">Total Leads</div>
+        <div class="number" id="totalLeads">0</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Messages Sent</div>
+        <div class="number blue" id="sentCount">0</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Delivered</div>
+        <div class="number green">0</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Replies</div>
+        <div class="number orange">0</div>
+      </div>
+
+    </div>
+
+
+    <div class="panel">
+
+      <h2>Quick Campaign</h2>
+
+      <div class="notice">
+        ⚠️ WhatsApp Cloud API connection is handled through the backend.
+      </div>
+
+      <button
+        class="green-btn"
+        onclick="showPage('campaigns')">
+        + Create Campaign
+      </button>
+
+    </div>
+
+
+    <div class="panel">
+
+      <h2>Recent Campaigns</h2>
+
+      <table class="table">
+
+        <tr>
+          <th>Campaign</th>
+          <th>Project</th>
+          <th>Status</th>
+          <th>Messages</th>
+        </tr>
+
+        <tr>
+          <td>No campaigns yet</td>
+          <td>-</td>
+          <td>-</td>
+          <td>0</td>
+        </tr>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- CAMPAIGNS -->
+
+  <section id="campaigns" class="page">
+
+    <div class="panel">
+
+      <h2>🚀 Create WhatsApp Campaign</h2>
+
+      <div class="grid">
+
+        <div>
+
+          <label>Campaign Name</label>
+
+          <input
+            id="campaignName"
+            placeholder="Example: Godrej Thane Launch"
+          >
+
+
+          <label>Project</label>
+
+          <select id="project">
+
+            <option>Godrej Thane</option>
+            <option>Chembur Golfcrest</option>
+            <option>Tata Ghansoli</option>
+            <option>Adani Realty</option>
+            <option>Other Project</option>
+
+          </select>
+
+
+          <label>WhatsApp Template</label>
+
+          <select id="template">
+
+            <option>property_launch</option>
+            <option>property_offer</option>
+            <option>site_visit</option>
+            <option>follow_up</option>
+
+          </select>
+
+
+          <label>Upload Leads</label>
+
+          <input
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            onchange="handleLeads(this)"
+          >
+
+
+          <label>Upload Media</label>
+
+          <input
+            type="file"
+            accept="image/*,video/*,.pdf"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>Message</label>
+
+          <textarea
+            id="campaignMessage"
+            oninput="updatePreview()"
+            placeholder="Enter approved WhatsApp template message..."
+          ></textarea>
+
+
+          <label>Reply Button</label>
+
+          <select>
+
+            <option>Yes / No</option>
+            <option>Interested</option>
+            <option>Not Interested</option>
+            <option>Book Site Visit</option>
+            <option>Get Price</option>
+
+          </select>
+
+
+          <label>Message Preview</label>
+
+          <div class="preview">
+
+            <div
+              class="whatsapp-message"
+              id="previewMessage">
+              Your WhatsApp message preview will appear here.
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <br>
+
+      <button class="green-btn">
+        Create Campaign
+      </button>
+
+      <button class="dark-btn">
+        Save Draft
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- LEADS -->
+
+  <section id="leads" class="page">
+
+    <div class="panel">
+
+      <h2>👥 Leads Management</h2>
+
+      <div class="notice">
+        Upload your customer list using CSV/Excel.
+        Only contacts with appropriate consent should be used for marketing.
+      </div>
+
+
+      <button class="green-btn">
+        + Add Lead
+      </button>
+
+      <button
+        class="dark-btn"
+        onclick="document.getElementById('leadFile').click()">
+        Import Excel / CSV
+      </button>
+
+      <input
+        id="leadFile"
+        type="file"
+        accept=".csv,.xlsx,.xls"
+        style="display:none"
+        onchange="handleLeads(this)"
+      >
+
+
+      <br><br>
+
+
+      <table class="table">
+
+        <tr>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Project</th>
+          <th>Status</th>
+        </tr>
+
+        <tr>
+          <td>No leads imported</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- TEMPLATES -->
+
+  <section id="templates" class="page">
+
+    <div class="panel">
+
+      <h2>📝 WhatsApp Templates</h2>
+
+      <div class="notice">
+        Marketing messages must use Meta-approved WhatsApp templates.
+      </div>
+
+
+      <button class="green-btn">
+        + Add Template
+      </button>
+
+      <br><br>
+
+
+      <table class="table">
+
+        <tr>
+          <th>Template</th>
+          <th>Category</th>
+          <th>Language</th>
+          <th>Status</th>
+        </tr>
+
+
+        <tr>
+          <td>property_launch</td>
+          <td>Marketing</td>
+          <td>English</td>
+          <td>
+            <span class="badge">Ready</span>
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>site_visit</td>
+          <td>Marketing</td>
+          <td>English</td>
+          <td>
+            <span class="badge">Ready</span>
+          </td>
+        </tr>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- MEDIA -->
+
+  <section id="media" class="page">
+
+    <div class="panel">
+
+      <h2>🖼 Media Library</h2>
+
+
+      <label>Project</label>
+
+      <select>
+
+        <option>Godrej Thane</option>
+        <option>Chembur Golfcrest</option>
+        <option>Tata Ghansoli</option>
+        <option>Adani Realty</option>
+
+      </select>
+
+
+      <label>Upload Image / Video / PDF</label>
+
+      <input
+        type="file"
+        accept="image/*,video/*,.pdf"
+      >
+
+
+      <button class="green-btn">
+        Upload Media
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- REPORTS -->
+
+  <section id="reports" class="page">
+
+    <div class="panel">
+
+      <h2>📈 Campaign Reports</h2>
+
+
+      <div class="cards">
+
+        <div class="card">
+          <div class="card-title">Sent</div>
+          <div class="number blue" id="reportSent">0</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Delivered</div>
+          <div class="number green">0</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Read</div>
+          <div class="number">0</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Failed</div>
+          <div class="number red">0</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- SETTINGS -->
+
+  <section id="settings" class="page">
+
+    <div class="panel">
+
+      <h2>⚙️ WhatsApp API Settings</h2>
+
+      <div class="notice">
+        🔐 Meta API credentials must stay on the backend.
+        Never put access tokens inside this HTML file.
+      </div>
+
+
+      <label>WhatsApp Business Account</label>
+
+      <input
+        placeholder="Connected securely from backend"
+        disabled
+      >
+
+
+      <label>Phone Number ID</label>
+
+      <input
+        placeholder="Connected securely from backend"
+        disabled
+      >
+
+
+      <label>Webhook Status</label>
+
+      <select>
+
+        <option>Not Connected</option>
+        <option>Connected</option>
+
+      </select>
+
+
+      <button class="green-btn">
+        Save Settings
+      </button>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<script>
+
+/* ==============================
+   WHATSAPP API
+================================ */
+
+const API_BASE =
+"https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
+
+
+/* ==============================
+   PAGE NAVIGATION
+================================ */
+
+function showPage(pageId, clickedMenu){
+
+  document.querySelectorAll(".page")
+    .forEach(function(page){
+
+      page.classList.remove("active");
+
+    });
+
+
+  const page =
+    document.getElementById(pageId);
+
+  if(page){
+    page.classList.add("active");
+  }
+
+
+  document.querySelectorAll(".menu")
+    .forEach(function(menu){
+
+      menu.classList.remove("active");
+
+    });
+
+
+  if(clickedMenu){
+    clickedMenu.classList.add("active");
+  }
+
+}
+
+
+/* ==============================
+   MESSAGE PREVIEW
+================================ */
+
+function updatePreview(){
+
+  const message =
+    document.getElementById("campaignMessage").value;
+
+  const preview =
+    document.getElementById("previewMessage");
+
+
+  preview.innerText =
+    message ||
+    "Your WhatsApp message preview will appear here.";
+
+}
+
+
+/* ==============================
+   LEADS
+================================ */
+
+function handleLeads(input){
+
+  if(!input.files || !input.files.length){
+    return;
+  }
+
+  const file =
+    input.files[0];
+
+  alert(
+    "Lead file selected: " +
+    file.name +
+    "\nBackend import will be connected next."
+  );
+
+}
+
+
+/* ==============================
+   LOAD COUNTS
+================================ */
+
+function loadCounts(){
+
+  const sent =
+    localStorage.getItem("sentCount") || 0;
+
+  document.getElementById("sentCount")
+    .innerText = sent;
+
+  document.getElementById("reportSent")
+    .innerText = sent;
+
+}
+
+
+loadCounts();
+
+</script>
+
+</body>
+</html>
