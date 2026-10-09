@@ -1,55 +1,290 @@
-◉ WhatsApp MarketingBUSINESS PANEL · A K PROPERTIES
-▦ Dashboard ☏ Inbox & Chats ➤ Send Message ◉ Campaign Drafts ♙ Leads & Contacts ▤ Templates ▥ Reports 
-● Connecting to API…
-Dashboard Overview
-🔔 Enable notifications ↻ Refresh
-Welcome back 👋
-WhatsApp business activity
-Inbox live refresh सुरू असतो, हा panel उघडा असताना browser notifications येऊ शकतात. Panel बंद असताना push notifications साठी स्वतंत्र setup आवश्यक आहे.
-Total messages
-—
-Chats / contacts
-—
-Incoming messages
-—
-Outgoing messages
-—
-Recent conversations
-Open Inbox
-Loading messages…
-Quick actions
-Send Message
-Add Lead
-Create Campaign Draft
-Inbox & Chats
-नंबर निवडा; संभाषण खाली दिसेल.
-↻ Refresh inbox
-Loading…
-डावीकडून contact निवडा
-Chat निवडल्यानंतर messages दिसतील.
-Send ➤
-Send a message
-WhatsApp number (country code सहित)
-Name (optional)
-Message
-Send message
-Campaign drafts
-Campaign name
-Project / segment
-Draft message
-Save draft
-हे फक्त local drafts आहेत; bulk sending configure केलेले नाही.
-Leads & Contacts
-Name
-WhatsApp number
-Project / notes
-Save lead
-________________________________________
-Template drafts
-Template name
-Message text
-Save template draft
-Meta approval स्वतंत्र आहे.
-Reports
-Time	Direction	Contact	Message
+HTML
 
+<!doctype html>
+<html lang="mr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A K Properties | WhatsApp Marketing Panel</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:14px Arial,sans-serif;background:#f3f7f7;color:#183238}
+button,input,textarea{font:inherit}
+button{cursor:pointer;padding:10px 13px;border:0;border-radius:8px;background:#075e54;color:white;font-weight:bold}
+button:disabled,input:disabled{opacity:.55}
+.app{display:grid;grid-template-columns:215px 1fr;min-height:100vh}
+aside{background:#082f32;color:white;padding:15px}
+nav{display:grid;gap:6px;margin-top:20px}
+nav button{text-align:left;background:#16494a}
+main{padding:18px;min-width:0}
+header{background:white;padding:15px;border-radius:10px;margin-bottom:15px}
+.view{display:none}.view.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.card,.panel{background:white;padding:15px;border-radius:10px;margin-bottom:12px;min-width:0}
+.number{font-size:26px;font-weight:bold;margin-top:8px}
+.chatlayout{display:grid;grid-template-columns:260px minmax(0,1fr);height:65vh;min-height:400px;background:white;border-radius:10px;overflow:hidden}
+.chatitems{overflow:auto;border-right:1px solid #ddd}
+.chatitem{padding:12px;border-bottom:1px solid #eee;cursor:pointer;overflow-wrap:anywhere}
+.chatitem:hover,.chatitem.selected{background:#e5f6f1}
+.chatwindow{display:flex;flex-direction:column;min-width:0}
+#messages{flex:1;overflow:auto;padding:12px;background:#f4f8f7}
+.msg{background:white;padding:10px;margin:7px 0;border-radius:9px;max-width:80%;overflow-wrap:anywhere;white-space:pre-wrap}
+.msg.out{background:#d9fdd3;margin-left:auto}
+.msg small{display:block;font-size:10px;text-align:right;color:#667;margin-top:5px}
+.replybar{display:flex;gap:8px;padding:10px;background:white}
+.replybar input{flex:1;min-width:0;padding:10px;border:1px solid #ccc;border-radius:8px}
+input,textarea{padding:10px;border:1px solid #ccc;border-radius:8px;max-width:100%;width:100%}
+label{display:block;margin:10px 0 5px;font-weight:bold}
+.status{font-size:12px;margin-top:20px;overflow-wrap:anywhere}
+.muted{color:#71838a;font-size:12px}
+table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}
+@media(max-width:700px){
+.app{grid-template-columns:1fr}aside{padding:8px}
+nav{display:flex;overflow:auto;margin-top:8px}nav button{white-space:nowrap}
+.cards{grid-template-columns:1fr 1fr}main{padding:10px}
+.chatlayout{grid-template-columns:125px minmax(0,1fr);height:68vh}
+.chatitem{padding:8px;font-size:11px}.msg{max-width:95%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<h3>◉ WhatsApp Marketing</h3>
+<small>BUSINESS PANEL · A K PROPERTIES</small>
+<nav>
+<button data-view="dashboard">▦ Dashboard</button>
+<button data-view="inbox">☏ Inbox & Chats</button>
+<button data-view="send">➤ Send Message</button>
+<button data-view="campaigns">◉ Campaign Drafts</button>
+<button data-view="leads">♙ Leads & Contacts</button>
+<button data-view="templates">▤ Templates</button>
+<button data-view="reports">▥ Reports</button>
+</nav>
+<div id="apiStatus" class="status">Connecting to API…</div>
+</aside>
+<div>
+<header>
+<strong id="title">Dashboard Overview</strong>
+<button id="refreshBtn" style="float:right">↻ Refresh</button>
+<div style="clear:both"></div>
+</header>
+<main>
+<section id="dashboard" class="view active">
+<h2>Welcome back 👋</h2>
+<p class="muted">WhatsApp business activity</p>
+<div class="cards">
+<div class="card">Total messages<div id="totalCount" class="number">—</div></div>
+<div class="card">Chats / contacts<div id="chatCount" class="number">—</div></div>
+<div class="card">Incoming messages<div id="incomingCount" class="number">—</div></div>
+<div class="card">Outgoing messages<div id="outgoingCount" class="number">—</div></div>
+</div>
+<div class="panel"><h3>Recent conversations</h3><div id="recentList">Loading…</div></div>
+</section>
+
+<section id="inbox" class="view">
+<h2>Inbox & Chats</h2>
+<p class="muted">Contact निवडा. जुने messages वर आणि नवीन messages खाली दिसतील.</p>
+<div class="chatlayout">
+<div>
+<input id="chatSearch" placeholder="नाव / नंबर शोधा">
+<div id="chatItems" class="chatitems">Loading…</div>
+</div>
+<div class="chatwindow">
+<div id="chatHead" class="panel">डावीकडून contact निवडा</div>
+<div id="messages">Chat निवडल्यानंतर messages दिसतील.</div>
+<form id="replyForm" class="replybar">
+<input id="replyText" placeholder="Message लिहा…" autocomplete="off" disabled>
+<button id="replySend" disabled>Send ➤</button>
+</form>
+</div>
+</div>
+</section>
+
+<section id="send" class="view">
+<h2>Send Message</h2>
+<div class="panel">
+<form id="sendForm">
+<label>WhatsApp number (country code सहित)</label>
+<input id="sendTo" required placeholder="919876543210">
+<label>Name (optional)</label><input id="sendName">
+<label>Message</label><textarea id="sendText" required></textarea>
+<p><button type="submit">Send message</button></p>
+<div id="sendResult"></div>
+</form>
+</div>
+</section>
+
+<section id="campaigns" class="view">
+<h2>Campaign Drafts</h2><div class="panel">
+<form id="campaignForm">
+<label>Campaign name</label><input id="campName" required>
+<label>Project / segment</label><input id="campSegment">
+<label>Draft message</label><textarea id="campText" required></textarea>
+<p><button type="submit">Save draft</button></p>
+</form><div id="campaignList"></div>
+<p class="muted">हे drafts या browser मध्ये सेव्ह होतात; bulk sending यात configure केलेले नाही.</p>
+</div></section>
+
+<section id="leads" class="view">
+<h2>Leads & Contacts</h2><div class="panel">
+<form id="leadForm">
+<label>Name</label><input id="leadName" required>
+<label>WhatsApp number</label><input id="leadPhone" required>
+<label>Project / notes</label><input id="leadNotes">
+<p><button type="submit">Save lead</button></p>
+</form><div id="leadList"></div>
+</div></section>
+
+<section id="templates" class="view">
+<h2>Template Drafts</h2><div class="panel">
+<form id="templateForm">
+<label>Template name</label><input id="tplName" required>
+<label>Message text</label><textarea id="tplText" required></textarea>
+<p><button type="submit">Save template draft</button></p>
+</form><div id="templateList"></div>
+<p class="muted">Meta template approval स्वतंत्र आहे.</p>
+</div></section>
+
+<section id="reports" class="view">
+<h2>Reports</h2><div class="panel" style="overflow:auto">
+<table><thead><tr><th>Time</th><th>Direction</th><th>Contact</th><th>Message</th></tr></thead>
+<tbody id="reportRows"></tbody></table>
+</div></section>
+</main>
+</div></div>
+
+<script>
+(function(){
+'use strict';
+const API='https://whatsapp-marketinf-api.amolkolekar100000.workers.dev';
+const $=id=>document.getElementById(id);
+let messages=[],selected='',selectedName='';
+
+function esc(s){
+return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function rawTime(m){return m.timestamp??m.created_at??m.createdAt??m.time??0}
+function stamp(m){
+let v=rawTime(m),n;
+if(typeof v==='number')n=v;
+else {let s=String(v||'').trim();n=/^\d+(\.\d+)?$/.test(s)?Number(s):Date.parse(s)}
+if(!Number.isFinite(n)||n<=0)return 0;
+return n<1e12?n*1000:n;
+}
+function dateText(m){
+let n=stamp(m);return n?new Date(n).toLocaleString():'';
+}
+function phone(m){return String(m.wa_id||m.from||m.to||m.phone||m.number||m.contact||'').replace(/\s/g,'')}
+function body(m){return String(m.message||m.text||m.body||m.content||m.message_text||'')}
+function dir(m){
+let d=String(m.direction||m.type||'').toLowerCase();
+if(['incoming','in','received','inbound'].includes(d))return 'incoming';
+if(['outgoing','out','sent','outbound'].includes(d))return 'outgoing';
+return d;
+}
+function showView(id){
+if(!$ (id))return;
+document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+$('title').textContent=({dashboard:'Dashboard Overview',inbox:'Inbox & Chats',send:'Send Message',campaigns:'Campaign Drafts',leads:'Leads & Contacts',templates:'Templates',reports:'Reports'})[id]||id;
+if(id==='inbox')drawChats();
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+
+function getChats(){
+const map=new Map();
+messages.forEach(m=>{
+const n=phone(m);if(!n)return;
+if(!map.has(n))map.set(n,{phone:n,name:m.name||m.contact_name||m.profile_name||n,items:[],last:0});
+const c=map.get(n);c.items.push(m);
+if(stamp(m)>=c.last){c.last=stamp(m);c.name=m.name||m.contact_name||m.profile_name||n;}
+});
+return [...map.values()].sort((a,b)=>b.last-a.last);
+}
+function drawChats(){
+const q=$('chatSearch').value.toLowerCase();
+const list=getChats().filter(c=>(c.phone+' '+c.name).toLowerCase().includes(q));
+$('chatItems').innerHTML=list.map(c=>`<div class="chatitem ${selected===c.phone?'selected':''}" data-phone="${esc(c.phone)}"><b>${esc(c.name)}</b><div>${esc(body(c.items[c.items.length-1]))}</div><small>${esc(dateText(c.items[c.items.length-1]))}</small></div>`).join('')||'<p>No chats found</p>';
+document.querySelectorAll('[data-phone]').forEach(el=>el.addEventListener('click',()=>openChat(el.dataset.phone)));
+}
+function openChat(n){
+selected=n;const c=getChats().find(x=>x.phone===n);selectedName=c?.name||n;
+$('chatHead').textContent=selectedName+' · '+n;
+$('replyText').disabled=false;$('replySend').disabled=false;
+drawChats();drawMessages();$('replyText').focus();
+}
+function drawMessages(){
+if(!selected){$('messages').textContent='Contact निवडा';return}
+const list=messages.filter(m=>phone(m)===selected).slice().sort((a,b)=>stamp(a)-stamp(b));
+$('messages').innerHTML=list.map(m=>`<div class="msg ${dir(m)==='outgoing'?'out':''}">${esc(body(m)||'(Media message)')}<small>${esc(dateText(m))}</small></div>`).join('')||'No messages';
+$('messages').scrollTop=$('messages').scrollHeight;
+}
+function drawStats(){
+const cs=getChats();
+$('totalCount').textContent=messages.length;
+$('chatCount').textContent=cs.length;
+$('incomingCount').textContent=messages.filter(m=>dir(m)==='incoming').length;
+$('outgoingCount').textContent=messages.filter(m=>dir(m)==='outgoing').length;
+$('recentList').innerHTML=cs.slice(0,7).map(c=>`<div class="chatitem" data-recent="${esc(c.phone)}"><b>${esc(c.name)}</b><div>${esc(body(c.items[c.items.length-1]))}</div></div>`).join('')||'No conversations';
+document.querySelectorAll('[data-recent]').forEach(el=>el.addEventListener('click',()=>{showView('inbox');openChat(el.dataset.recent)}));
+$('reportRows').innerHTML=messages.slice().sort((a,b)=>stamp(b)-stamp(a)).slice(0,250).map(m=>`<tr><td>${esc(dateText(m))}</td><td>${esc(dir(m))}</td><td>${esc(phone(m))}</td><td>${esc(body(m))}</td></tr>`).join('');
+}
+async function refresh(){
+try{
+const r=await fetch(API+'/messages',{cache:'no-store'});
+if(!r.ok)throw Error('HTTP '+r.status);
+const d=await r.json();if(!d.success)throw Error(d.error||'API error');
+messages=(Array.isArray(d.messages)?d.messages:[]).slice().sort((a,b)=>stamp(a)-stamp(b));
+$('apiStatus').textContent='● API Connected · Auto refresh';
+drawStats();drawChats();if(selected)drawMessages();
+}catch(e){$('apiStatus').textContent='● API error: '+e.message;console.error(e)}
+}
+$('refreshBtn').addEventListener('click',refresh);
+$('chatSearch').addEventListener('input',drawChats);
+$('replyForm').addEventListener('submit',async e=>{
+e.preventDefault();const msg=$('replyText').value.trim();if(!selected||!msg)return;
+$('replySend').disabled=true;
+try{
+const r=await fetch(API+'/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:selected,text:msg,message:msg,name:selectedName})});
+const d=await r.json();if(!r.ok||d.success===false)throw Error(d.error||'Send failed');
+$('replyText').value='';$('apiStatus').textContent='● Send request accepted';await refresh();
+}catch(err){$('apiStatus').textContent='● Send error: '+err.message}
+finally{$('replySend').disabled=false}
+});
+$('sendForm').addEventListener('submit',async e=>{
+e.preventDefault();$('sendResult').textContent='Sending…';
+try{
+const msg=$('sendText').value.trim();
+const r=await fetch(API+'/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:$('sendTo').value.trim(),text:msg,message:msg,name:$('sendName').value.trim()})});
+const d=await r.json();if(!r.ok||d.success===false)throw Error(d.error||'Send failed');
+$('sendResult').textContent='API ने request स्वीकारली';await refresh();
+}catch(err){$('sendResult').textContent='Error: '+err.message}
+});
+function load(key){try{return JSON.parse(localStorage.getItem(key)||'[]')}catch(e){return []}}
+function save(key,a){localStorage.setItem(key,JSON.stringify(a))}
+function drawLocal(key,target,field1,field2){
+$(target).innerHTML=load(key).map(x=>`<div class="chatitem"><b>${esc(x[field1])}</b><div>${esc(x[field2]||'')}</div></div>`).join('')||'<p>अजून काही सेव्ह केलेले नाही.</p>';
+}
+$('campaignForm').addEventListener('submit',e=>{
+e.preventDefault();let a=load('ak_campaigns');
+a.unshift({name:$('campName').value,segment:$('campSegment').value,text:$('campText').value});
+save('ak_campaigns',a);drawLocal('ak_campaigns','campaignList','name','text');e.target.reset();
+});
+$('leadForm').addEventListener('submit',e=>{
+e.preventDefault();let a=load('ak_leads');
+a.unshift({name:$('leadName').value,phone:$('leadPhone').value,notes:$('leadNotes').value});
+save('ak_leads',a);drawLocal('ak_leads','leadList','name','phone');e.target.reset();
+});
+$('templateForm').addEventListener('submit',e=>{
+e.preventDefault();let a=load('ak_templates');
+a.unshift({name:$('tplName').value,text:$('tplText').value});
+save('ak_templates',a);drawLocal('ak_templates','templateList','name','text');e.target.reset();
+});
+drawLocal('ak_campaigns','campaignList','name','text');
+drawLocal('ak_leads','leadList','name','phone');
+drawLocal('ak_templates','templateList','name','text');
+refresh();setInterval(refresh,5000);
+})();
+</script>
+</body>
+</html>
