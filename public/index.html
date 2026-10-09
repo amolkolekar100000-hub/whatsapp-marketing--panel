@@ -1,98 +1,204 @@
-◉ A K PropertiesWHATSAPP MARKETING CONSOLE
-Workspace
-▦ Dashboard ➤ Campaign Manager ☏ Inbox & Chats ♙ Leads & Contacts 
-Analytics & Setup
-▥ Delivery Reports ▤ Templates ⚙ API Settings 
-● Checking API connection…
-Dashboard Overview
-🔔 Enable notifications↻ Refresh
-Campaign Overview
-Daily activity and delivery status
-＋ New Campaign
-Meta's actual messaging limit and quality rules are controlled by Meta. This dashboard's 2,000/day figure is a planning cap only; it cannot increase or override your Meta account limit.
-Messages in API history
-—
-From /messages endpoint
-Contacts / chats
-—
-Unique phone numbers
-Incoming messages
-—
-Replies stored by API
-Outgoing messages
-—
-Outgoing records stored by API
-Daily campaign capacity (planning)
-0 / 20002,000 planned slots left
-Counts attempts made from this browser's campaign runner, not Meta's authoritative tier/limit.
-Delivery status
-Delivery/read statuses need webhook status events from Meta.
-Sent requests accepted0
-Delivered confirmed0
-Failed / invalid0
-Recent conversations
-Newest chat first
-Open Inbox
-Loading messages…
-Campaign Manager
-Import a consented contact list, prepare a message, then start/stop sending.
-Use only opted-in contacts and approved WhatsApp templates when required (especially outside the customer-service window). Sending is sequential through your existing /send endpoint. Delivery confirmation needs Meta webhook status events. Do not upload purchased/scraped lists.
-Campaign name
-Daily planning cap
-Import contacts CSV (columns: phone,name; optional)
-Phone numbers must include country code, e.g. 919876543210. The file is processed in this browser only.
-Or paste numbers (one per line; country code included)
-Message text
-I confirm these contacts opted in to receive messages from my business.
-Prepare / Preview▶ Start Campaign■ StopClear list
-Campaign progress
-No campaign running.
-Ready
-0 of 0 contacts processed0%
-PHONE	NAME	STATUS	RESPONSE
-Import contacts and prepare a campaign.
-Inbox & Chats
-Incoming replies are shown here when Meta webhook stores them in the API.
-↻ Refresh inbox
-Loading…
-← BackSelect a contact
-Select a chat to view messages.
-Send
-Leads & Contacts
-Locally saved contacts for this browser.
-Name
-Phone (country code included)
-Notes / project
-Save contact
-NAME	PHONE	NOTES
-Delivery Reports
-API message history plus campaign attempts recorded in this browser.
-Export CSV
-Sent/accepted by the API is not the same as Delivered. True Delivered/Read/Failed and invalid-number reasons require Meta webhook status callbacks to be stored by the Worker. The frontend will not guess these statuses.
-Campaign attempts
-0
-Accepted by API
-0
-Confirmed delivered
-0
-Failed
-0
-TIME	DIRECTION	CONTACT	MESSAGE	STATUS
-Template Notes
-Save local drafts; approval is done in Meta WhatsApp Manager.
-Template name
-Draft body
-Save template draft
-API Settings
-Current API connection and test results.
-Test API connection
-Worker API
-Configured API base URL
-Not tested yet.
-Test /messages
-What is still required?
-•	Worker /send must support the payload and return success/error details.
-•	Meta webhook must receive inbound messages and message status callbacks.
-•	Webhook must store incoming messages and statuses in the database returned by /messages.
-•	Meta account's actual messaging limit is controlled by Meta.
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A K Properties | WhatsApp Marketing</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:15px Arial;background:#f2f6f5;color:#19332e}
+header{background:#075e54;color:white;padding:20px}
+.layout{display:flex;min-height:calc(100vh - 70px)}
+nav{background:#123b35;color:white;width:220px;padding:15px}
+nav button{display:block;width:100%;margin:5px 0;text-align:left;background:transparent;color:white}
+button{padding:11px;border:0;border-radius:7px;background:#087f5b;color:white;cursor:pointer}
+main{padding:22px;flex:1;min-width:0}
+.panel,.card{background:white;border-radius:12px;padding:18px;margin-bottom:15px;box-shadow:0 2px 8px #0001}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+h2{margin-top:0}input,textarea,select{width:100%;padding:11px;border:1px solid #ccd8d4;border-radius:7px;margin:7px 0 14px}
+textarea{min-height:100px}label{font-weight:bold}
+.view{display:none}.view.active{display:block}
+nav button.active{background:#087f5b}
+table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}
+.notice{background:#fff5d8;padding:12px;border-radius:8px;margin-bottom:15px}
+#result{white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:650px){.layout{display:block}nav{width:100%;display:flex;overflow:auto;gap:5px}nav button{min-width:max-content;width:auto}main{padding:12px}}
+</style>
+</head>
+<body>
+<header><b>A K PROPERTIES</b><br>WhatsApp Marketing Console</header>
+<div class="layout">
+<nav>
+<button class="active" data-page="dashboard">Dashboard</button>
+<button data-page="campaigns">Campaign Manager</button>
+<button data-page="inbox">Inbox & Chats</button>
+<button data-page="leads">Leads & Contacts</button>
+<button data-page="reports">Delivery Reports</button>
+<button data-page="templates">Templates</button>
+<button data-page="settings">API Settings</button>
+</nav>
+<main>
+<section id="dashboard" class="view active">
+<h2>Dashboard Overview</h2>
+<div class="notice">Meta messaging limits are controlled by Meta. Send messages only to opted-in contacts and use approved templates when required.</div>
+<div class="cards">
+<div class="card">Messages in API history<h2 id="total">—</h2></div>
+<div class="card">Contacts / Chats<h2 id="chats">—</h2></div>
+<div class="card">Incoming messages<h2 id="incoming">—</h2></div>
+<div class="card">Outgoing messages<h2 id="outgoing">—</h2></div>
+</div>
+<div class="panel"><button onclick="loadMessages()">Refresh Dashboard</button><p id="dashStatus">Not tested yet</p></div>
+</section>
 
+<section id="campaigns" class="view">
+<h2>Campaign Manager</h2>
+<div class="notice">Use only consented contacts. This basic version sends text through the existing /send endpoint; it does not yet send approved template payloads.</div>
+<div class="panel">
+<label>Campaign name</label><input id="campName" placeholder="New launch campaign">
+<label>Phone numbers (one per line, with country code)</label>
+<textarea id="numbers" placeholder="919876543210"></textarea>
+<label>Message text</label><textarea id="message" placeholder="Enter message"></textarea>
+<label><input id="consent" type="checkbox" style="width:auto"> I confirm these contacts opted in</label>
+<button onclick="prepare()">Prepare Campaign</button>
+<button onclick="sendCampaign()">Start Campaign</button>
+<p id="campStatus">No campaign running.</p>
+</div>
+</section>
+
+<section id="inbox" class="view">
+<h2>Inbox & Chats</h2>
+<div class="panel"><button onclick="loadMessages()">Refresh Inbox</button><div id="inboxList">No messages loaded.</div></div>
+</section>
+
+<section id="leads" class="view">
+<h2>Leads & Contacts</h2>
+<div class="panel">
+<label>Name</label><input id="leadName">
+<label>Phone (country code included)</label><input id="leadPhone">
+<label>Notes / Project</label><input id="leadNotes">
+<button onclick="saveLead()">Save Contact</button>
+<div id="leadList"></div>
+</div>
+</section>
+
+<section id="reports" class="view">
+<h2>Delivery Reports</h2>
+<div class="panel"><button onclick="loadMessages()">Refresh Reports</button><button onclick="exportCSV()">Export CSV</button><div id="reportsList">No report loaded.</div></div>
+</section>
+
+<section id="templates" class="view">
+<h2>Approved WhatsApp Templates</h2>
+<div class="panel">
+<p>Your approved template: <b>new_launch_project</b></p>
+<p>Template approval is managed in Meta WhatsApp Manager. Approval alone does not connect the template to the sending endpoint.</p>
+</div>
+</section>
+
+<section id="settings" class="view">
+<h2>API Settings</h2>
+<div class="panel">
+<label>Worker API base URL</label>
+<input id="apiUrl" value="https://whatsapp-marketinf-api.amolkolekar100000.workers.dev">
+<button onclick="testAPI()">Test API Connection</button>
+<button onclick="loadMessages()">Test /messages</button>
+<p id="result">Not tested yet.</p>
+</div>
+</section>
+</main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let messages=[],leads=[],prepared=false;
+
+document.querySelectorAll('nav button').forEach(btn=>{
+ btn.addEventListener('click',()=>{
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  btn.classList.add('active');
+  $(btn.dataset.page).classList.add('active');
+  if(btn.dataset.page==='dashboard'||btn.dataset.page==='inbox'||btn.dataset.page==='reports')loadMessages();
+ });
+});
+
+function api(path){
+ return $('apiUrl').value.trim().replace(/\/+$/,'')+path;
+}
+async function testAPI(){
+ $('result').textContent='Connecting…';
+ try{
+  const r=await fetch(api('/messages'));
+  const t=await r.text();
+  $('result').textContent='HTTP '+r.status+'\n'+t.slice(0,2000);
+ }catch(e){$('result').textContent='Connection error: '+e.message;}
+}
+async function loadMessages(){
+ $('dashStatus').textContent='Loading…';
+ try{
+  const r=await fetch(api('/messages'));
+  const data=await r.json();
+  if(!r.ok)throw Error(JSON.stringify(data));
+  messages=Array.isArray(data)?data:(data.messages||[]);
+  const phones=new Set(messages.map(m=>m.from||m.phone||m.wa_id).filter(Boolean));
+  $('total').textContent=messages.length;
+  $('chats').textContent=phones.size;
+  $('incoming').textContent=messages.filter(m=>m.direction==='in'||m.from).length;
+  $('outgoing').textContent=messages.filter(m=>m.direction==='out').length;
+  const html=messages.map(m=>'<tr><td>'+esc(m.from||m.phone||'')+'</td><td>'+esc(m.text||m.message||m.body||'')+'</td><td>'+esc(m.timestamp||m.created_at||'')+'</td></tr>').join('');
+  const table='<table><thead><tr><th>Phone</th><th>Message</th><th>Time</th></tr></thead><tbody>'+html+'</tbody></table>';
+  $('inboxList').innerHTML=table;
+  $('reportsList').innerHTML=table;
+  $('dashStatus').textContent='API connected. Records loaded: '+messages.length;
+  $('result').textContent='API connected. /messages working.';
+ }catch(e){
+  $('dashStatus').textContent='API error: '+e.message;
+  $('result').textContent='API error: '+e.message;
+ }
+}
+function esc(s){
+ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function prepare(){
+ const nums=$('numbers').value.split(/\r?\n/).map(s=>s.replace(/\D/g,'')).filter(Boolean);
+ if(!nums.length||!$('message').value.trim()){alert('Enter phone numbers and message');return;}
+ if(!$('consent').checked){alert('Confirm that contacts opted in first');return;}
+ prepared=true;
+ $('campStatus').textContent=nums.length+' contacts ready for review.';
+}
+async function sendCampaign(){
+ if(!prepared){alert('Click Prepare Campaign first');return;}
+ if(!$('consent').checked){alert('Opt-in confirmation required');return;}
+ const nums=$('numbers').value.split(/\r?\n/).map(s=>s.replace(/\D/g,'')).filter(Boolean);
+ const msg=$('message').value.trim();
+ if(!confirm('Send text to '+nums.length+' contacts?'))return;
+ $('campStatus').textContent='Sending…';
+ let ok=0,fail=0;
+ for(let i=0;i<nums.length;i++){
+  $('campStatus').textContent='Processing '+(i+1)+' / '+nums.length;
+  try{
+   const r=await fetch(api('/send'),{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({to:nums[i],phone:nums[i],message:msg})
+   });
+   if(r.ok){ok++;}else{fail++;}
+  }catch(e){fail++;}
+ }
+ $('campStatus').textContent='Finished. Accepted: '+ok+'; failed: '+fail+'. Check API reports.';
+ prepared=false;
+}
+function saveLead(){
+ const name=$('leadName').value.trim(),phone=$('leadPhone').value.trim();
+ if(!name||!phone){alert('Enter name and phone');return;}
+ leads.push({name,phone,notes:$('leadNotes').value});
+ $('leadList').innerHTML='<table><tr><th>Name</th><th>Phone</th><th>Notes</th></tr>'+leads.map(l=>'<tr><td>'+esc(l.name)+'</td><td>'+esc(l.phone)+'</td><td>'+esc(l.notes)+'</td></tr>').join('')+'</table>';
+ $('leadName').value='';$('leadPhone').value='';$('leadNotes').value='';
+}
+function exportCSV(){
+ const rows=[['Phone','Message','Time'],...messages.map(m=>[m.from||m.phone||'',m.text||m.message||m.body||'',m.timestamp||m.created_at||''])];
+ const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='delivery-reports.csv';a.click();URL.revokeObjectURL(a.href);
+}
+loadMessages();
+</script>
+</body>
+</html>
