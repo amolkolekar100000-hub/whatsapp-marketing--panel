@@ -1,178 +1,157 @@
 <!doctype html>
-<html lang="mr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>A K Properties WhatsApp Panel</title>
+<title>A K Properties | WhatsApp Campaign Console</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font:15px Arial;background:#f3f7f7;color:#183238}
-button,input{font:inherit;padding:11px;border-radius:8px;border:1px solid #ddd}
-button{background:#075e54;color:white;cursor:pointer}
-.layout{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
-aside{background:#082f32;color:white;padding:15px}
-nav{display:grid;gap:8px;margin-top:20px}
-nav button{text-align:left;background:#16494a}
-main{padding:18px;min-width:0}
-.view{display:none}.view.active{display:block}
-.panel{background:white;padding:15px;border-radius:10px;margin:12px 0}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.stat{background:white;padding:15px;border-radius:10px}
-.chatlayout{display:grid;grid-template-columns:260px 1fr;min-height:65vh;background:white}
-#chatItems{border-right:1px solid #ddd}
-.chat{padding:12px;border-bottom:1px solid #ddd;cursor:pointer}
-#messages{height:48vh;overflow:auto;padding:12px;background:#f5f9f8}
-.msg{padding:10px;background:white;border-radius:10px;margin:8px 0;overflow-wrap:anywhere}
-.out{background:#d9fdd3;margin-left:15%}
-form{display:flex;gap:8px;padding:10px}
-form input{flex:1;min-width:0}
-#apiStatus{font-size:12px;margin-top:20px}
-@media(max-width:650px){
-.layout{grid-template-columns:1fr}
-nav{display:flex;overflow:auto}
-nav button{white-space:nowrap}
-.stats{grid-template-columns:1fr 1fr}
-.chatlayout{grid-template-columns:115px 1fr}
-}
+:root{--green:#087f5b;--green2:#0ca678;--nav:#102a2a;--bg:#f4f7f8;--ink:#182b32;--muted:#718096;--line:#e2e8f0;--white:#fff;--red:#c92a2a;--amber:#b7791f;--blue:#2563eb}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 13px;background:var(--green);color:#fff;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.danger{background:#fff1f0;color:#a61e1e;border:1px solid #ffc9c9}.app{min-height:100vh;display:grid;grid-template-columns:238px minmax(0,1fr)}aside{background:var(--nav);color:#e6fffa;padding:18px 13px;display:flex;flex-direction:column;gap:18px}.brand{font-weight:800;font-size:17px;padding:5px 8px 16px;border-bottom:1px solid #ffffff20}.brand small{display:block;color:#9fc4bc;font-size:10px;font-weight:500;letter-spacing:1px;margin-top:5px}.nav{display:grid;gap:5px}.nav button{background:transparent;text-align:left;color:#cde4df;font-weight:550}.nav button:hover,.nav button.active{background:#1e4844;color:white}.nav .group{font-size:10px;color:#8fb6ae;text-transform:uppercase;letter-spacing:1px;padding:10px 9px 3px}.sideStatus{font-size:11px;color:#b5d4cb;margin-top:auto;overflow-wrap:anywhere}.main{min-width:0}.topbar{height:72px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:4;gap:12px}.topbar h1{font-size:20px;margin:0}.topactions{display:flex;gap:8px;align-items:center}.content{padding:22px;max-width:1600px;margin:auto}.view{display:none}.view.active{display:block}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}.heading h2{margin:0;font-size:23px}.sub{color:var(--muted);font-size:12px;margin-top:4px}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.card,.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:17px;min-width:0;box-shadow:0 2px 8px #182b3205}.card label{font-size:12px;color:var(--muted)}.metric{font-size:29px;font-weight:800;margin-top:7px;letter-spacing:-.5px}.metricline{display:flex;align-items:center;justify-content:space-between;gap:8px}.pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#e6fcf5;color:#087f5b;font-size:11px;font-weight:700}.pill.warn{background:#fff3bf;color:#8a6100}.pill.bad{background:#fff1f0;color:#c92a2a}.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:15px}.panel h3{margin:0 0 13px;font-size:15px}.bar{height:8px;background:#edf2f7;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;background:var(--green2);width:0}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #edf2f7;white-space:nowrap}th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:700}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:11px;background:#fff;color:var(--ink)}.field textarea{min-height:100px;resize:vertical}.note{padding:12px;border-radius:10px;background:#fffbeb;border:1px solid #f5e7a6;color:#805d14;font-size:12px;margin-bottom:14px}.successnote{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}.chatlayout{display:grid;grid-template-columns:300px minmax(0,1fr);height:calc(100vh - 190px);min-height:450px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}.chatlist{display:flex;flex-direction:column;border-right:1px solid var(--line);min-width:0}.chatsearch{padding:11px;border-bottom:1px solid var(--line)}.chatsearch input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px}.chatitems{overflow:auto}.chatitem{display:flex;gap:9px;padding:12px;border-bottom:1px solid #f0f3f6;cursor:pointer}.chatitem:hover,.chatitem.selected{background:#e6fcf5}.avatar{flex:0 0 36px;height:36px;border-radius:50%;background:#c3fae8;color:#087f5b;display:grid;place-items:center;font-weight:800}.chatinfo{min-width:0;flex:1}.chatinfo strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.preview{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:4px}.chatwindow{display:flex;flex-direction:column;min-width:0;min-height:0}.chathead{display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid var(--line);font-weight:700}.messages{flex:1;min-height:0;overflow:auto;padding:16px;background:#f5f9f8;display:flex;flex-direction:column;gap:8px}.msg{max-width:82%;width:fit-content;padding:10px 12px;border-radius:11px;background:white;border:1px solid #e6eeee;white-space:pre-wrap;overflow-wrap:anywhere}.msg.out{align-self:flex-end;background:#d9fdd3}.msg small{display:block;text-align:right;font-size:9px;color:#71838a;margin-top:4px}.replybar{display:flex;gap:8px;padding:11px;border-top:1px solid var(--line);background:white}.replybar input{flex:1;min-width:0;padding:11px;border:1px solid #cbd5e1;border-radius:9px}.empty{padding:25px 10px;text-align:center;color:var(--muted);font-size:12px}.toast{position:fixed;bottom:18px;right:18px;z-index:20;display:none;max-width:90vw;background:#102a2a;color:white;padding:13px 16px;border-radius:10px;box-shadow:0 8px 25px #0002}.toast.show{display:block}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.progressline{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin:8px 0}.filehint{font-size:11px;color:var(--muted)}.smallbtn{padding:7px 9px;font-size:12px}.settingsgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:850px){.app{grid-template-columns:1fr}aside{padding:8px;gap:8px}.brand{padding:5px;margin:0}.nav{display:flex;overflow:auto;gap:4px}.nav button{white-space:nowrap;padding:9px}.nav .group{display:none}.sideStatus{display:none}.topbar{height:auto;padding:12px}.content{padding:12px}.cards{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.chatlayout{grid-template-columns:125px minmax(0,1fr);height:68vh;min-height:420px}.chatitem{padding:9px 5px;display:block}.avatar{width:30px;height:30px;margin-bottom:5px}.chatinfo strong{font-size:10px}.preview{font-size:10px}.msg{max-width:95%}.formgrid,.settingsgrid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+@media(max-width:430px){.cards{gap:7px}.card{padding:11px}.metric{font-size:23px}.topbar h1{font-size:16px}.topactions button{padding:8px;font-size:11px}}
 </style>
 </head>
 <body>
-<div class="layout">
+<div class="app">
 <aside>
-<h3>◉ WhatsApp Marketing</h3>
-<small>A K PROPERTIES</small>
-<nav>
-<button data-page="dashboard">Dashboard</button>
-<button data-page="inbox">Inbox & Chats</button>
-<button data-page="send">Send Message</button>
-</nav>
-<p id="apiStatus">Connecting to API…</p>
+  <div class="brand">◉ A K Properties<small>WHATSAPP MARKETING CONSOLE</small></div>
+  <nav id="nav">
+    <div class="group">Workspace</div>
+    <button class="active" data-view="dashboard">▦ Dashboard</button>
+    <button data-view="campaigns">➤ Campaign Manager</button>
+    <button data-view="inbox">☏ Inbox & Chats <span id="unreadNav"></span></button>
+    <button data-view="contacts">♙ Leads & Contacts</button>
+    <div class="group">Analytics & Setup</div>
+    <button data-view="reports">▥ Delivery Reports</button>
+    <button data-view="templates">▤ Templates</button>
+    <button data-view="settings">⚙ API Settings</button>
+  </nav>
+  <div class="sideStatus" id="apiStatus">● Checking API connection…</div>
 </aside>
-<main>
-<header class="panel">
-<b id="pageTitle">Dashboard</b>
-<button id="refresh" style="float:right">Refresh</button>
+<div class="main">
+<header class="topbar">
+  <h1 id="pageTitle">Dashboard Overview</h1>
+  <div class="topactions"><button class="secondary" id="notifyBtn">🔔 Enable notifications</button><button class="secondary" id="refreshBtn">↻ Refresh</button></div>
 </header>
-
+<main class="content">
 <section id="dashboard" class="view active">
-<h2>Welcome back 👋</h2>
-<div class="stats">
-<div class="stat">Total messages<h2 id="total">—</h2></div>
-<div class="stat">Chats<h2 id="count">—</h2></div>
-<div class="stat">Incoming<h2 id="incoming">—</h2></div>
-<div class="stat">Outgoing<h2 id="outgoing">—</h2></div>
-</div>
-<div class="panel"><h3>Recent conversations</h3><div id="recent">Loading…</div></div>
+  <div class="heading"><div><h2>Campaign Overview</h2><div class="sub">Daily activity and delivery status</div></div><button data-goto="campaigns">＋ New Campaign</button></div>
+  <div class="note">Meta's actual messaging limit and quality rules are controlled by Meta. This dashboard's 2,000/day figure is a planning cap only; it cannot increase or override your Meta account limit.</div>
+  <div class="cards">
+    <div class="card"><label>Messages in API history</label><div class="metric" id="totalCount">—</div><div class="sub">From /messages endpoint</div></div>
+    <div class="card"><label>Contacts / chats</label><div class="metric" id="chatCount">—</div><div class="sub">Unique phone numbers</div></div>
+    <div class="card"><label>Incoming messages</label><div class="metric" id="incomingCount">—</div><div class="sub">Replies stored by API</div></div>
+    <div class="card"><label>Outgoing messages</label><div class="metric" id="outgoingCount">—</div><div class="sub">Outgoing records stored by API</div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><h3>Daily campaign capacity (planning)</h3><div class="metricline"><strong><span id="dailyUsed">0</span> / <span id="dailyCap">2000</span></strong><span class="pill" id="dailyRemaining">2,000 planned slots left</span></div><div class="bar" style="margin:12px 0"><span id="dailyBar"></span></div><div class="sub">Counts attempts made from this browser's campaign runner, not Meta's authoritative tier/limit.</div></div>
+    <div class="panel"><h3>Delivery status</h3><div id="deliverySummary" class="sub">Delivery/read statuses need webhook status events from Meta.</div><div class="progressline"><span>Sent requests accepted</span><b id="sentCount">0</b></div><div class="progressline"><span>Delivered confirmed</span><b id="deliveredCount">0</b></div><div class="progressline"><span>Failed / invalid</span><b id="failedCount">0</b></div></div>
+  </div>
+  <div class="panel" style="margin-top:15px"><div class="heading"><div><h3>Recent conversations</h3><div class="sub">Newest chat first</div></div><button class="secondary" data-goto="inbox">Open Inbox</button></div><div id="recentList" class="empty">Loading messages…</div></div>
+</section>
+
+<section id="campaigns" class="view">
+  <div class="heading"><div><h2>Campaign Manager</h2><div class="sub">Import a consented contact list, prepare a message, then start/stop sending.</div></div></div>
+  <div class="note">Use only opted-in contacts and approved WhatsApp templates when required (especially outside the customer-service window). Sending is sequential through your existing /send endpoint. Delivery confirmation needs Meta webhook status events. Do not upload purchased/scraped lists.</div>
+  <div class="panel">
+    <form id="campaignForm" class="formgrid">
+      <div class="field"><label>Campaign name</label><input id="campName" required placeholder="e.g. Bayleaf Residences launch"></div>
+      <div class="field"><label>Daily planning cap</label><input id="campaignCap" type="number" min="1" max="2000" value="2000" required></div>
+      <div class="field full"><label>Import contacts CSV (columns: phone,name; optional)</label><input id="csvFile" type="file" accept=".csv,text/csv"><div class="filehint">Phone numbers must include country code, e.g. 919876543210. The file is processed in this browser only.</div></div>
+      <div class="field full"><label>Or paste numbers (one per line; country code included)</label><textarea id="manualNumbers" placeholder="919876543210, Customer Name&#10;919876543211, Another Customer"></textarea></div>
+      <div class="field full"><label>Message text</label><textarea id="campMessage" required placeholder="Write your approved message here..."></textarea></div>
+      <div class="field full"><label><input id="consentConfirm" type="checkbox" style="width:auto"> I confirm these contacts opted in to receive messages from my business.</label></div>
+      <div class="field full actions"><button type="button" id="previewCampaign" class="secondary">Prepare / Preview</button><button type="submit" id="startCampaign">▶ Start Campaign</button><button type="button" id="stopCampaign" class="danger" disabled>■ Stop</button><button type="button" id="clearCampaign" class="secondary">Clear list</button></div>
+    </form>
+  </div>
+  <div class="panel"><div class="heading"><div><h3>Campaign progress</h3><div id="campaignStatus" class="sub">No campaign running.</div></div><span class="pill" id="campaignPill">Ready</span></div><div class="bar"><span id="campaignBar"></span></div><div class="progressline"><span id="campaignProgress">0 of 0 contacts processed</span><b id="campaignPercent">0%</b></div><div class="tablewrap"><table><thead><tr><th>Phone</th><th>Name</th><th>Status</th><th>Response</th></tr></thead><tbody id="campaignRows"><tr><td colspan="4">Import contacts and prepare a campaign.</td></tr></tbody></table></div></div>
 </section>
 
 <section id="inbox" class="view">
-<h2>Inbox & Chats</h2>
-<div class="chatlayout">
-<div>
-<input id="search" placeholder="नंबर शोधा" style="width:100%">
-<div id="chatItems">Loading…</div>
-</div>
-<div>
-<div class="panel">
-<button id="back">← Back to chats</button>
-<b id="chatHead">Contact निवडा</b>
-</div>
-<div id="messages">Chat निवडल्यानंतर messages दिसतील.</div>
-<form id="replyForm">
-<input id="reply" placeholder="Message लिहा…" disabled>
-<button id="sendReply" disabled>Send</button>
-</form>
-</div>
-</div>
+  <div class="heading"><div><h2>Inbox & Chats</h2><div class="sub">Incoming replies are shown here when Meta webhook stores them in the API.</div></div><button id="inboxRefresh" class="secondary">↻ Refresh inbox</button></div>
+  <div class="chatlayout" id="chatLayout">
+    <div class="chatlist"><div class="chatsearch"><input id="chatSearch" placeholder="Search name / number"></div><div id="chatItems" class="chatitems"><div class="empty">Loading…</div></div></div>
+    <div class="chatwindow"><div class="chathead"><button type="button" id="backChats" class="secondary smallbtn">← Back</button><span id="chatHead">Select a contact</span></div><div id="messages" class="messages"><div class="empty">Select a chat to view messages.</div></div><form id="replyForm" class="replybar"><input id="replyText" placeholder="Type a reply…" autocomplete="off" disabled><button id="replySend" type="submit" disabled>Send</button></form></div>
+  </div>
 </section>
 
-<section id="send" class="view">
-<h2>Send Message</h2>
-<div class="panel">
-<form id="sendForm" style="display:block">
-<label>WhatsApp number country code सहित</label>
-<input id="number" placeholder="919876543210" required>
-<label>Message</label>
-<input id="message" required>
-<button type="submit">Send message</button>
-<p id="result"></p>
-</form>
-</div>
+<section id="contacts" class="view">
+  <div class="heading"><div><h2>Leads & Contacts</h2><div class="sub">Locally saved contacts for this browser.</div></div></div>
+  <div class="panel"><form id="contactForm" class="formgrid"><div class="field"><label>Name</label><input id="contactName" required></div><div class="field"><label>Phone (country code included)</label><input id="contactPhone" required placeholder="919876543210"></div><div class="field full"><label>Notes / project</label><input id="contactNotes"></div><div class="field full"><button>Save contact</button></div></form><div class="tablewrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Notes</th></tr></thead><tbody id="contactRows"></tbody></table></div></div>
 </section>
-</main>
-</div>
+
+<section id="reports" class="view">
+  <div class="heading"><div><h2>Delivery Reports</h2><div class="sub">API message history plus campaign attempts recorded in this browser.</div></div><button id="exportReport" class="secondary">Export CSV</button></div>
+  <div class="note">Sent/accepted by the API is not the same as Delivered. True Delivered/Read/Failed and invalid-number reasons require Meta webhook status callbacks to be stored by the Worker. The frontend will not guess these statuses.</div>
+  <div class="cards"><div class="card"><label>Campaign attempts</label><div id="rAttempts" class="metric">0</div></div><div class="card"><label>Accepted by API</label><div id="rAccepted" class="metric">0</div></div><div class="card"><label>Confirmed delivered</label><div id="rDelivered" class="metric">0</div></div><div class="card"><label>Failed</label><div id="rFailed" class="metric">0</div></div></div>
+  <div class="panel tablewrap"><table><thead><tr><th>Time</th><th>Direction</th><th>Contact</th><th>Message</th><th>Status</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+</section>
+
+<section id="templates" class="view">
+  <div class="heading"><div><h2>Template Notes</h2><div class="sub">Save local drafts; approval is done in Meta WhatsApp Manager.</div></div></div>
+  <div class="panel"><form id="templateForm" class="formgrid"><div class="field"><label>Template name</label><input id="tplName" required></div><div class="field full"><label>Draft body</label><textarea id="tplBody" required></textarea></div><div class="field full"><button>Save template draft</button></div></form><div id="templateList"></div></div>
+</section>
+
+<section id="settings" class="view">
+  <div class="heading"><div><h2>API Settings</h2><div class="sub">Current API connection and test results.</div></div><button id="testApi">Test API connection</button></div>
+  <div class="settingsgrid"><div class="panel"><h3>Worker API</h3><p class="sub">Configured API base URL</p><code id="apiUrl"></code><p id="settingsStatus">Not tested yet.</p><button id="testMessages" class="secondary">Test /messages</button></div><div class="panel"><h3>What is still required?</h3><ul><li>Worker /send must support the payload and return success/error details.</li><li>Meta webhook must receive inbound messages and message status callbacks.</li><li>Webhook must store incoming messages and statuses in the database returned by /messages.</li><li>Meta account's actual messaging limit is controlled by Meta.</li></ul></div></div>
+</section>
+</main></div></div><div id="toast" class="toast"></div>
 <script>
-(()=>{
-const API='https://whatsapp-marketinf-api.amolkolekar100000.workers.dev';
+(function(){
+'use strict';
+const API_BASE='https://whatsapp-marketinf-api.amolkolekar100000.workers.dev';
 const $=id=>document.getElementById(id);
-let data=[],selected='';
-const text=m=>String(m.message||m.text||m.body||'');
-const phone=m=>String(m.wa_id||m.from||m.to||m.phone||m.number||'').replace(/\s/g,'');
-const incoming=m=>['incoming','in','received'].includes(String(m.direction||m.type||'').toLowerCase());
-const stamp=m=>{let v=m.timestamp||m.created_at||0;let n=typeof v==='number'?v:Date.parse(v);if(!n)return 0;return n<1e12?n*1000:n};
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function page(id){
-document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
-$('pageTitle').textContent=id;
-}
-document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>page(b.dataset.page));
-function listChats(){
-let map={};
-data.forEach(m=>{let n=phone(m);if(!n)return;if(!map[n])map[n]=[];map[n].push(m)});
-return Object.entries(map).map(([n,a])=>({n,a,last:Math.max(...a.map(stamp))})).sort((a,b)=>b.last-a.last);
-}
-function drawChats(){
-let q=$('search').value.toLowerCase();
-$('chatItems').innerHTML=listChats().filter(c=>c.n.toLowerCase().includes(q)).map(c=>
-`<div class="chat ${selected===c.n?'out':''}" data-n="${esc(c.n)}"><b>${esc(c.n)}</b><div>${esc(text(c.a[c.a.length-1]))}</div></div>`
-).join('')||'No chats';
-document.querySelectorAll('[data-n]').forEach(el=>el.onclick=()=>openChat(el.dataset.n));
-}
-function openChat(n){
-selected=n;
-$('chatHead').textContent=n;
-$('reply').disabled=false;$('sendReply').disabled=false;
-$('messages').innerHTML=data.filter(m=>phone(m)===n).slice().sort((a,b)=>stamp(a)-stamp(b)).map(m=>
-`<div class="msg ${incoming(m)?'':'out'}">${esc(text(m))}<small>${new Date(stamp(m)).toLocaleString()}</small></div>`
-).join('');
-$('messages').scrollTop=$('messages').scrollHeight;
-drawChats();
-}
-$('back').onclick=()=>{selected='';$('chatHead').textContent='Contact निवडा';$('reply').value='';$('reply').disabled=true;$('sendReply').disabled=true;$('messages').textContent='Chat निवडा';drawChats()};
-async function refresh(){
-try{
-let r=await fetch(API+'/messages',{cache:'no-store'});
-if(!r.ok)throw Error('HTTP '+r.status);
-let d=await r.json();if(!d.success)throw Error(d.error||'API error');
-data=Array.isArray(d.messages)?d.messages:[];
-$('apiStatus').textContent='● API Connected';
-$('total').textContent=data.length;
-$('count').textContent=listChats().length;
-$('incoming').textContent=data.filter(incoming).length;
-$('outgoing').textContent=data.filter(m=>!incoming(m)).length;
-$('recent').innerHTML=listChats().slice(0,5).map(c=>`<div class="chat">${esc(c.n)} — ${esc(text(c.a[c.a.length-1]))}</div>`).join('');
-drawChats();if(selected)openChat(selected);
-}catch(e){$('apiStatus').textContent='● API error: '+e.message}
-}
-$('refresh').onclick=refresh;
-$('search').oninput=drawChats;
-async function send(to,msg,name){
-let r=await fetch(API+'/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,text:msg,message:msg,name:name||to})});
-let d=await r.json();if(!r.ok||d.success===false)throw Error(d.error||'Send failed');
-}
-$('replyForm').onsubmit=async e=>{
-e.preventDefault();let msg=$('reply').value.trim();if(!selected||!msg)return;
-$('sendReply').disabled=true;
-try{await send(selected,msg,selected);$('reply').value='';await refresh()}
-catch(err){alert('Send error: '+err.message)}
-finally{$('sendReply').disabled=false}
-};
-$('sendForm').onsubmit=async e=>{
-e.preventDefault();
-try{await send($('number').value.trim(),$('message').value.trim(),$('number').value.trim());$('result').textContent='Request accepted';await refresh()}
-catch(err){$('result').textContent='Error: '+err.message}
-};
-refresh();setInterval(refresh,5000);
+let allMessages=[],selectedWaId='',selectedName='',firstLoad=true,seenIds=new Set(),unread={};
+let campaignContacts=[],campaignRunning=false,campaignIndex=0,campaignResults=[];
+const titles={dashboard:'Dashboard Overview',campaigns:'Campaign Manager',inbox:'Inbox & Chats',contacts:'Leads & Contacts',reports:'Delivery Reports',templates:'Templates',settings:'API Settings'};
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000)}
+function rawTime(m){return m.timestamp??m.created_at??m.createdAt??m.time??0}
+function stamp(m){let v=rawTime(m),n;if(typeof v==='number')n=v;else{let s=String(v||'').trim();n=/^\d+(\.\d+)?$/.test(s)?Number(s):Date.parse(s)}if(!Number.isFinite(n)||n<=0)return 0;return n<1e12?n*1000:n}
+function dateText(m){const n=stamp(m);return n?new Date(n).toLocaleString():''}
+function direction(m){const d=String(m.direction||m.type||'').toLowerCase();if(['incoming','in','received','inbound'].includes(d))return'incoming';if(['outgoing','out','sent','outbound'].includes(d))return'outgoing';return d}
+function phone(m){return String(m.wa_id||m.from||m.to||m.phone||m.number||m.contact||'').replace(/\s/g,'')}
+function nameOf(m){return String(m.name||m.contact_name||m.profile_name||phone(m)||'Unknown')}
+function bodyOf(m){return String(m.message||m.text||m.body||m.content||m.message_text||'')}
+function idOf(m){return String(m.id||m.message_id||m.wamid||[phone(m),stamp(m),bodyOf(m)].join('|'))}
+function showView(id){if(!$ (id))return;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));$('pageTitle').textContent=titles[id]||id;if(id==='inbox')drawChats();if(id==='reports')drawReports()}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.goto)));
+function getChats(){const map=new Map();for(const m of allMessages){const n=phone(m);if(!n)continue;if(!map.has(n))map.set(n,{phone:n,name:nameOf(m),items:[],last:0});const c=map.get(n);c.items.push(m);if(stamp(m)>=c.last){c.last=stamp(m);c.name=nameOf(m)}}return [...map.values()].sort((a,b)=>b.last-a.last)}
+function drawStats(){const cs=getChats();$('totalCount').textContent=allMessages.length;$('chatCount').textContent=cs.length;$('incomingCount').textContent=allMessages.filter(m=>direction(m)==='incoming').length;$('outgoingCount').textContent=allMessages.filter(m=>direction(m)==='outgoing').length;$('unreadNav').textContent=Object.values(unread).reduce((a,b)=>a+b,0)||'';drawRecent();drawReports();drawCampaignMetrics()}
+function drawRecent(){const cs=getChats().slice(0,7);$('recentList').innerHTML=cs.length?cs.map(c=>`<div class="chatitem" data-recent="${esc(c.phone)}"><div class="avatar">${esc(c.name.slice(0,1).toUpperCase())}</div><div class="chatinfo"><strong>${esc(c.name)}</strong><div class="preview">${esc(bodyOf(c.items[c.items.length-1]))}</div></div></div>`).join(''):'<div class="empty">No conversations yet.</div>';document.querySelectorAll('[data-recent]').forEach(el=>el.onclick=()=>{showView('inbox');openChat(el.dataset.recent)})}
+function drawChats(){const q=($('chatSearch').value||'').toLowerCase();const cs=getChats().filter(c=>(c.name+' '+c.phone).toLowerCase().includes(q));$('chatItems').innerHTML=cs.length?cs.map(c=>{const last=c.items[c.items.length-1];return `<div class="chatitem ${selectedWaId===c.phone?'selected':''}" data-chat="${esc(c.phone)}"><div class="avatar">${esc(c.name.slice(0,1).toUpperCase())}</div><div class="chatinfo"><strong>${esc(c.name)} ${unread[c.phone]?`<span class="pill">${unread[c.phone]}</span>`:''}</strong><div class="preview">${esc(bodyOf(last)||'(media message)')}</div><div class="preview">${esc(dateText(last))}</div></div></div>`}).join(''):'<div class="empty">No chats found.</div>';document.querySelectorAll('[data-chat]').forEach(el=>el.onclick=()=>openChat(el.dataset.chat))}
+function openChat(n){selectedWaId=n;const c=getChats().find(x=>x.phone===n);selectedName=c?.name||n;unread[n]=0;$('chatHead').textContent=selectedName+' · '+n;$('replyText').disabled=false;$('replySend').disabled=false;drawChats();drawMessages();drawStats();$('replyText').focus()}
+function drawMessages(){if(!selectedWaId){$('messages').innerHTML='<div class="empty">Select a chat to view messages.</div>';return}const ms=allMessages.filter(m=>phone(m)===selectedWaId).slice().sort((a,b)=>stamp(a)-stamp(b));$('messages').innerHTML=ms.length?ms.map(m=>`<div class="msg ${direction(m)==='outgoing'?'out':''}">${esc(bodyOf(m)||'(Media / unsupported message)')}<small>${esc(dateText(m))}</small></div>`).join(''):'<div class="empty">No messages in this chat.</div>';$('messages').scrollTop=$('messages').scrollHeight}
+$('backChats').addEventListener('click',()=>{selectedWaId='';selectedName='';$('chatHead').textContent='Select a contact';$('replyText').value='';$('replyText').disabled=true;$('replySend').disabled=true;drawChats();drawMessages()});
+async function refresh(){try{const r=await fetch(API_BASE+'/messages',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();if(!d.success)throw Error(d.error||'API response error');const next=Array.isArray(d.messages)?d.messages:[];for(const m of next){const id=idOf(m);if(!seenIds.has(id)){seenIds.add(id);if(!firstLoad&&direction(m)==='incoming'&&bodyOf(m)){const n=phone(m);if(n&&n!==selectedWaId)unread[n]=(unread[n]||0)+1;if('Notification'in window&&Notification.permission==='granted')new Notification('New WhatsApp message',{body:nameOf(m)+': '+bodyOf(m).slice(0,100)})}}}firstLoad=false;allMessages=next.slice().sort((a,b)=>stamp(a)-stamp(b));$('apiStatus').textContent='● API Connected · polling every 5s';$('settingsStatus').textContent='Connected to /messages successfully.';drawStats();drawChats();if(selectedWaId)drawMessages()}catch(e){$('apiStatus').textContent='● API error: '+e.message;$('settingsStatus').textContent='Connection failed: '+e.message}}
+$('refreshBtn').onclick=refresh;$('inboxRefresh').onclick=refresh;$('chatSearch').oninput=drawChats;
+$('notifyBtn').onclick=async()=>{if(!('Notification'in window)){toast('This browser does not support notifications.');return}const p=await Notification.requestPermission();toast(p==='granted'?'Browser notifications enabled while this panel is open.':'Notification permission was not granted.')};
+async function sendOne(to,msg,name){const r=await fetch(API_BASE+'/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,text:msg,message:msg,name:name||to})});let d;try{d=await r.json()}catch{throw Error('API did not return JSON')}if(!r.ok||d.success===false)throw Error(d.error||d.message||('HTTP '+r.status));return d}
+$('replyForm').onsubmit=async e=>{e.preventDefault();const msg=$('replyText').value.trim();if(!selectedWaId||!msg)return;$('replySend').disabled=true;try{await sendOne(selectedWaId,msg,selectedName);$('replyText').value='';toast('Send request accepted by API. Delivery status requires webhook confirmation.');await refresh()}catch(err){toast('Send error: '+err.message)}finally{$('replySend').disabled=false}};
+$('testApi').onclick=refresh;$('testMessages').onclick=refresh;$('apiUrl').textContent=API_BASE;
+let contactsFile=[];
+$('csvFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const t=await f.text();contactsFile=parseCsv(t);toast(contactsFile.length+' contact rows imported from CSV.')});
+function parseCsv(t){const lines=t.replace(/\r/g,'').split('\n').filter(x=>x.trim());if(!lines.length)return[];const split=line=>line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(x=>x.trim().replace(/^"|"$/g,''));let rows=lines.map(split);let first=rows[0].map(x=>x.toLowerCase());let hasHeader=first.some(x=>['phone','number','mobile','name','wa_id'].includes(x));let pidx=hasHeader?Math.max(0,first.findIndex(x=>['phone','number','mobile','wa_id'].includes(x))):0;let nidx=hasHeader?first.findIndex(x=>x==='name'):-1;if(hasHeader)rows=rows.slice(1);return rows.map(r=>({phone:String(r[pidx]||'').replace(/[^\d+]/g,''),name:nidx>=0?(r[nidx]||''):''})).filter(x=>x.phone.length>=8)}
+function getContactsFromForm(){let raw=$('manualNumbers').value.trim();let arr=raw?raw.split(/\n/).map(line=>{let a=line.split(',');return{phone:String(a[0]||'').trim().replace(/[^\d+]/g,''),name:String(a.slice(1).join(',')||'').trim()}}).filter(x=>x.phone.length>=8):[];return [...contactsFile,...arr]}
+function drawCampaignRows(){const list=campaignContacts.slice(0,300);$('campaignRows').innerHTML=list.length?list.map((c,i)=>`<tr><td>${esc(c.phone)}</td><td>${esc(c.name||'—')}</td><td>${esc(c.status||'Ready')}</td><td>${esc(c.response||'—')}</td></tr>`).join(''):'<tr><td colspan="4">Import contacts and prepare a campaign.</td></tr>';if(campaignContacts.length>300)$('campaignRows').insertAdjacentHTML('beforeend',`<tr><td colspan="4">Showing first 300 of ${campaignContacts.length} contacts.</td></tr>`)}
+function prepareCampaign(){campaignContacts=getContactsFromForm();const unique=new Map();campaignContacts.forEach(c=>{if(c.phone&&!unique.has(c.phone))unique.set(c.phone,{...c,status:'Ready',response:''})});campaignContacts=[...unique.values()];const cap=Math.max(1,Math.min(2000,Number($('campaignCap').value)||2000));if(campaignContacts.length>cap)campaignContacts=campaignContacts.slice(0,cap);drawCampaignRows();$('campaignStatus').textContent=`Prepared ${campaignContacts.length} unique contacts (planning cap ${cap}).`;toast('Campaign prepared: '+campaignContacts.length+' contacts.')}
+$('previewCampaign').onclick=prepareCampaign;
+$('clearCampaign').onclick=()=>{if(campaignRunning)return;campaignContacts=[];contactsFile=[];$('csvFile').value='';$('manualNumbers').value='';drawCampaignRows();$('campaignStatus').textContent='List cleared.'};
+$('stopCampaign').onclick=()=>{campaignRunning=false;$('campaignPill').textContent='Stopping';$('campaignStatus').textContent='Stop requested; current request may finish.';$('stopCampaign').disabled=true};
+$('campaignForm').onsubmit=async e=>{e.preventDefault();if(campaignRunning){toast('A campaign is already running.');return}if(!campaignContacts.length)prepareCampaign();if(!campaignContacts.length){toast('Import or paste at least one valid number.');return}if(!$('consentConfirm').checked){toast('Confirm contacts opted in before sending.');return}if(!confirm(`Start "${$('campName').value}" for ${campaignContacts.length} contacts? This sends real WhatsApp messages.`))return;campaignRunning=true;campaignIndex=0;campaignResults=[];$('startCampaign').disabled=true;$('stopCampaign').disabled=false;$('campaignPill').textContent='Running';$('campaignStatus').textContent='Campaign sending sequentially…';const msg=$('campMessage').value.trim();const gap=1200;while(campaignRunning&&campaignIndex<campaignContacts.length){const c=campaignContacts[campaignIndex];try{const d=await sendOne(c.phone,msg,c.name);c.status='Accepted by API';c.response=String(d.message_id||d.id||'API accepted; awaiting webhook status');campaignResults.push({time:new Date().toISOString(),phone:c.phone,name:c.name,message:msg,status:'Accepted by API',direction:'outgoing',response:c.response});}catch(err){c.status=/invalid|number|phone/i.test(err.message)?'Failed / check number':'Failed';c.response=err.message;campaignResults.push({time:new Date().toISOString(),phone:c.phone,name:c.name,message:msg,status:c.status,direction:'outgoing',response:err.message});}campaignIndex++;drawCampaignRows();drawCampaignMetrics();$('campaignProgress').textContent=`${campaignIndex} of ${campaignContacts.length} contacts processed`;$('campaignPercent').textContent=Math.round(campaignIndex/campaignContacts.length*100)+'%';$('campaignBar').style.width=(campaignIndex/campaignContacts.length*100)+'%';await new Promise(resolve=>setTimeout(resolve,gap));}campaignRunning=false;$('startCampaign').disabled=false;$('stopCampaign').disabled=true;$('campaignPill').textContent='Finished';$('campaignStatus').textContent='Campaign run finished. Check reports/webhook for final delivery statuses.';drawReports();toast('Campaign run finished. API acceptance is not delivery confirmation.');};
+function campaignTotals(){return{attempts:campaignResults.length,accepted:campaignResults.filter(x=>x.status==='Accepted by API').length,delivered:campaignResults.filter(x=>x.status==='Delivered').length,failed:campaignResults.filter(x=>x.status.startsWith('Failed')).length}}
+function drawCampaignMetrics(){const cap=Math.max(1,Math.min(2000,Number($('campaignCap')?.value)||2000));$('dailyCap').textContent=cap;$('dailyUsed').textContent=campaignResults.length;const remain=Math.max(0,cap-campaignResults.length);$('dailyRemaining').textContent=remain.toLocaleString()+' planned slots left';$('dailyBar').style.width=Math.min(100,campaignResults.length/cap*100)+'%';const t=campaignTotals();$('sentCount').textContent=t.accepted;$('deliveredCount').textContent=t.delivered;$('failedCount').textContent=t.failed;$('rAttempts').textContent=t.attempts;$('rAccepted').textContent=t.accepted;$('rDelivered').textContent=t.delivered;$('rFailed').textContent=t.failed}
+function drawReports(){const combined=[...campaignResults.map(x=>({...x})),...allMessages.map(m=>({time:dateText(m),direction:direction(m),phone:phone(m),message:bodyOf(m),status:m.status||m.delivery_status||'Stored in API'}))];$('reportRows').innerHTML=combined.slice().reverse().slice(0,500).map(x=>`<tr><td>${esc(x.time||'')}</td><td>${esc(x.direction||'')}</td><td>${esc(x.phone||phone(x))}</td><td>${esc(x.message||'')}</td><td>${esc(x.status||'')}</td></tr>`).join('')||'<tr><td colspan="5">No report records yet.</td></tr>'}
+$('exportReport').onclick=()=>{const rows=[['time','direction','phone','message','status'],...campaignResults.map(x=>[x.time,x.direction,x.phone,x.message,x.status])];const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ak-properties-campaign-report.csv';a.click();URL.revokeObjectURL(url)};
+function loadLocal(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return[]}}
+function saveLocal(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function drawContacts(){const a=loadLocal('ak_contacts');$('contactRows').innerHTML=a.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${esc(c.notes)}</td></tr>`).join('')||'<tr><td colspan="3">No saved contacts.</td></tr>'}
+$('contactForm').onsubmit=e=>{e.preventDefault();const a=loadLocal('ak_contacts');a.unshift({name:$('contactName').value.trim(),phone:$('contactPhone').value.trim(),notes:$('contactNotes').value.trim()});saveLocal('ak_contacts',a);drawContacts();e.target.reset();toast('Contact saved in this browser.')};
+$('templateForm').onsubmit=e=>{e.preventDefault();const a=loadLocal('ak_templates');a.unshift({name:$('tplName').value.trim(),body:$('tplBody').value.trim()});saveLocal('ak_templates',a);drawTemplates();e.target.reset();toast('Local template draft saved.')};
+function drawTemplates(){$('templateList').innerHTML=loadLocal('ak_templates').map(x=>`<div class="chatitem"><strong>${esc(x.name)}</strong><div class="preview">${esc(x.body)}</div></div>`).join('')||'<div class="empty">No saved drafts.</div>'}
+drawContacts();drawTemplates();refresh();setInterval(refresh,5000);
 })();
 </script>
 </body>
