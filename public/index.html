@@ -1,55 +1,179 @@
-◉ WhatsApp MarketingBUSINESS PANEL · A K PROPERTIES
-▦ Dashboard ☏ Inbox & Chats ➤ Send Message ◉ Campaign Drafts ♙ Leads & Contacts ▤ Templates ▥ Reports 
-● Connecting to API…
-Dashboard Overview
-🔔 Enable notifications ↻ Refresh
-Welcome back 👋
-WhatsApp business activity
-Inbox live refresh सुरू असतो, हा panel उघडा असताना browser notifications येऊ शकतात. Panel बंद असताना push notifications साठी स्वतंत्र setup आवश्यक आहे.
-Total messages
-—
-Chats / contacts
-—
-Incoming messages
-—
-Outgoing messages
-—
-Recent conversations
-Open Inbox
-Loading messages…
-Quick actions
-Send Message
-Add Lead
-Create Campaign Draft
-Inbox & Chats
-नंबर निवडा; संभाषण खाली दिसेल.
-↻ Refresh inbox
-Loading…
-← Backडावीकडून contact निवडा
-Chat निवडल्यानंतर messages दिसतील.
-Send ➤
-Send a message
-WhatsApp number (country code सहित)
-Name (optional)
-Message
-Send message
-Campaign drafts
-Campaign name
-Project / segment
-Draft message
-Save draft
-हे फक्त local drafts आहेत; bulk sending configure केलेले नाही.
-Leads & Contacts
-Name
-WhatsApp number
-Project / notes
-Save lead
-________________________________________
-Template drafts
-Template name
-Message text
-Save template draft
-Meta approval स्वतंत्र आहे.
-Reports
-Time	Direction	Contact	Message
+<!doctype html>
+<html lang="mr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A K Properties WhatsApp Panel</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:15px Arial;background:#f3f7f7;color:#183238}
+button,input{font:inherit;padding:11px;border-radius:8px;border:1px solid #ddd}
+button{background:#075e54;color:white;cursor:pointer}
+.layout{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+aside{background:#082f32;color:white;padding:15px}
+nav{display:grid;gap:8px;margin-top:20px}
+nav button{text-align:left;background:#16494a}
+main{padding:18px;min-width:0}
+.view{display:none}.view.active{display:block}
+.panel{background:white;padding:15px;border-radius:10px;margin:12px 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:white;padding:15px;border-radius:10px}
+.chatlayout{display:grid;grid-template-columns:260px 1fr;min-height:65vh;background:white}
+#chatItems{border-right:1px solid #ddd}
+.chat{padding:12px;border-bottom:1px solid #ddd;cursor:pointer}
+#messages{height:48vh;overflow:auto;padding:12px;background:#f5f9f8}
+.msg{padding:10px;background:white;border-radius:10px;margin:8px 0;overflow-wrap:anywhere}
+.out{background:#d9fdd3;margin-left:15%}
+form{display:flex;gap:8px;padding:10px}
+form input{flex:1;min-width:0}
+#apiStatus{font-size:12px;margin-top:20px}
+@media(max-width:650px){
+.layout{grid-template-columns:1fr}
+nav{display:flex;overflow:auto}
+nav button{white-space:nowrap}
+.stats{grid-template-columns:1fr 1fr}
+.chatlayout{grid-template-columns:115px 1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+<h3>◉ WhatsApp Marketing</h3>
+<small>A K PROPERTIES</small>
+<nav>
+<button data-page="dashboard">Dashboard</button>
+<button data-page="inbox">Inbox & Chats</button>
+<button data-page="send">Send Message</button>
+</nav>
+<p id="apiStatus">Connecting to API…</p>
+</aside>
+<main>
+<header class="panel">
+<b id="pageTitle">Dashboard</b>
+<button id="refresh" style="float:right">Refresh</button>
+</header>
 
+<section id="dashboard" class="view active">
+<h2>Welcome back 👋</h2>
+<div class="stats">
+<div class="stat">Total messages<h2 id="total">—</h2></div>
+<div class="stat">Chats<h2 id="count">—</h2></div>
+<div class="stat">Incoming<h2 id="incoming">—</h2></div>
+<div class="stat">Outgoing<h2 id="outgoing">—</h2></div>
+</div>
+<div class="panel"><h3>Recent conversations</h3><div id="recent">Loading…</div></div>
+</section>
+
+<section id="inbox" class="view">
+<h2>Inbox & Chats</h2>
+<div class="chatlayout">
+<div>
+<input id="search" placeholder="नंबर शोधा" style="width:100%">
+<div id="chatItems">Loading…</div>
+</div>
+<div>
+<div class="panel">
+<button id="back">← Back to chats</button>
+<b id="chatHead">Contact निवडा</b>
+</div>
+<div id="messages">Chat निवडल्यानंतर messages दिसतील.</div>
+<form id="replyForm">
+<input id="reply" placeholder="Message लिहा…" disabled>
+<button id="sendReply" disabled>Send</button>
+</form>
+</div>
+</div>
+</section>
+
+<section id="send" class="view">
+<h2>Send Message</h2>
+<div class="panel">
+<form id="sendForm" style="display:block">
+<label>WhatsApp number country code सहित</label>
+<input id="number" placeholder="919876543210" required>
+<label>Message</label>
+<input id="message" required>
+<button type="submit">Send message</button>
+<p id="result"></p>
+</form>
+</div>
+</section>
+</main>
+</div>
+<script>
+(()=>{
+const API='https://whatsapp-marketinf-api.amolkolekar100000.workers.dev';
+const $=id=>document.getElementById(id);
+let data=[],selected='';
+const text=m=>String(m.message||m.text||m.body||'');
+const phone=m=>String(m.wa_id||m.from||m.to||m.phone||m.number||'').replace(/\s/g,'');
+const incoming=m=>['incoming','in','received'].includes(String(m.direction||m.type||'').toLowerCase());
+const stamp=m=>{let v=m.timestamp||m.created_at||0;let n=typeof v==='number'?v:Date.parse(v);if(!n)return 0;return n<1e12?n*1000:n};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function page(id){
+document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+$('pageTitle').textContent=id;
+}
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>page(b.dataset.page));
+function listChats(){
+let map={};
+data.forEach(m=>{let n=phone(m);if(!n)return;if(!map[n])map[n]=[];map[n].push(m)});
+return Object.entries(map).map(([n,a])=>({n,a,last:Math.max(...a.map(stamp))})).sort((a,b)=>b.last-a.last);
+}
+function drawChats(){
+let q=$('search').value.toLowerCase();
+$('chatItems').innerHTML=listChats().filter(c=>c.n.toLowerCase().includes(q)).map(c=>
+`<div class="chat ${selected===c.n?'out':''}" data-n="${esc(c.n)}"><b>${esc(c.n)}</b><div>${esc(text(c.a[c.a.length-1]))}</div></div>`
+).join('')||'No chats';
+document.querySelectorAll('[data-n]').forEach(el=>el.onclick=()=>openChat(el.dataset.n));
+}
+function openChat(n){
+selected=n;
+$('chatHead').textContent=n;
+$('reply').disabled=false;$('sendReply').disabled=false;
+$('messages').innerHTML=data.filter(m=>phone(m)===n).slice().sort((a,b)=>stamp(a)-stamp(b)).map(m=>
+`<div class="msg ${incoming(m)?'':'out'}">${esc(text(m))}<small>${new Date(stamp(m)).toLocaleString()}</small></div>`
+).join('');
+$('messages').scrollTop=$('messages').scrollHeight;
+drawChats();
+}
+$('back').onclick=()=>{selected='';$('chatHead').textContent='Contact निवडा';$('reply').value='';$('reply').disabled=true;$('sendReply').disabled=true;$('messages').textContent='Chat निवडा';drawChats()};
+async function refresh(){
+try{
+let r=await fetch(API+'/messages',{cache:'no-store'});
+if(!r.ok)throw Error('HTTP '+r.status);
+let d=await r.json();if(!d.success)throw Error(d.error||'API error');
+data=Array.isArray(d.messages)?d.messages:[];
+$('apiStatus').textContent='● API Connected';
+$('total').textContent=data.length;
+$('count').textContent=listChats().length;
+$('incoming').textContent=data.filter(incoming).length;
+$('outgoing').textContent=data.filter(m=>!incoming(m)).length;
+$('recent').innerHTML=listChats().slice(0,5).map(c=>`<div class="chat">${esc(c.n)} — ${esc(text(c.a[c.a.length-1]))}</div>`).join('');
+drawChats();if(selected)openChat(selected);
+}catch(e){$('apiStatus').textContent='● API error: '+e.message}
+}
+$('refresh').onclick=refresh;
+$('search').oninput=drawChats;
+async function send(to,msg,name){
+let r=await fetch(API+'/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,text:msg,message:msg,name:name||to})});
+let d=await r.json();if(!r.ok||d.success===false)throw Error(d.error||'Send failed');
+}
+$('replyForm').onsubmit=async e=>{
+e.preventDefault();let msg=$('reply').value.trim();if(!selected||!msg)return;
+$('sendReply').disabled=true;
+try{await send(selected,msg,selected);$('reply').value='';await refresh()}
+catch(err){alert('Send error: '+err.message)}
+finally{$('sendReply').disabled=false}
+};
+$('sendForm').onsubmit=async e=>{
+e.preventDefault();
+try{await send($('number').value.trim(),$('message').value.trim(),$('number').value.trim());$('result').textContent='Request accepted';await refresh()}
+catch(err){$('result').textContent='Error: '+err.message}
+};
+refresh();setInterval(refresh,5000);
+})();
+</script>
+</body>
+</html>
