@@ -1,4 +1,5 @@
 HTML
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,23 +7,32 @@ HTML
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>A K Properties | WhatsApp Marketing</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font:15px Arial;background:#f2f6f5;color:#19332e}
+*{box-sizing:border-box}
+body{margin:0;font:15px Arial;background:#f2f6f5;color:#19332e}
 header{background:#075e54;color:white;padding:20px}
 .layout{display:flex;min-height:calc(100vh - 70px)}
 nav{background:#123b35;color:white;width:220px;padding:15px}
 nav button{display:block;width:100%;margin:5px 0;text-align:left;background:transparent;color:white}
-button{padding:11px;border:0;border-radius:7px;background:#087f5b;color:white;cursor:pointer}
+button{padding:11px;border:0;border-radius:7px;background:#087f5b;color:white;cursor:pointer;margin:3px}
 main{padding:22px;flex:1;min-width:0}
 .panel,.card{background:white;border-radius:12px;padding:18px;margin-bottom:15px;box-shadow:0 2px 8px #0001}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
-h2{margin-top:0}input,textarea,select{width:100%;padding:11px;border:1px solid #ccd8d4;border-radius:7px;margin:7px 0 14px}
-textarea{min-height:100px}label{font-weight:bold}
+h2{margin-top:0}
+input,textarea,select{width:100%;padding:11px;border:1px solid #ccd8d4;border-radius:7px;margin:7px 0 14px}
+textarea{min-height:85px}
+label{font-weight:bold}
 .view{display:none}.view.active{display:block}
 nav button.active{background:#087f5b}
-table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}
+table{width:100%;border-collapse:collapse}
+td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}
 .notice{background:#fff5d8;padding:12px;border-radius:8px;margin-bottom:15px}
 #result{white-space:pre-wrap;overflow-wrap:anywhere}
-@media(max-width:650px){.layout{display:block}nav{width:100%;display:flex;overflow:auto;gap:5px}nav button{min-width:max-content;width:auto}main{padding:12px}}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(max-width:650px){
+ .layout{display:block}nav{width:100%;display:flex;overflow:auto;gap:5px}
+ nav button{min-width:max-content;width:auto}main{padding:12px}
+ .grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -30,7 +40,7 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:9px;bord
 <div class="layout">
 <nav>
 <button class="active" data-page="dashboard">Dashboard</button>
-<button data-page="campaigns">Campaign Manager</button>
+<button data-page="campaigns">Template Blast</button>
 <button data-page="inbox">Inbox & Chats</button>
 <button data-page="leads">Leads & Contacts</button>
 <button data-page="reports">Delivery Reports</button>
@@ -40,28 +50,44 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:9px;bord
 <main>
 <section id="dashboard" class="view active">
 <h2>Dashboard Overview</h2>
-<div class="notice">Meta messaging limits are controlled by Meta. Send messages only to opted-in contacts and use approved templates when required.</div>
+<div class="notice">Send only to contacts who have consented to receive WhatsApp messages. Meta controls messaging limits and template delivery.</div>
 <div class="cards">
 <div class="card">Messages in API history<h2 id="total">—</h2></div>
 <div class="card">Contacts / Chats<h2 id="chats">—</h2></div>
 <div class="card">Incoming messages<h2 id="incoming">—</h2></div>
 <div class="card">Outgoing messages<h2 id="outgoing">—</h2></div>
 </div>
-<div class="panel"><button onclick="loadMessages()">Refresh Dashboard</button><p id="dashStatus">Not tested yet</p></div>
+<div class="panel"><button onclick="loadMessages()">Refresh Dashboard</button><p id="dashStatus">Connecting…</p></div>
 </section>
 
 <section id="campaigns" class="view">
-<h2>Campaign Manager</h2>
-<div class="notice">Use only consented contacts. This basic version sends text through the existing /send endpoint; it does not yet send approved template payloads.</div>
+<h2>Approved Template Blast</h2>
+<div class="notice">Template: <b>new_launch_project</b>. Start with your own number as a test. Do not use unverified variable values.</div>
 <div class="panel">
-<label>Campaign name</label><input id="campName" placeholder="New launch campaign">
-<label>Phone numbers (one per line, with country code)</label>
+<label>Campaign name</label>
+<input id="campName" value="New Launch Project">
+<label>Recipients (one phone number per line, country code included)</label>
 <textarea id="numbers" placeholder="919876543210"></textarea>
-<label>Message text</label><textarea id="message" placeholder="Enter message"></textarea>
-<label><input id="consent" type="checkbox" style="width:auto"> I confirm these contacts opted in</label>
-<button onclick="prepare()">Prepare Campaign</button>
-<button onclick="sendCampaign()">Start Campaign</button>
-<p id="campStatus">No campaign running.</p>
+<label>Public HTTPS project image URL</label>
+<input id="imageUrl" placeholder="https://example.com/project-image.jpg">
+<p><b>Template body variables — enter all 11 in the exact approved order</b></p>
+<div class="grid">
+<div><label>1. Username</label><input id="p1" placeholder="Customer name"></div>
+<div><label>2. Order ID</label><input id="p2" placeholder="Value 2"></div>
+<div><label>3. Order number</label><input id="p3" placeholder="Value 3"></div>
+<div><label>4. Order status</label><input id="p4" placeholder="Value 4"></div>
+<div><label>5. Tracking status link</label><input id="p5" placeholder="Value 5"></div>
+<div><label>6. Tracking number</label><input id="p6" placeholder="Value 6"></div>
+<div><label>7. Tracking ID</label><input id="p7" placeholder="Value 7"></div>
+<div><label>8. Invoice date</label><input id="p8" placeholder="Value 8"></div>
+<div><label>9. Invoice ID</label><input id="p9" placeholder="Value 9"></div>
+<div><label>10. Payment method</label><input id="p10" placeholder="Value 10"></div>
+<div><label>11. Amount</label><input id="p11" placeholder="Value 11"></div>
+</div>
+<label><input id="consent" type="checkbox" style="width:auto"> I confirm these recipients opted in to WhatsApp messages</label>
+<p><button onclick="testTemplate()">Send one test</button><button onclick="sendCampaign()">Start campaign</button></p>
+<p id="campStatus">Not sent.</p>
+<pre id="sendResult"></pre>
 </div>
 </section>
 
@@ -87,10 +113,11 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:9px;bord
 </section>
 
 <section id="templates" class="view">
-<h2>Approved WhatsApp Templates</h2>
+<h2>WhatsApp Templates</h2>
 <div class="panel">
-<p>Your approved template: <b>new_launch_project</b></p>
-<p>Template approval is managed in Meta WhatsApp Manager. Approval alone does not connect the template to the sending endpoint.</p>
+<p>Template name: <b>new_launch_project</b></p>
+<p>Language: English (en)</p>
+<p>Approval and actual variable/button configuration must match Meta WhatsApp Manager.</p>
 </div>
 </section>
 
@@ -109,7 +136,7 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:9px;bord
 
 <script>
 const $=id=>document.getElementById(id);
-let messages=[],leads=[],prepared=false;
+let messages=[],leads=[];
 
 document.querySelectorAll('nav button').forEach(btn=>{
  btn.addEventListener('click',()=>{
@@ -117,12 +144,15 @@ document.querySelectorAll('nav button').forEach(btn=>{
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   btn.classList.add('active');
   $(btn.dataset.page).classList.add('active');
-  if(btn.dataset.page==='dashboard'||btn.dataset.page==='inbox'||btn.dataset.page==='reports')loadMessages();
+  if(['dashboard','inbox','reports'].includes(btn.dataset.page))loadMessages();
  });
 });
 
 function api(path){
  return $('apiUrl').value.trim().replace(/\/+$/,'')+path;
+}
+function esc(s){
+ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 async function testAPI(){
  $('result').textContent='Connecting…';
@@ -139,13 +169,13 @@ async function loadMessages(){
   const data=await r.json();
   if(!r.ok)throw Error(JSON.stringify(data));
   messages=Array.isArray(data)?data:(data.messages||[]);
-  const phones=new Set(messages.map(m=>m.from||m.phone||m.wa_id).filter(Boolean));
+  const phones=new Set(messages.map(m=>m.wa_id||m.from||m.phone).filter(Boolean));
   $('total').textContent=messages.length;
   $('chats').textContent=phones.size;
-  $('incoming').textContent=messages.filter(m=>m.direction==='in'||m.from).length;
-  $('outgoing').textContent=messages.filter(m=>m.direction==='out').length;
-  const html=messages.map(m=>'<tr><td>'+esc(m.from||m.phone||'')+'</td><td>'+esc(m.text||m.message||m.body||'')+'</td><td>'+esc(m.timestamp||m.created_at||'')+'</td></tr>').join('');
-  const table='<table><thead><tr><th>Phone</th><th>Message</th><th>Time</th></tr></thead><tbody>'+html+'</tbody></table>';
+  $('incoming').textContent=messages.filter(m=>m.direction==='incoming'||m.direction==='in').length;
+  $('outgoing').textContent=messages.filter(m=>m.direction==='outgoing'||m.direction==='out').length;
+  const rows=messages.map(m=>'<tr><td>'+esc(m.wa_id||m.from||m.phone||'')+'</td><td>'+esc(m.message||m.text||'')+'</td><td>'+esc(m.timestamp||m.created_at||'')+'</td></tr>').join('');
+  const table='<table><thead><tr><th>Phone</th><th>Message</th><th>Time</th></tr></thead><tbody>'+rows+'</tbody></table>';
   $('inboxList').innerHTML=table;
   $('reportsList').innerHTML=table;
   $('dashStatus').textContent='API connected. Records loaded: '+messages.length;
@@ -155,36 +185,58 @@ async function loadMessages(){
   $('result').textContent='API error: '+e.message;
  }
 }
-function esc(s){
- return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function prepare(){
+function getTemplateData(){
  const nums=$('numbers').value.split(/\r?\n/).map(s=>s.replace(/\D/g,'')).filter(Boolean);
- if(!nums.length||!$('message').value.trim()){alert('Enter phone numbers and message');return;}
- if(!$('consent').checked){alert('Confirm that contacts opted in first');return;}
- prepared=true;
- $('campStatus').textContent=nums.length+' contacts ready for review.';
+ const imageUrl=$('imageUrl').value.trim();
+ const parameters=Array.from({length:11},(_,i)=>$('p'+(i+1)).value.trim());
+ if(!nums.length)throw Error('Enter at least one phone number with country code.');
+ if(!imageUrl.startsWith('https://'))throw Error('Enter a public HTTPS project image URL.');
+ if(parameters.some(v=>!v))throw Error('Fill all 11 template variables in the approved order.');
+ if(!$('consent').checked)throw Error('Confirm recipient opt-in first.');
+ return {nums,imageUrl,parameters};
+}
+async function sendOne(number,imageUrl,parameters){
+ const r=await fetch(api('/send-template'),{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({
+   to:number,
+   name:number,
+   templateName:'new_launch_project',
+   language:'en',
+   imageUrl,
+   parameters
+  })
+ });
+ const data=await r.json().catch(()=>({error:'Invalid API response'}));
+ return {ok:r.ok&&data.success===true,data};
+}
+async function testTemplate(){
+ try{
+  const d=getTemplateData();
+  if(d.nums.length!==1)throw Error('For the test, keep exactly ONE number in the recipients box.');
+  $('campStatus').textContent='Sending test…';
+  const result=await sendOne(d.nums[0],d.imageUrl,d.parameters);
+  $('sendResult').textContent=JSON.stringify(result.data,null,2);
+  $('campStatus').textContent=result.ok?'Test accepted by WhatsApp API. Check the recipient phone.':'Test failed. See API error below.';
+ }catch(e){$('campStatus').textContent=e.message;}
 }
 async function sendCampaign(){
- if(!prepared){alert('Click Prepare Campaign first');return;}
- if(!$('consent').checked){alert('Opt-in confirmation required');return;}
- const nums=$('numbers').value.split(/\r?\n/).map(s=>s.replace(/\D/g,'')).filter(Boolean);
- const msg=$('message').value.trim();
- if(!confirm('Send text to '+nums.length+' contacts?'))return;
- $('campStatus').textContent='Sending…';
- let ok=0,fail=0;
- for(let i=0;i<nums.length;i++){
-  $('campStatus').textContent='Processing '+(i+1)+' / '+nums.length;
-  try{
-   const r=await fetch(api('/send'),{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({to:nums[i],phone:nums[i],message:msg})
-   });
-   if(r.ok){ok++;}else{fail++;}
-  }catch(e){fail++;}
- }
- $('campStatus').textContent='Finished. Accepted: '+ok+'; failed: '+fail+'. Check API reports.';
- prepared=false;
+ try{
+  const d=getTemplateData();
+  if(d.nums.length>1&&!confirm('Send approved template to '+d.nums.length+' opted-in contacts?'))return;
+  $('campStatus').textContent='Sending…';
+  let ok=0,fail=0;
+  for(let i=0;i<d.nums.length;i++){
+   $('campStatus').textContent='Processing '+(i+1)+' / '+d.nums.length;
+   const result=await sendOne(d.nums[i],d.imageUrl,d.parameters);
+   if(result.ok)ok++;else fail++;
+   $('sendResult').textContent=JSON.stringify(result.data,null,2);
+   if(!result.ok)break;
+  }
+  $('campStatus').textContent='Finished. API accepted: '+ok+'; failed: '+fail+'. Check actual delivery in WhatsApp/Meta.';
+  await loadMessages();
+ }catch(e){$('campStatus').textContent=e.message;}
 }
 function saveLead(){
  const name=$('leadName').value.trim(),phone=$('leadPhone').value.trim();
@@ -194,9 +246,11 @@ function saveLead(){
  $('leadName').value='';$('leadPhone').value='';$('leadNotes').value='';
 }
 function exportCSV(){
- const rows=[['Phone','Message','Time'],...messages.map(m=>[m.from||m.phone||'',m.text||m.message||m.body||'',m.timestamp||m.created_at||''])];
+ const rows=[['Phone','Message','Time'],...messages.map(m=>[m.wa_id||m.from||m.phone||'',m.message||m.text||'',m.timestamp||m.created_at||''])];
  const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
- const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='delivery-reports.csv';a.click();URL.revokeObjectURL(a.href);
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+ a.download='delivery-reports.csv';a.click();URL.revokeObjectURL(a.href);
 }
 loadMessages();
 </script>
