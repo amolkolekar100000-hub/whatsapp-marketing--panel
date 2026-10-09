@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>WhatsApp Marketing Panel</title>
 
 <style>
-
 *{
   box-sizing:border-box;
   margin:0;
@@ -20,8 +18,6 @@ body{
   color:#17202a;
 }
 
-/* SIDEBAR */
-
 .sidebar{
   position:fixed;
   left:0;
@@ -30,14 +26,14 @@ body{
   height:100vh;
   background:#111827;
   color:white;
-  padding:22px 14px;
+  padding:20px 14px;
   overflow-y:auto;
 }
 
 .logo{
   font-size:21px;
   font-weight:bold;
-  padding:8px 12px 28px;
+  padding:8px 12px 25px;
 }
 
 .logo span{
@@ -51,7 +47,6 @@ body{
   border-radius:9px;
   color:#d1d5db;
   cursor:pointer;
-  user-select:none;
 }
 
 .menu:hover,
@@ -59,8 +54,6 @@ body{
   background:#25D366;
   color:white;
 }
-
-/* MAIN */
 
 .main{
   margin-left:235px;
@@ -85,8 +78,6 @@ body{
   box-shadow:0 2px 8px #0001;
 }
 
-/* PAGES */
-
 .page{
   display:none;
 }
@@ -94,8 +85,6 @@ body{
 .page.active{
   display:block;
 }
-
-/* CARDS */
 
 .cards{
   display:grid;
@@ -138,8 +127,6 @@ body{
   color:#dc2626;
 }
 
-/* PANELS */
-
 .panel{
   background:white;
   padding:24px;
@@ -157,8 +144,6 @@ body{
   grid-template-columns:1fr 1fr;
   gap:22px;
 }
-
-/* FORM */
 
 label{
   display:block;
@@ -204,22 +189,10 @@ button{
   color:white;
 }
 
-.red-btn{
-  background:#dc2626;
-  color:white;
-}
-
 .blue-btn{
   background:#2563eb;
   color:white;
 }
-
-button:disabled{
-  background:#9ca3af;
-  cursor:not-allowed;
-}
-
-/* MESSAGES */
 
 .notice{
   background:#fff7ed;
@@ -246,23 +219,12 @@ button:disabled{
   margin-top:15px;
 }
 
-/* PREVIEW */
-
-.preview{
-  background:#e8f5e9;
-  border-radius:10px;
-  padding:18px;
-  min-height:160px;
+.status{
+  display:none;
+  padding:12px;
+  border-radius:8px;
+  margin-top:15px;
 }
-
-.whatsapp-message{
-  background:#d9fdd3;
-  padding:14px;
-  border-radius:10px;
-  white-space:pre-wrap;
-}
-
-/* TABLE */
 
 .table{
   width:100%;
@@ -286,52 +248,28 @@ button:disabled{
   font-size:12px;
 }
 
-/* CHAT */
-
 .chat-layout{
   display:grid;
-  grid-template-columns:320px 1fr;
+  grid-template-columns:300px 1fr;
   gap:18px;
-  min-height:560px;
 }
 
-.chat-list{
-  background:white;
-  border-radius:13px;
-  padding:15px;
-  box-shadow:0 2px 10px #0000000d;
-  overflow-y:auto;
-}
-
-.chat-user{
-  padding:14px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-  border-radius:8px;
-}
-
-.chat-user:hover,
-.chat-user.active{
-  background:#e8f5e9;
-}
-
-.chat-user-name{
-  font-weight:bold;
-}
-
-.chat-user-phone{
-  color:#6b7280;
-  font-size:12px;
-  margin-top:4px;
-}
-
+.chat-list,
 .chat-window{
   background:white;
   border-radius:13px;
   box-shadow:0 2px 10px #0000000d;
+}
+
+.chat-list{
+  min-height:500px;
+  padding:15px;
+}
+
+.chat-window{
+  min-height:500px;
   display:flex;
   flex-direction:column;
-  min-height:560px;
 }
 
 .chat-header{
@@ -343,70 +281,23 @@ button:disabled{
 .chat-messages{
   flex:1;
   padding:20px;
-  overflow-y:auto;
   background:#f0f2f5;
-}
-
-.chat-bubble{
-  max-width:75%;
-  padding:10px 13px;
-  border-radius:10px;
-  margin-bottom:10px;
-  white-space:pre-wrap;
-}
-
-.chat-in{
-  background:white;
-  margin-right:auto;
-}
-
-.chat-out{
-  background:#d9fdd3;
-  margin-left:auto;
 }
 
 .chat-compose{
   padding:14px;
-  border-top:1px solid #eee;
   display:flex;
   gap:8px;
 }
 
 .chat-compose input{
   margin:0;
-  flex:1;
 }
-
-.chat-compose button{
-  margin:0;
-}
-
-/* STATUS */
-
-.status-box{
-  padding:12px;
-  border-radius:8px;
-  margin-top:12px;
-  display:none;
-}
-
-.status-success{
-  background:#dcfce7;
-  color:#166534;
-}
-
-.status-error{
-  background:#fee2e2;
-  color:#991b1b;
-}
-
-/* MOBILE */
 
 @media(max-width:900px){
 
   .sidebar{
     width:70px;
-    padding:15px 8px;
   }
 
   .logo{
@@ -457,7 +348,6 @@ button:disabled{
     flex-direction:column;
   }
 }
-
 </style>
 </head>
 
@@ -471,48 +361,39 @@ button:disabled{
     WhatsApp <span>Blast</span>
   </div>
 
-  <div class="menu active"
-       onclick="showPage('dashboard',this)">
+  <div class="menu active" data-page="dashboard">
     📊 Dashboard
   </div>
 
-  <div class="menu"
-       onclick="showPage('sendmessage',this)">
+  <div class="menu" data-page="sendmessage">
     📤 Send Message
   </div>
 
-  <div class="menu"
-       onclick="showPage('inbox',this)">
+  <div class="menu" data-page="inbox">
     💬 Inbox / Chat
   </div>
 
-  <div class="menu"
-       onclick="showPage('campaigns',this)">
+  <div class="menu" data-page="campaigns">
     📢 Campaigns
   </div>
 
-  <div class="menu"
-       onclick="showPage('leads',this)">
+  <div class="menu" data-page="leads">
     👥 Leads
   </div>
 
-  <div class="menu"
-       onclick="showPage('templates',this)">
+  <div class="menu" data-page="templates">
     📝 Templates
   </div>
 
-  <div class="menu"
-       onclick="showPage('media',this)">
+  <div class="menu" data-page="media">
     🖼 Media
   </div>
 
-  <div class="menu"
-       onclick="showPage('reports',this)">
+  <div class="menu" data-page="reports">
     📈 Reports
   </div>
 
-  <div class="menu"
-       onclick="showPage('settings',this)">
+  <div class="menu" data-page="settings">
     ⚙️ Settings
   </div>
 
@@ -524,13 +405,11 @@ button:disabled{
 <div class="main">
 
   <div class="header">
-
     <h1>WhatsApp Marketing Panel</h1>
 
     <div class="admin">
       👤 Admin
     </div>
-
   </div>
 
 
@@ -552,67 +431,35 @@ button:disabled{
 
       <div class="card">
         <div class="card-title">Delivered</div>
-        <div class="number green" id="deliveredCount">0</div>
+        <div class="number green">0</div>
       </div>
 
       <div class="card">
         <div class="card-title">Replies</div>
-        <div class="number orange" id="replyCount">0</div>
+        <div class="number orange">0</div>
       </div>
 
     </div>
-
 
     <div class="panel">
 
       <h2>Quick Actions</h2>
 
       <div class="notice">
-        ⚡ WhatsApp Cloud API is connected through the secure backend Worker.
+        WhatsApp Cloud API is connected through the secure backend Worker.
       </div>
 
-      <button
-        class="green-btn"
-        onclick="showPage('sendmessage')">
+      <button class="green-btn" data-open="sendmessage">
         📤 Send Message
       </button>
 
-      <button
-        class="dark-btn"
-        onclick="showPage('inbox')">
+      <button class="dark-btn" data-open="inbox">
         💬 Open Inbox
       </button>
 
-      <button
-        class="blue-btn"
-        onclick="showPage('campaigns')">
+      <button class="blue-btn" data-open="campaigns">
         📢 Create Campaign
       </button>
-
-    </div>
-
-
-    <div class="panel">
-
-      <h2>Recent Activity</h2>
-
-      <table class="table">
-
-        <tr>
-          <th>Activity</th>
-          <th>Status</th>
-          <th>Time</th>
-        </tr>
-
-        <tr>
-          <td>WhatsApp API</td>
-          <td>
-            <span class="badge">Connected</span>
-          </td>
-          <td id="apiTime">-</td>
-        </tr>
-
-      </table>
 
     </div>
 
@@ -628,10 +475,8 @@ button:disabled{
       <h2>📤 Send WhatsApp Message</h2>
 
       <div class="notice">
-        🔐 Message is sent through your Cloudflare backend Worker.
-        Your Meta access token is not stored in this HTML.
+        🔐 Meta access token is stored securely on the backend.
       </div>
-
 
       <label>Recipient WhatsApp Number</label>
 
@@ -641,7 +486,6 @@ button:disabled{
         placeholder="Example: 919876543210"
       >
 
-
       <label>Message</label>
 
       <textarea
@@ -649,38 +493,19 @@ button:disabled{
         placeholder="Type your WhatsApp message..."
       ></textarea>
 
-
       <button
         class="green-btn"
-        id="sendBtn"
-        onclick="sendMessage()">
+        id="sendBtn">
         📤 Send WhatsApp Message
       </button>
 
-
       <button
         class="dark-btn"
-        onclick="clearMessageForm()">
+        id="clearBtn">
         Clear
       </button>
 
-
-      <div
-        id="sendStatus"
-        class="status-box">
-      </div>
-
-    </div>
-
-
-    <div class="panel">
-
-      <h2>⚠️ Important</h2>
-
-      <div class="notice">
-        For WhatsApp marketing, use Meta-approved templates
-        and contact users who have given appropriate consent.
-      </div>
+      <div id="sendStatus" class="status"></div>
 
     </div>
 
@@ -696,48 +521,36 @@ button:disabled{
       <h2>💬 WhatsApp Inbox / Chat</h2>
 
       <div class="notice">
-        Incoming WhatsApp replies are received through your backend webhook.
+        Incoming WhatsApp replies will appear here after webhook messages are received.
       </div>
 
-      <button
-        class="blue-btn"
-        onclick="loadInbox()">
+      <button class="blue-btn" id="refreshInbox">
         🔄 Refresh Inbox
       </button>
 
     </div>
-
 
     <div class="chat-layout">
 
       <div class="chat-list" id="chatList">
 
         <div style="padding:15px;color:#6b7280;">
-          No conversations loaded yet.
+          No conversations yet.
         </div>
 
       </div>
 
-
       <div class="chat-window">
 
-        <div
-          class="chat-header"
-          id="chatHeader">
+        <div class="chat-header" id="chatHeader">
           Select a conversation
         </div>
 
-
-        <div
-          class="chat-messages"
-          id="chatMessages">
-
+        <div class="chat-messages" id="chatMessages">
           <div style="color:#6b7280;">
-            Select a lead from the left side.
+            Select a conversation from the left.
           </div>
-
         </div>
-
 
         <div class="chat-compose">
 
@@ -748,7 +561,7 @@ button:disabled{
 
           <button
             class="green-btn"
-            onclick="sendReply()">
+            id="replyBtn">
             Send
           </button>
 
@@ -777,53 +590,36 @@ button:disabled{
 
           <input
             id="campaignName"
-            placeholder="Example: Godrej Thane Launch"
+            placeholder="Example: Godrej Launch"
           >
-
 
           <label>Project</label>
 
-          <select id="project">
-
-            <option>Godrej Thane</option>
+          <select>
+            <option>Godrej</option>
+            <option>Adani Realty</option>
             <option>Chembur Golfcrest</option>
             <option>Tata Ghansoli</option>
-            <option>Adani Realty</option>
-            <option>Other Project</option>
-
+            <option>Other</option>
           </select>
-
 
           <label>WhatsApp Template</label>
 
-          <select id="template">
-
+          <select>
             <option>property_launch</option>
             <option>property_offer</option>
             <option>site_visit</option>
             <option>follow_up</option>
-
           </select>
-
 
           <label>Upload Leads</label>
 
           <input
             type="file"
             accept=".csv,.xlsx,.xls"
-            onchange="handleLeads(this)"
-          >
-
-
-          <label>Upload Media</label>
-
-          <input
-            type="file"
-            accept="image/*,video/*,.pdf"
           >
 
         </div>
-
 
         <div>
 
@@ -831,55 +627,26 @@ button:disabled{
 
           <textarea
             id="campaignMessage"
-            oninput="updatePreview()"
-            placeholder="Enter approved WhatsApp template message..."
+            placeholder="Enter approved template message..."
           ></textarea>
 
-
-          <label>Reply Button</label>
+          <label>Button</label>
 
           <select>
-
             <option>Yes / No</option>
             <option>Interested</option>
             <option>Not Interested</option>
             <option>Book Site Visit</option>
             <option>Get Price</option>
-
           </select>
-
-
-          <label>Message Preview</label>
-
-          <div class="preview">
-
-            <div
-              class="whatsapp-message"
-              id="previewMessage">
-              Your WhatsApp message preview will appear here.
-            </div>
-
-          </div>
 
         </div>
 
       </div>
 
-
-      <br>
-
-      <button
-        class="green-btn"
-        onclick="createCampaign()">
+      <button class="green-btn" id="createCampaign">
         Create Campaign
       </button>
-
-      <button
-        class="dark-btn">
-        Save Draft
-      </button>
-
-      <div id="campaignStatus"></div>
 
     </div>
 
@@ -895,59 +662,33 @@ button:disabled{
       <h2>👥 Leads Management</h2>
 
       <div class="notice">
-        Upload your customer list using CSV/Excel.
-        Only contacts with appropriate consent should be used for marketing.
+        Upload customer leads using CSV or Excel.
       </div>
 
-
-      <button
-        class="green-btn"
-        onclick="addLead()">
+      <button class="green-btn" id="addLead">
         + Add Lead
       </button>
 
-
-      <button
-        class="dark-btn"
-        onclick="document.getElementById('leadFile').click()">
+      <button class="dark-btn">
         Import Excel / CSV
       </button>
 
-
-      <input
-        id="leadFile"
-        type="file"
-        accept=".csv,.xlsx,.xls"
-        style="display:none"
-        onchange="handleLeads(this)"
-      >
-
-
       <br><br>
-
 
       <table class="table">
 
-        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Project</th>
+          <th>Status</th>
+        </tr>
 
-          <tr>
-            <th>Name</th>
-            <th>Mobile</th>
-            <th>Project</th>
-            <th>Status</th>
-          </tr>
-
-        </thead>
-
-        <tbody id="leadTable">
-
-          <tr>
-            <td colspan="4">
-              No leads imported
-            </td>
-          </tr>
-
-        </tbody>
+        <tr>
+          <td colspan="4">
+            No leads imported
+          </td>
+        </tr>
 
       </table>
 
@@ -968,15 +709,11 @@ button:disabled{
         Marketing messages must use Meta-approved WhatsApp templates.
       </div>
 
-
-      <button
-        class="green-btn"
-        onclick="addTemplate()">
+      <button class="green-btn">
         + Add Template
       </button>
 
       <br><br>
-
 
       <table class="table">
 
@@ -987,7 +724,6 @@ button:disabled{
           <th>Status</th>
         </tr>
 
-
         <tr>
           <td>property_launch</td>
           <td>Marketing</td>
@@ -996,7 +732,6 @@ button:disabled{
             <span class="badge">Ready</span>
           </td>
         </tr>
-
 
         <tr>
           <td>site_visit</td>
@@ -1022,18 +757,14 @@ button:disabled{
 
       <h2>🖼 Media Library</h2>
 
-
       <label>Project</label>
 
       <select>
-
-        <option>Godrej Thane</option>
+        <option>Godrej</option>
+        <option>Adani Realty</option>
         <option>Chembur Golfcrest</option>
         <option>Tata Ghansoli</option>
-        <option>Adani Realty</option>
-
       </select>
-
 
       <label>Upload Image / Video / PDF</label>
 
@@ -1042,10 +773,7 @@ button:disabled{
         accept="image/*,video/*,.pdf"
       >
 
-
-      <button
-        class="green-btn"
-        onclick="uploadMedia()">
+      <button class="green-btn">
         Upload Media
       </button>
 
@@ -1062,44 +790,26 @@ button:disabled{
 
       <h2>📈 Campaign Reports</h2>
 
-
       <div class="cards">
 
         <div class="card">
           <div class="card-title">Sent</div>
-          <div
-            class="number blue"
-            id="reportSent">
-            0
-          </div>
+          <div class="number blue" id="reportSent">0</div>
         </div>
-
 
         <div class="card">
           <div class="card-title">Delivered</div>
-          <div
-            class="number green"
-            id="reportDelivered">
-            0
-          </div>
+          <div class="number green">0</div>
         </div>
-
 
         <div class="card">
           <div class="card-title">Read</div>
-          <div class="number">
-            0
-          </div>
+          <div class="number">0</div>
         </div>
-
 
         <div class="card">
           <div class="card-title">Failed</div>
-          <div
-            class="number red"
-            id="failedCount">
-            0
-          </div>
+          <div class="number red">0</div>
         </div>
 
       </div>
@@ -1118,34 +828,15 @@ button:disabled{
       <h2>⚙️ WhatsApp API Settings</h2>
 
       <div class="notice">
-        🔐 Meta API credentials stay securely on the backend.
-        Never put your access token inside this HTML file.
+        🔐 Meta credentials stay securely on the backend.
       </div>
-
 
       <label>API Worker</label>
 
       <input
-        value="Connected through Cloudflare Worker"
+        value="whatsapp-marketinf-api"
         disabled
       >
-
-
-      <label>WhatsApp Business Account</label>
-
-      <input
-        value="Connected securely from backend"
-        disabled
-      >
-
-
-      <label>Phone Number ID</label>
-
-      <input
-        value="Connected securely from backend"
-        disabled
-      >
-
 
       <label>Graph API Version</label>
 
@@ -1154,22 +845,19 @@ button:disabled{
         disabled
       >
 
+      <label>Phone Number ID</label>
 
-      <label>Webhook Status</label>
+      <input
+        value="Connected securely from backend"
+        disabled
+      >
 
-      <select id="webhookStatus">
+      <label>Webhook</label>
 
+      <select>
         <option>Connected</option>
         <option>Not Connected</option>
-
       </select>
-
-
-      <button
-        class="green-btn"
-        onclick="saveSettings()">
-        Save Settings
-      </button>
 
     </div>
 
@@ -1180,148 +868,303 @@ button:disabled{
 
 <script>
 
-/* =====================================================
-   WHATSAPP API WORKER
-===================================================== */
-
 const API_BASE =
 "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
 
 
-/* =====================================================
-   PAGE NAVIGATION
-===================================================== */
+/* PAGE NAVIGATION */
 
-function showPage(pageId, clickedMenu){
+function openPage(pageId, clickedMenu){
 
-  document.querySelectorAll(".page")
-    .forEach(function(page){
+  document.querySelectorAll(".page").forEach(function(page){
+    page.classList.remove("active");
+  });
 
-      page.classList.remove("active");
-
-    });
-
-
-  const page =
+  const target =
     document.getElementById(pageId);
 
-  if(page){
-
-    page.classList.add("active");
-
+  if(target){
+    target.classList.add("active");
   }
 
-
-  document.querySelectorAll(".menu")
-    .forEach(function(menu){
-
-      menu.classList.remove("active");
-
-    });
-
+  document.querySelectorAll(".menu").forEach(function(menu){
+    menu.classList.remove("active");
+  });
 
   if(clickedMenu){
-
     clickedMenu.classList.add("active");
+  }
+}
+
+
+/* SIDEBAR CLICK */
+
+document.querySelectorAll(".menu").forEach(function(menu){
+
+  menu.addEventListener("click", function(){
+
+    openPage(
+      menu.getAttribute("data-page"),
+      menu
+    );
+
+  });
+
+});
+
+
+/* QUICK BUTTONS */
+
+document.querySelectorAll("[data-open]").forEach(function(button){
+
+  button.addEventListener("click", function(){
+
+    openPage(
+      button.getAttribute("data-open"),
+      null
+    );
+
+  });
+
+});
+
+
+/* SEND MESSAGE */
+
+document.getElementById("sendBtn").addEventListener(
+  "click",
+  async function(){
+
+    const phone =
+      document.getElementById("phone").value.trim();
+
+    const message =
+      document.getElementById("message").value.trim();
+
+    const status =
+      document.getElementById("sendStatus");
+
+    const button =
+      document.getElementById("sendBtn");
+
+
+    if(!phone){
+
+      status.style.display = "block";
+      status.style.background = "#fee2e2";
+      status.style.color = "#991b1b";
+      status.innerText =
+        "Please enter WhatsApp number.";
+
+      return;
+    }
+
+
+    if(!message){
+
+      status.style.display = "block";
+      status.style.background = "#fee2e2";
+      status.style.color = "#991b1b";
+      status.innerText =
+        "Please enter message.";
+
+      return;
+    }
+
+
+    button.disabled = true;
+    button.innerText = "Sending...";
+
+
+    try{
+
+      const response =
+        await fetch(
+          API_BASE + "/send",
+          {
+            method:"POST",
+
+            headers:{
+              "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+              to:phone,
+              text:message
+            })
+          }
+        );
+
+
+      const data =
+        await response.json().catch(function(){
+          return {};
+        });
+
+
+      if(!response.ok){
+
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Message sending failed."
+        );
+
+      }
+
+
+      let count =
+        Number(
+          localStorage.getItem("sentCount") || 0
+        );
+
+      count++;
+
+      localStorage.setItem(
+        "sentCount",
+        count
+      );
+
+
+      document.getElementById("sentCount")
+        .innerText = count;
+
+      document.getElementById("reportSent")
+        .innerText = count;
+
+
+      status.style.display = "block";
+      status.style.background = "#dcfce7";
+      status.style.color = "#166534";
+      status.innerText =
+        "✅ WhatsApp message sent successfully.";
+
+
+    }catch(error){
+
+      status.style.display = "block";
+      status.style.background = "#fee2e2";
+      status.style.color = "#991b1b";
+      status.innerText =
+        "❌ " + error.message;
+
+    }finally{
+
+      button.disabled = false;
+      button.innerText =
+        "📤 Send WhatsApp Message";
+
+    }
 
   }
+);
+
+
+/* CLEAR */
+
+document.getElementById("clearBtn")
+.addEventListener("click", function(){
+
+  document.getElementById("phone").value = "";
+  document.getElementById("message").value = "";
+
+  document.getElementById("sendStatus")
+    .style.display = "none";
+
+});
+
+
+/* REFRESH INBOX */
+
+document.getElementById("refreshInbox")
+.addEventListener("click", function(){
+
+  document.getElementById("chatList").innerHTML =
+    '<div style="padding:15px;color:#6b7280;">' +
+    'Inbox is ready. Incoming webhook messages will appear here.' +
+    '</div>';
+
+});
+
+
+/* REPLY */
+
+document.getElementById("replyBtn")
+.addEventListener("click", function(){
+
+  const input =
+    document.getElementById("replyMessage");
+
+  const text =
+    input.value.trim();
+
+  if(!text){
+    return;
+  }
+
+  alert(
+    "Reply UI ready. Backend inbox reply connection will be added next."
+  );
+
+  input.value = "";
+
+});
+
+
+/* CAMPAIGN */
+
+document.getElementById("createCampaign")
+.addEventListener("click", function(){
+
+  const name =
+    document.getElementById("campaignName")
+      .value.trim();
+
+  if(!name){
+
+    alert("Please enter campaign name.");
+
+    return;
+  }
+
+  alert(
+    "✅ Campaign created in panel."
+  );
+
+});
+
+
+/* ADD LEAD */
+
+document.getElementById("addLead")
+.addEventListener("click", function(){
+
+  alert(
+    "Lead management is ready."
+  );
+
+});
+
+
+/* COUNTS */
+
+function loadCounts(){
+
+  const count =
+    localStorage.getItem("sentCount") || 0;
+
+  document.getElementById("sentCount")
+    .innerText = count;
+
+  document.getElementById("reportSent")
+    .innerText = count;
 
 }
 
 
-/* =====================================================
-   SEND WHATSAPP MESSAGE
-===================================================== */
+loadCounts();
 
-async function sendMessage(){
+</script>
 
-  const phone =
-    document.getElementById("phone").value.trim();
-
-  const message =
-    document.getElementById("message").value.trim();
-
-  const button =
-    document.getElementById("sendBtn");
-
-  const status =
-    document.getElementById("sendStatus");
-
-
-  if(!phone){
-
-    showSendStatus(
-      "Please enter WhatsApp number.",
-      false
-    );
-
-    return;
-
-  }
-
-
-  if(!message){
-
-    showSendStatus(
-      "Please enter message.",
-      false
-    );
-
-    return;
-
-  }
-
-
-  button.disabled = true;
-
-  button.innerText = "Sending...";
-
-
-  try{
-
-    const response =
-      await fetch(API_BASE + "/send",{
-
-        method:"POST",
-
-        headers:{
-          "Content-Type":"application/json"
-        },
-
-        body:JSON.stringify({
-
-          to:phone,
-
-          text:message
-
-        })
-
-      });
-
-
-    const data =
-      await response.json()
-        .catch(function(){
-
-          return {};
-
-        });
-
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error ||
-        data.message ||
-        "Message sending failed."
-      );
-
-    }
-
-
-    let sent =
-      Number(
-        localStorage.getItem("sentCount") || 0
-      );
-
-    sent++;
+</body>
+</html>
