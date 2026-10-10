@@ -1,61 +1,350 @@
-A K PROPERTIES
-WhatsApp API Marketing Panel 
-Dashboard Campaigns / Blast Live Chat CRM / Contacts Reports Templates API Settings 
-Dashboard
-Send WhatsApp messages only to contacts who have opted in. Meta approval and messaging limits apply. Live Chat displays messages returned by your API Worker /messages endpoint.
-Message History
-0
-Unique Contacts
-0
-Incoming
-0
-Outgoing
-0
-Saved Leads
-0
-Refresh Now Enable Notifications 
-Connecting...
-The inbox checks for new messages every 5 seconds while this page is open.
-WhatsApp Template Blast
-Template: new_launch_project. Test with one opted-in number first.
-Campaign Name Recipient Numbers (one per line, with country code) Public HTTPS Image URL 
-Approved template variables (all 11 required)
-1. Username
-2. Order ID
-3. Order Number
-4. Order Status
-5. Tracking Status Link
-6. Tracking Number
-7. Tracking ID
-8. Invoice Date
-9. Invoice ID
-10. Payment Method
-11. Amount
-I confirm recipients opted in to receive WhatsApp messages. 
-Send One TestStart Campaign
-Not sent.
-Live Chat
-Refresh Chats Enable Notifications 
-Connecting...
-Loading chats...
-← BackSelect a customer
-Customer conversation will appear here.
-Send Message 
-CRM / Leads & Contacts
-Customer Name Phone with Country Code Project / Notes Save ContactExport Contacts CSV Import Contacts CSV Import CSV 
-Contacts are stored in this browser.
-Message Reports
-Refresh ReportsExport Message History CSV 
-Delivery status depends on Meta webhook events reaching the API Worker.
-Loading...
-WhatsApp Templates
-new_launch_project
-Language: English (en)
-Header: Image
-Body variables: 11
-Template name, language, variable order and header must exactly match the approved Meta template.
-API Settings
-Cloudflare Worker API Base URL Save API URLTest APITest /messages 
-Not tested.
-Never place the WhatsApp access token in this HTML file.
+HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A K Properties | WhatsApp Marketing Panel</title>
+<style>
+:root{--g:#075e54;--green:#128c7e;--bg:#f3f6f8;--line:#e2e8ec;--text:#1d3038;--muted:#71818a}
+*{box-sizing:border-box}
+body{margin:0;font:14px Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:8px;background:var(--g);color:white;padding:10px 14px;font-weight:bold}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,textarea,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:white}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+.app{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+aside{background:#073b3b;color:white;padding:18px 12px}
+.brand{font-size:19px;font-weight:bold;padding:10px 8px 20px}
+.brand small{display:block;font-size:11px;color:#b9d8d3;margin-top:6px}
+nav{display:grid;gap:5px}
+nav button{background:transparent;text-align:left;color:#d9e8e6}
+nav button.active,nav button:hover{background:#145454}
+main{min-width:0}
+header{height:68px;background:white;border-bottom:1px solid var(--line);padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+header strong{font-size:18px}
+.content{padding:22px;max-width:1500px;margin:auto}
+.view{display:none}.view.active{display:block}
+h2{margin:0 0 6px;font-size:25px}
+.sub{color:var(--muted);margin:0 0 20px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.card,.panel{background:white;border:1px solid var(--line);border-radius:13px;padding:17px;margin-bottom:16px;min-width:0}
+.stat{color:var(--muted);font-size:12px}.number{font-size:28px;font-weight:bold;margin-top:10px;color:var(--g)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{min-width:0}
+.small{font-size:12px;color:var(--muted)}
+.notice{padding:12px;background:#fff6df;border-radius:8px;color:#755b17;margin-bottom:15px}
+.chatlayout{display:grid;grid-template-columns:300px minmax(0,1fr);height:calc(100vh - 180px);min-height:500px;background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.chatlist{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line)}
+.chatsearch{padding:10px;border-bottom:1px solid var(--line)}
+.chatitems{overflow-y:auto;overscroll-behavior:contain;flex:1}
+.chatitem{display:flex;gap:9px;padding:13px 10px;border-bottom:1px solid #edf0f2;cursor:pointer}
+.chatitem:hover,.chatitem.selected{background:#eaf7f3}
+.avatar{width:39px;height:39px;border-radius:50%;background:#d6f1e8;color:var(--g);display:grid;place-items:center;font-weight:bold;flex-shrink:0}
+.chatinfo{flex:1;min-width:0}
+.chatline{display:flex;justify-content:space-between;gap:5px}
+.chatline strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.chatline small{font-size:10px;color:var(--muted);white-space:nowrap}
+.preview{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:6px}
+.unread{display:inline-block;background:#128c7e;color:white;border-radius:15px;padding:3px 7px;font-size:10px;margin-top:4px}
+.chatwindow{display:flex;flex-direction:column;min-width:0;min-height:0}
+.chathead{padding:12px 15px;display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--line)}
+.chathead strong{display:block}.chathead small{color:var(--muted)}
+.messages{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:16px;background:#efeae2}
+.msg{max-width:80%;width:max-content;min-width:65px;padding:10px 12px;margin:7px 0;border-radius:10px;background:white;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 1px 2px #0001}
+.msg.in{margin-right:auto;border-top-left-radius:3px}
+.msg.out{margin-left:auto;background:#d9fdd3;border-top-right-radius:3px}
+.msgtime{text-align:right;font-size:10px;color:#738078;margin-top:5px}
+.replybar{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:white}
+.replybar input{flex:1;min-width:0}
+.backbtn{display:none;background:#edf6f3;color:var(--g)}
+.tablewrap{overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.status{font-size:12px;color:var(--muted)}
+.toast{position:fixed;bottom:15px;right:15px;background:#123e39;color:white;padding:13px 16px;border-radius:8px;display:none;max-width:90vw}
+@media(max-width:800px){
+.app{grid-template-columns:1fr}
+aside{padding:8px}
+.brand{padding:7px}
+.brand small{display:none}
+nav{display:flex;overflow-x:auto}
+nav button{white-space:nowrap;padding:9px;font-size:12px}
+header{padding:12px;height:auto}
+.content{padding:12px}
+.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid2{grid-template-columns:1fr}
+.chatlayout{grid-template-columns:minmax(95px,32%) minmax(0,1fr);height:70vh;min-height:450px}
+.chatitem{padding:9px 5px;gap:5px}
+.avatar{width:30px;height:30px}
+.chatline{display:block}
+.chatline small{display:block;margin-top:3px}
+.messages{padding:7px}
+.msg{max-width:95%;padding:8px}
+.backbtn{display:inline-block}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand">A K PROPERTIES<small>WhatsApp API Marketing Panel</small></div>
+  <nav>
+    <button class="active" data-view="dashboard">▦ Dashboard</button>
+    <button data-view="send">➤ Send Message</button>
+    <button data-view="inbox">◉ Live Chat</button>
+    <button data-view="contacts">♙ Contacts</button>
+    <button data-view="reports">▤ Reports</button>
+    <button data-view="settings">⚙ API Settings</button>
+  </nav>
+</aside>
+<main>
+<header><strong id="pageTitle">Dashboard</strong><span id="connection" class="status">Connecting…</span></header>
+<div class="content">
 
+<section id="dashboard" class="view active">
+<h2>Dashboard</h2>
+<p class="sub">A K Properties WhatsApp Marketing</p>
+<div class="notice">Send messages only to contacts who have opted in. Meta approval and messaging limits apply.</div>
+<div class="cards">
+ <div class="card"><div class="stat">Message History</div><div class="number" id="total">0</div></div>
+ <div class="card"><div class="stat">Unique Contacts</div><div class="number" id="unique">0</div></div>
+ <div class="card"><div class="stat">Incoming Messages</div><div class="number" id="incoming">0</div></div>
+ <div class="card"><div class="stat">Outgoing Messages</div><div class="number" id="outgoing">0</div></div>
+</div>
+<div class="panel">
+ <div class="row" style="justify-content:space-between"><h3>Recent Messages</h3><button onclick="refresh(true)">Refresh Now</button></div>
+ <div class="tablewrap"><table><thead><tr><th>Contact</th><th>Message</th><th>Direction</th><th>Time</th></tr></thead><tbody id="recent"></tbody></table></div>
+</div>
+</section>
+
+<section id="send" class="view">
+<h2>Send WhatsApp Message</h2>
+<p class="sub">Send a message to one opted-in contact.</p>
+<div class="panel">
+<form id="sendForm">
+<label>Customer Name (optional)</label><input id="sendName" placeholder="Customer name">
+<label>Recipient Number (with country code)</label><input id="sendTo" placeholder="919876543210" required>
+<label>Message</label><textarea id="sendText" rows="5" placeholder="Type your message…" required></textarea>
+<div class="row" style="margin-top:12px"><button type="submit" id="sendBtn">Send Message</button><span id="sendResult" class="status"></span></div>
+</form>
+</div>
+</section>
+
+<section id="inbox" class="view">
+<div class="row" style="justify-content:space-between;margin-bottom:12px">
+<div><h2>Live Chat</h2><p class="sub" style="margin:5px 0">Customer conversations</p></div>
+<div class="row"><button class="backbtn" id="backBtn">← Back</button><button onclick="refresh(true)">Refresh Chats</button></div>
+</div>
+<div class="chatlayout">
+ <div class="chatlist" id="chatListPane">
+  <div class="chatsearch"><input id="chatSearch" placeholder="Search name or number…"></div>
+  <div id="chatItems" class="chatitems"><div class="empty">Loading chats…</div></div>
+ </div>
+ <div class="chatwindow">
+  <div class="chathead" id="chatHead"><div class="empty">Select a customer</div></div>
+  <div id="chatMessages" class="messages"><div class="empty">Customer conversation will appear here.</div></div>
+  <form id="replyForm" class="replybar"><input id="replyText" placeholder="Type a reply…" autocomplete="off" disabled><button id="replyBtn" disabled>Send</button></form>
+ </div>
+</div>
+<p class="small">New messages are checked every 3 seconds while this page is open.</p>
+</section>
+
+<section id="contacts" class="view">
+<h2>CRM / Contacts</h2><p class="sub">Save leads locally in this browser.</p>
+<div class="panel">
+<form id="contactForm" class="grid2">
+<div><label>Customer Name</label><input id="cName" required></div>
+<div><label>Phone with country code</label><input id="cPhone" placeholder="919876543210" required></div>
+<div style="grid-column:1/-1"><label>Project / Notes</label><input id="cNotes"></div>
+<div class="row"><button>Save Contact</button><button type="button" onclick="exportContacts()">Export CSV</button></div>
+</form>
+</div>
+<div class="panel tablewrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Notes</th><th>Action</th></tr></thead><tbody id="contactRows"></tbody></table></div>
+</section>
+
+<section id="reports" class="view">
+<h2>Message Reports</h2><p class="sub">Message history returned by your API Worker.</p>
+<div class="panel tablewrap"><table><thead><tr><th>Time</th><th>Contact</th><th>Direction</th><th>Message</th><th>Status</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+</section>
+
+<section id="settings" class="view">
+<h2>API Settings</h2><p class="sub">Your existing Cloudflare API Worker.</p>
+<div class="panel">
+<label>API Base URL</label><input id="apiUrl" value="https://whatsapp-marketinf-api.amolkolekar100000.workers.dev">
+<div class="row" style="margin-top:12px"><button onclick="saveApi()">Save API URL</button><button onclick="testApi()">Test API</button><button onclick="testMessages()">Test /messages</button></div>
+<p id="settingsResult" class="status">Not tested.</p>
+<p class="small">Never put your WhatsApp access token in this HTML file. Keep it in Cloudflare Worker secrets.</p>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const DEFAULT_API="https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
+let API=(localStorage.getItem("ak_api_url")||DEFAULT_API).replace(/\/+$/,"");
+let messages=[],selected=null,knownIds=new Set(),unread={},contacts=[];
+try{contacts=JSON.parse(localStorage.getItem("ak_contacts")||"[]")}catch(e){contacts=[]}
+let firstLoad=true,chatSig="",lastTopMessage="";
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function phone(m){return String(m.wa_id||m.phone||m.from||m.to||"").replace(/\D/g,"")}
+function textOf(m){return String(m.message??m.text??m.body??m.content??"")}
+function timeOf(m){return m.timestamp||m.created_at||m.time||""}
+function ms(m){let v=timeOf(m);if(typeof v==="number")return v<1e12?v*1000:v;let n=Date.parse(v);return Number.isFinite(n)?n:0}
+function when(m){let n=ms(m);return n?new Date(n).toLocaleString(): ""}
+function outgoing(m){let d=String(m.direction||"").toLowerCase();return ["out","outgoing","sent","business"].includes(d)}
+function toast(s){$("toast").textContent=s;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",3500)}
+function showView(id){
+ document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===id));
+ document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===id));
+ $("pageTitle").textContent=({dashboard:"Dashboard",send:"Send Message",inbox:"Live Chat",contacts:"Contacts",reports:"Reports",settings:"API Settings"})[id]||id;
+ if(id==="inbox")renderChats();
+}
+document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function saveApi(){let v=$("apiUrl").value.trim().replace(/\/+$/,"");if(!/^https:\/\/.+/.test(v)){toast("Enter a valid HTTPS API URL");return}API=v;localStorage.setItem("ak_api_url",API);toast("API URL saved");refresh(true)}
+async function api(path,opts={}){
+ let r=await fetch(API+path,{...opts,headers:{"Content-Type":"application/json",...(opts.headers||{})}});
+ let d=await r.json().catch(()=>({error:"API returned invalid JSON"}));
+ if(!r.ok)throw Error(d.error||d.message||("HTTP "+r.status));
+ if(d.success===false)throw Error(d.error||"API request failed");
+ return d;
+}
+async function sendMessage(to,text,name=""){
+ to=String(to).replace(/[+\s()-]/g,"");
+ if(!/^\d{8,15}$/.test(to))throw Error("Enter number with country code, e.g. 919876543210");
+ return api("/send",{method:"POST",body:JSON.stringify({to,text,name})});
+}
+function convs(){
+ let map=new Map();
+ for(let m of messages){let id=phone(m);if(!id)continue;if(!map.has(id))map.set(id,[]);map.get(id).push(m)}
+ return [...map.entries()].map(([id,arr])=>{
+  arr.sort((a,b)=>ms(a)-ms(b));
+  let last=arr[arr.length-1],name=[...arr].reverse().find(m=>m.name)?.name||id;
+  return{id,arr,last,name};
+ }).sort((a,b)=>ms(b.last)-ms(a.last));
+}
+async function refresh(showError=false){
+ try{
+  let d=await api("/messages");
+  messages=(Array.isArray(d)?d:(d.messages||[])).slice().sort((a,b)=>ms(a)-ms(b));
+  const newIncoming=[];
+  for(const m of messages){
+   let id=String(m.id||m.message_id||[phone(m),timeOf(m),textOf(m),m.direction].join("|"));
+   if(!knownIds.has(id)){if(!firstLoad&&!outgoing(m))newIncoming.push(m);knownIds.add(id)}
+  }
+  if(newIncoming.length){
+   for(const m of newIncoming){let p=phone(m);if(p&&p!==selected)unread[p]=(unread[p]||0)+1}
+   let newest=newIncoming[newIncoming.length-1];lastTopMessage=phone(newest);
+   if("Notification"in window&&Notification.permission==="granted"&&document.hidden)
+    new Notification("New WhatsApp message",{body:(newest.name||phone(newest))+": "+textOf(newest)});
+  }
+  firstLoad=false;
+  $("connection").textContent="API Connected · "+new Date().toLocaleTimeString();
+  renderDashboard();renderChats();renderReports();renderContacts();
+  return true;
+ }catch(e){
+  $("connection").textContent="API error";
+  if(showError){$("settingsResult").textContent="Error: "+e.message;toast("API error: "+e.message)}
+  return false;
+ }
+}
+function renderDashboard(){
+ $("total").textContent=messages.length;
+ $("unique").textContent=new Set(messages.map(phone).filter(Boolean)).size;
+ $("incoming").textContent=messages.filter(m=>!outgoing(m)).length;
+ $("outgoing").textContent=messages.filter(outgoing).length;
+ let arr=messages.slice().sort((a,b)=>ms(b)-ms(a)).slice(0,10);
+ $("recent").innerHTML=arr.length?arr.map(m=>`<tr><td>${esc(m.name||phone(m))}<br>${esc(phone(m))}</td><td>${esc(textOf(m))}</td><td>${outgoing(m)?"Outgoing":"Incoming"}</td><td>${esc(when(m))}</td></tr>`).join(""):'<tr><td colspan="4" class="empty">No messages yet.</td></tr>';
+}
+function renderChats(){
+ let q=$("chatSearch").value.toLowerCase().trim();
+ let cs=convs().filter(c=>(c.id+" "+c.name+" "+textOf(c.last)).toLowerCase().includes(q));
+ if(selected&&!cs.some(c=>c.id===selected))selected=null;
+ if(!selected&&cs.length)selected=cs[0].id;
+ $("chatItems").innerHTML=cs.length?cs.map(c=>{
+  let n=unread[c.id]||0;
+  return `<div class="chatitem ${c.id===selected?"selected":""}" data-chat="${esc(c.id)}">
+   <div class="avatar">${esc((c.name||c.id).slice(-1).toUpperCase())}</div>
+   <div class="chatinfo"><div class="chatline"><strong>${esc(c.name)}</strong><small>${esc(when(c.last))}</small></div>
+   <div class="preview">${outgoing(c.last)?"You: ":""}${esc(textOf(c.last))}</div>${n?`<span class="unread">${n} new</span>`:""}</div></div>`;
+ }).join(""):'<div class="empty">No conversations yet. Incoming replies appear here after the webhook saves them.</div>';
+ document.querySelectorAll("[data-chat]").forEach(el=>el.onclick=()=>{
+  selected=el.dataset.chat;unread[selected]=0;chatSig="";renderChats();renderDashboard();
+ });
+ if(selected)renderSelected();else{
+  $("chatHead").innerHTML='<div>Select a customer</div>';
+  $("chatMessages").innerHTML='<div class="empty">Customer conversation will appear here.</div>';
+  $("replyText").disabled=$("replyBtn").disabled=true;
+ }
+}
+function renderSelected(){
+ let c=convs().find(x=>x.id===selected);
+ if(!c)return;
+ $("chatHead").innerHTML=`<button class="backbtn" onclick="backToChats()">←</button><div class="avatar">${esc(c.name.slice(0,1).toUpperCase())}</div><div><strong>${esc(c.name)}</strong><small>${esc(c.id)}</small></div>`;
+ $("replyText").disabled=$("replyBtn").disabled=false;
+ let sig=c.arr.map(m=>String(m.id||m.message_id||[timeOf(m),textOf(m),m.direction].join("|"))).join("~");
+ if(sig!==chatSig){
+  let box=$("chatMessages"),atBottom=box.scrollHeight-box.scrollTop-box.clientHeight<100;
+  $("chatMessages").innerHTML=c.arr.map(m=>`<div class="msg ${outgoing(m)?"out":"in"}">${esc(textOf(m))}<div class="msgtime">${esc(when(m))}${m.status?" · "+esc(m.status):""}</div></div>`).join("");
+  chatSig=sig;
+  if(atBottom||lastTopMessage===selected)box.scrollTop=box.scrollHeight;
+ }
+}
+function backToChats(){selected=null;chatSig="";renderChats()}
+$("backBtn").onclick=backToChats;
+$("chatSearch").oninput=()=>{selected=null;renderChats()};
+$("replyForm").onsubmit=async e=>{
+ e.preventDefault();let txt=$("replyText").value.trim(),id=selected;if(!txt||!id)return;
+ try{
+  $("replyBtn").disabled=true;
+  let c=convs().find(x=>x.id===id);
+  await sendMessage(id,txt,c?.name||"");
+  $("replyText").value="";toast("Send request successful");await refresh(true);
+  selected=id;chatSig="";renderChats();
+ }catch(err){toast("Send failed: "+err.message)}
+ finally{$("replyBtn").disabled=false}
+};
+$("sendForm").onsubmit=async e=>{
+ e.preventDefault();
+ let b=$("sendBtn");b.disabled=true;$("sendResult").textContent="Sending…";
+ try{
+  await sendMessage($("sendTo").value,$("sendText").value,$("sendName").value);
+  $("sendResult").textContent="Send request successful";toast("Message send request successful");await refresh(true);
+ }catch(err){$("sendResult").textContent="Error: "+err.message;toast("Send failed: "+err.message)}
+ finally{b.disabled=false}
+};
+$("contactForm").onsubmit=e=>{
+ e.preventDefault();contacts.push({name:$("cName").value,phone:$("cPhone").value,notes:$("cNotes").value});
+ localStorage.setItem("ak_contacts",JSON.stringify(contacts));e.target.reset();renderContacts();toast("Contact saved");
+};
+function renderContacts(){
+ $("contactRows").innerHTML=contacts.length?contacts.map((c,i)=>`<tr><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${esc(c.notes)}</td><td><button onclick="useContact(${i})">Message</button> <button onclick="deleteContact(${i})">Delete</button></td></tr>`).join(""):'<tr><td colspan="4" class="empty">No saved contacts.</td></tr>';
+}
+function useContact(i){let c=contacts[i];$("sendName").value=c.name;$("sendTo").value=c.phone;showView("send")}
+function deleteContact(i){contacts.splice(i,1);localStorage.setItem("ak_contacts",JSON.stringify(contacts));renderContacts()}
+function exportContacts(){
+ let csv="Name,Phone,Notes\n"+contacts.map(c=>[c.name,c.phone,c.notes].map(v=>'"'+String(v||"").replace(/"/g,'""')+'"').join(",")).join("\n");
+ let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="contacts.csv";a.click();URL.revokeObjectURL(a.href);
+}
+function renderReports(){
+ let arr=messages.slice().sort((a,b)=>ms(b)-ms(a));
+ $("reportRows").innerHTML=arr.length?arr.map(m=>`<tr><td>${esc(when(m))}</td><td>${esc(m.name||phone(m))}<br>${esc(phone(m))}</td><td>${outgoing(m)?"Outgoing":"Incoming"}</td><td>${esc(textOf(m))}</td><td>${esc(m.status||"Recorded")}</td></tr>`).join(""):'<tr><td colspan="5" class="empty">No message history.</td></tr>';
+}
+async function testApi(){saveApi();try{let d=await api("/health");$("settingsResult").textContent="API connected: "+JSON.stringify(d)}catch(e){$("settingsResult").textContent="API error: "+e.message}}
+async function testMessages(){try{let d=await api("/messages");$("settingsResult").textContent="Success. Messages returned: "+(d.messages||[]).length;await refresh(true)}catch(e){$("settingsResult").textContent="Error: "+e.message}}
+$("apiUrl").value=API;
+refresh(false);
+setInterval(()=>{if(!document.hidden)refresh(false)},3000);
+</script>
+</body>
+</html>
