@@ -260,6 +260,33 @@ async function request(path,options={}){
 }
 function setStatus(id,text){$(id).textContent=text}
 function saveURLs(){localStorage.setItem(URL_KEY,JSON.stringify(projectUrls))}
+function addProject(){
+  const name=prompt("नवीन Project चे नाव लिहा (उदा. Godrej Panvel):");
+  if(!name||!name.trim())return;
+  const cleanName=name.trim();
+  const url=prompt("या Project चा Cloudflare Worker HTTPS URL टाका:");
+  if(!url||!url.trim())return;
+  const cleanURL=url.trim().replace(/\\/+$/,"");
+  if(!cleanURL.startsWith("https://")){
+    alert("HTTPS Worker URL आवश्यक आहे. Project जोडलेला नाही.");return;
+  }
+  let key=cleanName.toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,30);
+  if(!key)key="project";
+  const base=key;let n=2;
+  while(PROJECTS[key])key=base+n++;
+  PROJECTS[key]={name:cleanName,url:cleanURL};
+  projectUrls[key]=cleanURL;
+  try{
+    const custom=JSON.parse(localStorage.getItem(CUSTOM_PROJECTS_KEY)||"{}");
+    custom[key]={name:cleanName,url:cleanURL};
+    localStorage.setItem(CUSTOM_PROJECTS_KEY,JSON.stringify(custom));
+    saveURLs();
+  }catch(e){alert("Project save करता आला नाही: "+e.message);delete PROJECTS[key];delete projectUrls[key];return}
+  const option=document.createElement("option");option.value=key;option.textContent=cleanName;
+  $("project").appendChild(option);
+  switchProject(key);
+  setStatus("apiStatus",cleanName+" जोडला. आता Sync Project करून API तपासा.");
+}
 function switchProject(key){
  if(!PROJECTS[key])return;
  activeProject=key;
