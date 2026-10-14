@@ -266,7 +266,7 @@ function addProject(){
   const cleanName=name.trim();
   const url=prompt("या Project चा Cloudflare Worker HTTPS URL टाका:");
   if(!url||!url.trim())return;
-  const cleanURL=url.trim().replace(/\\/+$/,"");
+  const cleanURL=url.trim().replace(/\/+$/,"");
   if(!cleanURL.startsWith("https://")){
     alert("HTTPS Worker URL आवश्यक आहे. Project जोडलेला नाही.");return;
   }
