@@ -35,8 +35,6 @@ table{width:100%;border-collapse:collapse;background:white}
 td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
 .template-row,.number-row{border:1px solid var(--border);padding:12px;border-radius:8px;margin:9px 0;background:#fbfdfc}
 .danger{background:#b42318}
-
-/* WhatsApp Web style chat */
 .chat-layout{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100vh - 220px);min-height:520px;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .chat-sidebar{overflow:auto;border-right:1px solid var(--border);padding:0;background:white}
 .chat-sidebar #chatSearch{width:calc(100% - 20px);margin:10px;background:#f0f2f5;border:0}
@@ -78,7 +76,9 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
 <body>
 <header>
  <div><h2>A K PROPERTIES</h2>WhatsApp Marketing Dashboard</div>
- <div>
+ <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <button id="backButton" type="button" onclick="goBack()" style="background:#ffffff;color:#075e54;border:1px solid #dce5e0;font-weight:bold">← Back</button>
+  <div>
   <label for="project" style="color:white">Project:</label>
   <select id="project" onchange="switchProject(this.value)">
    <option value="newlaunch">New Launch</option>
@@ -92,6 +92,7 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
    <option value="piramal">Piramal</option>
   </select>
   <div id="connection" style="font-size:12px">Checking API...</div>
+  </div>
  </div>
 </header>
 
@@ -180,40 +181,40 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
    <div><label>Phone with country code</label><input id="leadPhone" placeholder="919876543210"></div>
   </div>
   <label>Project / Notes</label><input id="leadNotes" placeholder="Interested in 2 BHK">
-  <button onclick="addLead()">Add Lead</button><button onclick="exportLeads()">Export CSV</button>
+  <p><button onclick="addLead()">Add Lead</button><button onclick="exportLeads()">Export CSV</button></p>
   <label>Import CSV</label><input type="file" id="leadFile" accept=".csv">
   <button onclick="importLeads()">Import CSV</button>
-  <input id="leadSearch" placeholder="Search contacts" oninput="renderLeads()">
-  <div id="leadStatus" class="status"></div><div id="leadTable" class="table-wrap"></div>
+  <input id="leadSearch" placeholder="Search leads..." oninput="renderLeads()">
+  <div id="leadStatus" class="status"></div>
+  <div id="leadTable" class="table-wrap"></div>
  </div>
 </section>
 
 <section class="view" id="reports">
- <h2>Message Reports</h2><div class="panel">
+ <h2>Reports</h2><div class="panel">
   <div class="grid">
    <div><label>From date</label><input type="date" id="fromDate"></div>
    <div><label>To date</label><input type="date" id="toDate"></div>
-   <div><label>Direction</label><select id="direction"><option value="">All</option><option>incoming</option><option>outgoing</option></select></div>
-   <div><label>Status</label><select id="reportFilter"><option value="">All</option><option>sent</option><option>delivered</option><option>read</option><option>failed</option></select></div>
+   <div><label>Direction</label><select id="direction"><option value="">All</option><option value="incoming">Incoming</option><option value="outgoing">Outgoing</option></select></div>
+   <div><label>Status</label><select id="reportFilter"><option value="">All</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="read">Read</option><option value="failed">Failed</option></select></div>
   </div>
-  <button onclick="loadReports()">Refresh Reports</button><button onclick="exportReports()">Export CSV</button>
-  <div id="reportStatus" class="status">Not loaded.</div><div id="reportTable" class="table-wrap"></div>
+  <button onclick="loadReports()">Apply Filters</button><button onclick="exportReports()">Export CSV</button>
+  <div id="reportStatus" class="status"></div>
+  <div id="reportTable" class="table-wrap"></div>
  </div>
 </section>
 
 <section class="view" id="templates">
- <h2>Meta WhatsApp Templates</h2>
- <div class="notice">Templates Meta Worker मधून आणले जातात. Template तयार किंवा approve करण्यासाठी Meta Business Manager वापरा.</div>
- <div class="panel">
-  <button onclick="syncTemplates()">Sync Templates Now</button><button onclick="syncNumbers()">Sync Numbers Now</button>
-  <div id="templateStatus" class="status">Not synced.</div><div id="templateList"></div>
+ <h2>Approved Templates</h2><div class="panel">
+  <button onclick="syncTemplates()">Sync Templates Now</button>
+  <div id="templateStatus" class="status"></div>
+  <div id="templateList"></div>
  </div>
 </section>
 
 <section class="view" id="settings">
- <h2>API Settings</h2>
- <div class="notice">Access Token किंवा App Secret येथे टाकू नका. ते Cloudflare Worker Secrets मध्येच ठेवा.</div>
- <div class="panel">
+ <h2>API Settings</h2><div class="panel">
+  <p>Access Token किंवा App Secret येथे टाकू नका. ते Cloudflare Worker Secrets मध्येच ठेवा.</p>
   <label>Selected Project Worker URL</label><input id="apiUrl" placeholder="https://your-worker.workers.dev">
   <button onclick="saveApi()">Save Worker URL</button><button onclick="testApi()">Test API</button><button onclick="syncAll()">Sync Project</button>
   <button onclick="addProject()">Add Project</button>
@@ -229,9 +230,7 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
 </section>
 </main>
 </div>
-<div id="toast"></div>
-
-<script>
+<div id="toast"></div><script>
 "use strict";
 
 const PROJECTS={
@@ -417,45 +416,39 @@ async function sendCampaign(testOnly){
   setStatus("campaignStatus","Worker accepted: "+sent+" · Failed: "+failed+". Delivery status Meta webhook वरून तपासा.");
   await loadMessages(true);
  }catch(e){setStatus("campaignStatus","Send failed: "+e.message)}
-}
-
-function phoneOf(m){return String(m.wa_id||m.from||m.phone||m.phone_number||"").replace(/\s/g,"")}
+}function phoneOf(m){return String(m.wa_id||m.from||m.phone||m.phone_number||"").replace(/\s/g,"")}
 function textOf(m){return String(m.message??m.text??m.body??m.content??m.caption??"")}
 function isIncoming(m){return ["incoming","in","received","inbound"].includes(String(m.direction||m.type||"").toLowerCase())}
 function messageKey(m){return String(m.message_id||m.id||[phoneOf(m),m.direction||m.type||"",m.timestamp||m.created_at||"",textOf(m)].join("|"))}
 function timeValue(m){
- const v=m.timestamp||m.created_at||0;
- const n=typeof v==="number"?v:new Date(v).getTime();
- return Number.isFinite(n)?(n<1e12?n*1000:n):0;
+ const v=m.timestamp||m.created_at||m.time||"";
+ if(!v)return 0;
+ const n=Number(v);
+ return Number.isFinite(n)&&n>0&&String(v).length<13?n*1000:Date.parse(v)||0;
 }
-function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():""}
-function groupMessages(){
- const g={};
- for(const m of messages){const p=phoneOf(m);if(!p)continue;(g[p]||(g[p]=[])).push(m)}
- for(const p in g)g[p].sort((a,b)=>timeValue(a)-timeValue(b));
- return g;
-}
-function unreadCount(p){return (groupMessages()[p]||[]).filter(m=>isIncoming(m)&&!seenIncoming.has(messageKey(m))).length}
-function markRead(p){
- (groupMessages()[p]||[]).filter(isIncoming).forEach(m=>seenIncoming.add(messageKey(m)));
- saveSeen();
+function timeText(m){
+ const t=timeValue(m);
+ return t?new Date(t).toLocaleString():"";
 }
 function renderChats(){
- const groups=groupMessages(),search=($("chatSearch").value||"").toLowerCase();
- const phones=Object.keys(groups).filter(p=>(p+" "+textOf(groups[p].at(-1))).toLowerCase().includes(search))
- .sort((a,b)=>timeValue(groups[b].at(-1))-timeValue(groups[a].at(-1)));
- $("chatContacts").innerHTML=phones.map(p=>{
-  const last=groups[p].at(-1),u=unreadCount(p);
-  return `<div class="chat-contact ${p===selectedChat?"selected":""} ${u?"has-unread":""}" data-phone="${esc(p)}">
-   <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b>${esc(p)}</b>${u?`<span class="unread-badge">${u}</span>`:""}</div>
-   <span class="preview-text">${esc(textOf(last)||"Media message")}</span><div class="small">${esc(timeText(last))}</div></div>`;
- }).join("")||"<p style='padding:15px'>No chats available.</p>";
- $("chatContacts").querySelectorAll("[data-phone]").forEach(el=>el.addEventListener("click",()=>openChat(el.dataset.phone)));
+ const q=($("chatSearch").value||"").replace(/\D/g,"");
+ const groups=new Map();
+ [...messages].sort((a,b)=>timeValue(a)-timeValue(b)).forEach(m=>{
+  const p=phoneOf(m);if(!p)return;
+  if(!groups.has(p))groups.set(p,[]);
+  groups.get(p).push(m);
+ });
+ const chats=[...groups.entries()].map(([phone,rows])=>({phone,rows,last:rows[rows.length-1]}))
+  .filter(c=>!q||c.phone.includes(q)).sort((a,b)=>timeValue(b.last)-timeValue(a.last));
+ $("chatContacts").innerHTML=chats.map(c=>`<div class="chat-contact ${selectedChat===c.phone?"selected":""}" onclick="openChat('${esc(c.phone)}')"><b>${esc(c.phone)}</b><span class="preview-text">${esc(textOf(c.last)||"[Message]")}</span><div class="small">${esc(timeText(c.last))}</div></div>`).join("")||"<p style='padding:12px'>No chats found.</p>";
  if(selectedChat)renderChatHistory();
 }
-function openChat(p){selectedChat=p;markRead(p);renderChats();renderChatHistory()}
+function openChat(phone){
+ selectedChat=phone;
+ renderChats();
+}
 function renderChatHistory(){
- const rows=groupMessages()[selectedChat]||[];
+ const rows=messages.filter(m=>phoneOf(m)===selectedChat).sort((a,b)=>timeValue(a)-timeValue(b));
  $("chatHeader").innerHTML=`<div class="avatar">👤</div><div><div>${esc(selectedChat||"Select customer")}</div><div class="small">WhatsApp conversation</div></div>`;
  const box=$("chatHistory"),nearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<100;
  box.innerHTML=rows.map(m=>`<div class="bubble ${isIncoming(m)?"":"out"}">${esc(textOf(m))}<div class="small">${esc(timeText(m))}${m.status?" · "+esc(m.status):""}</div></div>`).join("")||"<div style='text-align:center;color:#667781;padding:20px'>No messages yet</div>";
@@ -505,6 +498,9 @@ async function sendReply(){
   if(!selectedChat)throw Error("आधी customer निवडा.");
   const text=$("replyText").value.trim(),file=$("chatFile").files?.[0];
   if(!text&&!file)throw Error("Message लिहा किंवा photo/PDF attach करा.");
+  const chosen=numbers[Number($("sendNumber").value)]||numbers[0];
+  if(!chosen||!chosen.id)throw Error("या Project चा WhatsApp नंबर आधी Sync करा.");
+  const phoneNumberId=String(chosen.id);
   const btn=$("replyButton");btn.disabled=true;
   setStatus("replyStatus",file?"Sending attachment...":"Sending message...");
   let result;
@@ -513,10 +509,13 @@ async function sendReply(){
    if(!allowed)throw Error("फक्त JPG, PNG, WEBP किंवा PDF निवडा.");
    if(file.size>15*1024*1024)throw Error("फाइल 15 MB पेक्षा लहान असावी.");
    const form=new FormData();
-   form.append("to",selectedChat);form.append("caption",text);form.append("file",file,file.name);
+   form.append("to",selectedChat);
+   form.append("phoneNumberId",phoneNumberId);
+   form.append("caption",text);
+   form.append("file",file,file.name);
    result=await request("/send-media",{method:"POST",body:form});
   }else{
-   result=await request("/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:selectedChat,text})});
+   result=await request("/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:selectedChat,text,phoneNumberId,phone_number_id:phoneNumberId})});
   }
   if(result.success===false)throw Error(result.error||"Message failed");
   $("replyText").value="";$("chatFile").value="";$("chatFileName").textContent="No file selected";
@@ -525,7 +524,6 @@ async function sendReply(){
  }catch(e){setStatus("replyStatus","Send failed: "+e.message)}
  finally{$("replyButton").disabled=false}
 }
-
 function addLead(){
  const name=$("leadName").value.trim(),phone=$("leadPhone").value.replace(/\D/g,""),notes=$("leadNotes").value.trim();
  if(!name||!/^\d{8,15}$/.test(phone)){setStatus("leadStatus","Name आणि country code सहित phone भरा.");return}
@@ -588,15 +586,27 @@ async function syncAll(){
  await Promise.all([syncTemplates(),syncNumbers(),loadMessages()]);
  setStatus("connection","Sync attempted · "+PROJECTS[activeProject].name);
 }
-document.querySelectorAll("nav button").forEach(btn=>btn.addEventListener("click",()=>{
- document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
- document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
- btn.classList.add("active");$(btn.dataset.page).classList.add("active");
- if(btn.dataset.page==="templates")syncTemplates();
- if(btn.dataset.page==="inbox")loadMessages(true);
- if(btn.dataset.page==="reports")loadReports();
- if(btn.dataset.page==="leads")renderLeads();
-}));
+const pageHistory=[];
+let currentPage="dashboard";
+function showPage(page,remember=true){
+ const target=document.getElementById(page);
+ if(!target)return;
+ if(remember&&currentPage!==page)pageHistory.push(currentPage);
+ currentPage=page;
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===page));
+ const navButton=document.querySelector('nav button[data-page="'+page+'"]');
+ if(navButton)navButton.focus({preventScroll:true});
+ if(page==="templates")syncTemplates();
+ if(page==="inbox")loadMessages(true);
+ if(page==="reports")loadReports();
+ if(page==="leads")renderLeads();
+}
+function goBack(){
+ const previous=pageHistory.pop();
+ showPage(previous||"dashboard",false);
+}
+document.querySelectorAll("nav button").forEach(btn=>btn.addEventListener("click",()=>showPage(btn.dataset.page,true)));
 $("chatFile").addEventListener("change",()=>{
  const f=$("chatFile").files[0];
  $("chatFileName").textContent=f?f.name+" ("+(f.size/1024/1024).toFixed(2)+" MB)":"No file selected";
