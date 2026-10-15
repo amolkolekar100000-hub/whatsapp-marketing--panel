@@ -18,7 +18,8 @@ nav button.active,nav button:hover{background:var(--accent)}
 button{border:0;border-radius:7px;padding:10px 13px;margin:3px;background:var(--accent);color:white;cursor:pointer}
 button:disabled{opacity:.5;cursor:not-allowed}
 main{flex:1;min-width:0;padding:20px}
-.view{display:none}.view.active{display:block}
+.view{display:none}
+.view.active{display:block}
 .panel,.card{background:white;border-radius:11px;padding:15px;margin-bottom:14px;box-shadow:0 2px 7px #0000000b}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
 .card h2{margin:8px 0 0;font-size:25px}
@@ -35,6 +36,8 @@ table{width:100%;border-collapse:collapse;background:white}
 td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
 .template-row,.number-row{border:1px solid var(--border);padding:12px;border-radius:8px;margin:9px 0;background:#fbfdfc}
 .danger{background:#b42318}
+
+/* WhatsApp Web style chat */
 .chat-layout{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100vh - 220px);min-height:520px;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .chat-sidebar{overflow:auto;border-right:1px solid var(--border);padding:0;background:white}
 .chat-sidebar #chatSearch{width:calc(100% - 20px);margin:10px;background:#f0f2f5;border:0}
@@ -48,6 +51,9 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
 .unread-badge{display:inline-block;background:#2563eb;color:white;border-radius:12px;padding:3px 7px;font-size:11px;white-space:nowrap}
 .chat-main{display:flex;flex-direction:column;min-width:0;min-height:0;background:#efeae2}
 .chat-header{display:flex;align-items:center;gap:12px;min-height:62px;padding:12px 18px;background:#f0f2f5;border-bottom:1px solid #d8dfdc;color:#111b21;font-weight:bold}
+.chat-back{display:none;background:#075e54;color:#fff;white-space:nowrap;margin:0 4px 0 0;padding:9px 12px}
+.chat-header.has-chat .chat-back{display:inline-block}
+.chat-title{min-width:0;overflow-wrap:anywhere}
 .avatar{width:40px;height:40px;border-radius:50%;background:#dfe5e7;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .chat-history{flex:1;min-height:0;overflow-y:auto;padding:20px 5%;background:#efeae2}
 .bubble{width:fit-content;max-width:min(78%,600px);padding:9px 11px 7px;border-radius:8px;background:white;color:#111b21;margin:6px 0 10px;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 1px 1px #00000010;font-size:14px;line-height:1.5}
@@ -142,28 +148,36 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
   <div id="campaignStatus" class="status">Choose a project and sync templates.</div>
   <pre id="sendResult"></pre>
  </div>
-</section>
-
-<section class="view" id="inbox">
+</section><section class="view" id="inbox">
  <h2>Live Chat</h2>
  <div class="panel">
   <button onclick="loadMessages(true)">Refresh Chats</button>
   <button onclick="enableNotifications()">Enable Notifications</button>
   <div id="inboxStatus" class="status">Loading...</div>
+
   <div class="chat-layout">
-   <div class="chat-sidebar">
+   <div class="chat-sidebar" id="chatSidebar">
     <input id="chatSearch" placeholder="Search phone..." oninput="renderChats()">
     <div id="chatContacts"></div>
    </div>
-   <div class="chat-main">
+
+   <div class="chat-main" id="chatMain">
     <div class="chat-header" id="chatHeader">
-     <div class="avatar">👤</div><div>Select customer</div>
+     <button class="chat-back" id="chatBackButton"
+       type="button" onclick="backToChats()">← Back to Chats</button>
+     <div class="avatar">👤</div>
+     <div class="chat-title">Select customer</div>
     </div>
-    <div class="chat-history" id="chatHistory">Select a customer to view messages.</div>
+
+    <div class="chat-history" id="chatHistory">
+     Select a customer to view messages.
+    </div>
+
     <div class="chat-reply">
      <textarea id="replyText" placeholder="Type a message or media caption"></textarea>
      <div class="chat-attachment-row">
-      <input type="file" id="chatFile" accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp">
+      <input type="file" id="chatFile"
+       accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp">
      </div>
      <div id="chatFileName" class="small">No file selected</div>
      <button id="replyButton" onclick="sendReply()">Send Reply / Photo / PDF</button>
@@ -175,14 +189,20 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
 </section>
 
 <section class="view" id="leads">
- <h2>CRM / Contacts</h2><div class="panel">
+ <h2>CRM / Contacts</h2>
+ <div class="panel">
   <div class="grid">
    <div><label>Name</label><input id="leadName" placeholder="Customer name"></div>
    <div><label>Phone with country code</label><input id="leadPhone" placeholder="919876543210"></div>
   </div>
-  <label>Project / Notes</label><input id="leadNotes" placeholder="Interested in 2 BHK">
-  <p><button onclick="addLead()">Add Lead</button><button onclick="exportLeads()">Export CSV</button></p>
-  <label>Import CSV</label><input type="file" id="leadFile" accept=".csv">
+  <label>Project / Notes</label>
+  <input id="leadNotes" placeholder="Interested in 2 BHK">
+  <p>
+   <button onclick="addLead()">Add Lead</button>
+   <button onclick="exportLeads()">Export CSV</button>
+  </p>
+  <label>Import CSV</label>
+  <input type="file" id="leadFile" accept=".csv">
   <button onclick="importLeads()">Import CSV</button>
   <input id="leadSearch" placeholder="Search leads..." oninput="renderLeads()">
   <div id="leadStatus" class="status"></div>
@@ -191,21 +211,40 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
 </section>
 
 <section class="view" id="reports">
- <h2>Reports</h2><div class="panel">
+ <h2>Reports</h2>
+ <div class="panel">
   <div class="grid">
    <div><label>From date</label><input type="date" id="fromDate"></div>
    <div><label>To date</label><input type="date" id="toDate"></div>
-   <div><label>Direction</label><select id="direction"><option value="">All</option><option value="incoming">Incoming</option><option value="outgoing">Outgoing</option></select></div>
-   <div><label>Status</label><select id="reportFilter"><option value="">All</option><option value="sent">Sent</option><option value="delivered">Delivered</option><option value="read">Read</option><option value="failed">Failed</option></select></div>
+   <div>
+    <label>Direction</label>
+    <select id="direction">
+     <option value="">All</option>
+     <option value="incoming">Incoming</option>
+     <option value="outgoing">Outgoing</option>
+    </select>
+   </div>
+   <div>
+    <label>Status</label>
+    <select id="reportFilter">
+     <option value="">All</option>
+     <option value="sent">Sent</option>
+     <option value="delivered">Delivered</option>
+     <option value="read">Read</option>
+     <option value="failed">Failed</option>
+    </select>
+   </div>
   </div>
-  <button onclick="loadReports()">Apply Filters</button><button onclick="exportReports()">Export CSV</button>
+  <button onclick="loadReports()">Apply Filters</button>
+  <button onclick="exportReports()">Export CSV</button>
   <div id="reportStatus" class="status"></div>
   <div id="reportTable" class="table-wrap"></div>
  </div>
 </section>
 
 <section class="view" id="templates">
- <h2>Approved Templates</h2><div class="panel">
+ <h2>Approved Templates</h2>
+ <div class="panel">
   <button onclick="syncTemplates()">Sync Templates Now</button>
   <div id="templateStatus" class="status"></div>
   <div id="templateList"></div>
@@ -213,24 +252,34 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
 </section>
 
 <section class="view" id="settings">
- <h2>API Settings</h2><div class="panel">
+ <h2>API Settings</h2>
+ <div class="panel">
   <p>Access Token किंवा App Secret येथे टाकू नका. ते Cloudflare Worker Secrets मध्येच ठेवा.</p>
-  <label>Selected Project Worker URL</label><input id="apiUrl" placeholder="https://your-worker.workers.dev">
-  <button onclick="saveApi()">Save Worker URL</button><button onclick="testApi()">Test API</button><button onclick="syncAll()">Sync Project</button>
+  <label>Selected Project Worker URL</label>
+  <input id="apiUrl" placeholder="https://your-worker.workers.dev">
+  <button onclick="saveApi()">Save Worker URL</button>
+  <button onclick="testApi()">Test API</button>
+  <button onclick="syncAll()">Sync Project</button>
   <button onclick="addProject()">Add Project</button>
-  <div id="apiStatus" class="status"></div><hr>
+  <div id="apiStatus" class="status"></div>
+  <hr>
   <p><b>Worker endpoints</b></p>
   <ul>
-   <li><code>/templates</code></li><li><code>/phone-numbers</code></li>
-   <li><code>/messages</code></li><li><code>/send-template</code></li>
-   <li><code>/send</code></li><li><code>/reports</code></li>
+   <li><code>/templates</code></li>
+   <li><code>/phone-numbers</code></li>
+   <li><code>/messages</code></li>
+   <li><code>/send-template</code></li>
+   <li><code>/send</code></li>
+   <li><code>/reports</code></li>
    <li><code>/send-media</code> — media endpoint required</li>
   </ul>
  </div>
 </section>
 </main>
 </div>
-<div id="toast"></div><script>
+
+<div id="toast"></div>
+<script>
 "use strict";
 
 const PROJECTS={
@@ -265,11 +314,15 @@ function readURLs(){
  try{
   const custom=JSON.parse(localStorage.getItem(CUSTOM_KEY)||"{}");
   Object.entries(custom).forEach(([k,v])=>{
-   if(v&&v.name&&v.url){PROJECTS[k]=v;result[k]=saved[k]||v.url}
+   if(v&&v.name&&v.url){
+    PROJECTS[k]=v;
+    result[k]=saved[k]||v.url;
+   }
   });
  }catch{}
  return result;
 }
+
 function readLeads(){
  try{return JSON.parse(localStorage.getItem(LEAD_KEY)||"[]")}catch{return []}
 }
@@ -383,8 +436,7 @@ function renderVariables(){
  $("variableFields").innerHTML=Array.from({length:count},(_,j)=>`<label>Variable {{${j+1}}}</label><input data-variable="${j+1}" placeholder="Enter value for {{${j+1}}}">`).join("");
  const h=headerType(t);
  $("headerField").innerHTML=["IMAGE","VIDEO","DOCUMENT"].includes(h)?`<label>${h} header public HTTPS URL</label><input id="headerUrl" placeholder="https://example.com/media">`:"";
-}
-function campaignPayload(to){
+}function campaignPayload(to){
  const t=templates[Number($("campaignTemplate").value)];
  if(!t)throw Error("Select an approved template.");
  const params=[...document.querySelectorAll("[data-variable]")].map(e=>e.value.trim());
@@ -398,6 +450,7 @@ function campaignPayload(to){
  if(["VIDEO","DOCUMENT"].includes(h))payload.headerUrl=url;
  return payload;
 }
+
 async function sendCampaign(testOnly){
  try{
   if(!$("consent").checked)throw Error("ग्राहकांची WhatsApp opt-in consent confirm करा.");
@@ -416,7 +469,9 @@ async function sendCampaign(testOnly){
   setStatus("campaignStatus","Worker accepted: "+sent+" · Failed: "+failed+". Delivery status Meta webhook वरून तपासा.");
   await loadMessages(true);
  }catch(e){setStatus("campaignStatus","Send failed: "+e.message)}
-}function phoneOf(m){return String(m.wa_id||m.from||m.phone||m.phone_number||"").replace(/\s/g,"")}
+}
+
+function phoneOf(m){return String(m.wa_id||m.from||m.phone||m.phone_number||"").replace(/\s/g,"")}
 function textOf(m){return String(m.message??m.text??m.body??m.content??m.caption??"")}
 function isIncoming(m){return ["incoming","in","received","inbound"].includes(String(m.direction||m.type||"").toLowerCase())}
 function messageKey(m){return String(m.message_id||m.id||[phoneOf(m),m.direction||m.type||"",m.timestamp||m.created_at||"",textOf(m)].join("|"))}
@@ -426,10 +481,8 @@ function timeValue(m){
  const n=Number(v);
  return Number.isFinite(n)&&n>0&&String(v).length<13?n*1000:Date.parse(v)||0;
 }
-function timeText(m){
- const t=timeValue(m);
- return t?new Date(t).toLocaleString():"";
-}
+function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():""}
+
 function renderChats(){
  const q=($("chatSearch").value||"").replace(/\D/g,"");
  const groups=new Map();
@@ -442,24 +495,62 @@ function renderChats(){
   .filter(c=>!q||c.phone.includes(q)).sort((a,b)=>timeValue(b.last)-timeValue(a.last));
  $("chatContacts").innerHTML=chats.map(c=>`<div class="chat-contact ${selectedChat===c.phone?"selected":""}" onclick="openChat('${esc(c.phone)}')"><b>${esc(c.phone)}</b><span class="preview-text">${esc(textOf(c.last)||"[Message]")}</span><div class="small">${esc(timeText(c.last))}</div></div>`).join("")||"<p style='padding:12px'>No chats found.</p>";
  if(selectedChat)renderChatHistory();
+ else showChatList();
 }
+
 function openChat(phone){
  selectedChat=phone;
+ $("chatHeader").classList.add("has-chat");
  renderChats();
 }
+
+function backToChats(){
+ selectedChat="";
+ $("chatHeader").classList.remove("has-chat");
+ $("chatHeader").innerHTML='<button class="chat-back" type="button" onclick="backToChats()">← Back to Chats</button><div class="avatar">👤</div><div class="chat-title">Select customer</div>';
+ $("chatHistory").textContent="Select a customer to view messages.";
+ $("replyText").value="";
+ $("chatFile").value="";
+ $("chatFileName").textContent="No file selected";
+ setStatus("replyStatus","");
+ renderChats();
+ showChatList();
+}
+
+function showChatList(){
+ $("chatHeader").classList.remove("has-chat");
+ if(window.innerWidth<=700){
+  $("chatSidebar").style.display="block";
+  $("chatMain").style.display="none";
+ }else{
+  $("chatSidebar").style.display="block";
+  $("chatMain").style.display="flex";
+ }
+}
+
 function renderChatHistory(){
  const rows=messages.filter(m=>phoneOf(m)===selectedChat).sort((a,b)=>timeValue(a)-timeValue(b));
- $("chatHeader").innerHTML=`<div class="avatar">👤</div><div><div>${esc(selectedChat||"Select customer")}</div><div class="small">WhatsApp conversation</div></div>`;
+ $("chatHeader").classList.add("has-chat");
+ $("chatHeader").innerHTML=`<button class="chat-back" type="button" onclick="backToChats()">← Back to Chats</button><div class="avatar">👤</div><div class="chat-title"><div>${esc(selectedChat||"Select customer")}</div><div class="small">WhatsApp conversation</div></div>`;
  const box=$("chatHistory"),nearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<100;
  box.innerHTML=rows.map(m=>`<div class="bubble ${isIncoming(m)?"":"out"}">${esc(textOf(m))}<div class="small">${esc(timeText(m))}${m.status?" · "+esc(m.status):""}</div></div>`).join("")||"<div style='text-align:center;color:#667781;padding:20px'>No messages yet</div>";
  if(nearBottom)box.scrollTop=box.scrollHeight;
+ if(window.innerWidth<=700){
+  $("chatSidebar").style.display="none";
+  $("chatMain").style.display="flex";
+ }else{
+  $("chatSidebar").style.display="block";
+  $("chatMain").style.display="flex";
+ }
 }
+
 async function enableNotifications(){
  if(!("Notification" in window)){alert("Browser notifications supported नाहीत.");return}
  const p=await Notification.requestPermission();
  setStatus("dashStatus",p==="granted"?"Notifications enabled.":"Notification permission दिली नाही.");
  if(p==="granted")new Notification("A K Properties",{body:"Notifications enabled."});
 }
+
 function notifyIncoming(rows){
  if(!("Notification" in window)||Notification.permission!=="granted")return;
  rows.forEach(m=>{
@@ -469,6 +560,7 @@ function notifyIncoming(rows){
   }catch{}
  });
 }
+
 async function loadMessages(manual=false){
  if(polling)return;
  polling=true;
@@ -493,6 +585,7 @@ async function loadMessages(manual=false){
   setStatus("dashStatus","Messages API: "+e.message);
  }finally{polling=false}
 }
+
 async function sendReply(){
  try{
   if(!selectedChat)throw Error("आधी customer निवडा.");
@@ -524,6 +617,7 @@ async function sendReply(){
  }catch(e){setStatus("replyStatus","Send failed: "+e.message)}
  finally{$("replyButton").disabled=false}
 }
+
 function addLead(){
  const name=$("leadName").value.trim(),phone=$("leadPhone").value.replace(/\D/g,""),notes=$("leadNotes").value.trim();
  if(!name||!/^\d{8,15}$/.test(phone)){setStatus("leadStatus","Name आणि country code सहित phone भरा.");return}
@@ -586,6 +680,7 @@ async function syncAll(){
  await Promise.all([syncTemplates(),syncNumbers(),loadMessages()]);
  setStatus("connection","Sync attempted · "+PROJECTS[activeProject].name);
 }
+
 const pageHistory=[];
 let currentPage="dashboard";
 function showPage(page,remember=true){
@@ -616,6 +711,10 @@ renderNumbers();renderTemplates();renderVariables();renderLeads();renderChats();
 syncAll();
 setInterval(()=>loadMessages(false),3000);
 setInterval(()=>{syncTemplates();syncNumbers()},300000);
+window.addEventListener("resize",()=>{
+ if(!selectedChat)showChatList();
+ else if(window.innerWidth>700){$("chatSidebar").style.display="block";$("chatMain").style.display="flex"}
+});
 </script>
 </body>
 </html>
