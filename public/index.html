@@ -1,618 +1,889 @@
-const GRAPH = "https://graph.facebook.com/v26.0";
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    const path = url.pathname;
-    const method = request.method;
-    const cors = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization"
-    };
-    const json = (data, status = 200) =>
-      new Response(JSON.stringify(data), {
-        status,
-        headers: {
-          ...cors,
-          "Content-Type": "application/json; charset=utf-8",
-          "Cache-Control": "no-store"
-        }
-      });
-    if (method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: cors });
-    }
-    // Meta API request with detailed error capture.
-    async function metaRequest(endpoint, options = {}) {
-      if (!env.WHATSAPP_TOKEN) {
-        throw new Error("WHATSAPP_TOKEN Secret is missing");
-      }
-      const response = await fetch(`${GRAPH}${endpoint}`, {
-        ...options,
-        headers: {
-          Authorization: `Bearer ${env.WHATSAPP_TOKEN}`,
-          ...(options.body
-            ? { "Content-Type": "application/json" }
-            : {}),
-          ...options.headers
-        }
-      });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        const e = new Error(
-          data.error?.message || `Meta API error ${response.status}`
-        );
-        e.meta = {
-          httpStatus: response.status,
-          code: data.error?.code ?? null,
-          error_subcode: data.error?.error_subcode ?? null,
-          type: data.error?.type ?? null,
-          message: data.error?.message ?? "Unknown Meta API error",
-          error_user_title: data.error?.error_user_title ?? null,
-          error_user_msg: data.error?.error_user_msg ?? null,
-          fbtrace_id: data.error?.fbtrace_id ?? null
-        };
-        throw e;
-      }
-      return data;
-    }
-    const metaGet = endpoint => metaRequest(endpoint);
-    const metaPost = (endpoint, payload) =>
-      metaRequest(endpoint, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
-    function getWabaIds() {
-      return [...new Set([
-        env.WABA_ID,
-        env.SECOND_WABA_ID
-      ].filter(Boolean).map(String))];
-    }
-    async function getNumbersForWaba(wabaId) {
-      const data = await metaGet(
-        `/${wabaId}/phone_numbers?fields=id,display_phone_number,verified_name,quality_rating,code_verification_status`
-      );
-      return (data.data || []).map(p => ({
-        id: String(p.id),
-        phoneNumberId: String(p.id),
-        displayPhoneNumber: p.display_phone_number || "",
-        verifiedName: p.verified_name || "",
-        qualityRating: p.quality_rating || "UNKNOWN",
-        status: p.code_verification_status || "UNKNOWN",
-        wabaId: String(wabaId)
-      }));
-    }
-    async function getTemplatesForWaba(wabaId) {
-      const data = await metaGet(
-        `/${wabaId}/message_templates?limit=100`
-      );
-      return (data.data || []).map(t => ({
-        id: t.id,
-        name: t.name,
-        status: t.status,
-        category: t.category,
-        language: t.language,
-        components: t.components || [],
-        parameter_format: t.parameter_format || "POSITIONAL",
-        wabaId: String(wabaId)
-      }));
-    }
-    async function findNumber(phoneNumberId) {
-      for (const wabaId of getWabaIds()) {
-        try {
-          const numbers = await getNumbersForWaba(wabaId);
-          const match = numbers.find(
-            p => p.phoneNumberId === String(phoneNumberId)
-          );
-          if (match) return match;
-        } catch (error) {
-          console.error("Phone number lookup failed", {
-            wabaId,
-            error: error.meta || error.message
-          });
-        }
-      }
-      return null;
-    }
-    async function saveOutgoing({
-      to, text, messageId, name = "", status = "accepted"
-    }) {
-      if (!env.DB || !messageId) return;
-      await env.DB.prepare(`
-        INSERT INTO messages
-          (wa_id, name, message, direction, message_id,
-           "timestamp", created_at, status, status_timestamp,
-           error_details)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).bind(
-        String(to),
-        name || String(to),
-        String(text || ""),
-        "outgoing",
-        String(messageId),
-        new Date().toISOString(),
-        new Date().toISOString(),
-        status,
-        new Date().toISOString(),
-        null
-      ).run();
-    }
-    try {
-      // 1. Health check
-      if (path === "/health" && method === "GET") {
-        return json({
-          success: true,
-          project: "New Launch",
-          api: "active",
-          graphApiVersion: "v26.0",
-          configuredWabas: getWabaIds().length,
-          databaseConfigured: Boolean(env.DB),
-          webhookConfigured: Boolean(env.WEBHOOK_VERIFY_TOKEN),
-          endpoints: [
-            "/health",
-            "/phone-numbers",
-            "/templates",
-            "/messages",
-            "/send-template",
-            "/send",
-            "/webhook"
-          ]
-        });
-      }
-      // 2. Phone numbers
-      if (path === "/phone-numbers" && method === "GET") {
-        const wabaIds = getWabaIds();
-        if (!wabaIds.length) {
-          return json({
-            success: false,
-            error: "Configure WABA_ID in Cloudflare"
-          }, 500);
-        }
-        const phoneNumbers = [];
-        const accountErrors = [];
-        for (const wabaId of wabaIds) {
-          try {
-            phoneNumbers.push(...await getNumbersForWaba(wabaId));
-          } catch (error) {
-            accountErrors.push({
-              wabaId,
-              error: error.meta || error.message
-            });
-          }
-        }
-        const uniqueNumbers = [
-          ...new Map(
-            phoneNumbers.map(p => [p.phoneNumberId, p])
-          ).values()
-        ];
-        return json({
-          success: uniqueNumbers.length > 0,
-          count: uniqueNumbers.length,
-          phoneNumbers: uniqueNumbers,
-          accountErrors
-        });
-      }
-      // 3. Templates
-      if (path === "/templates" && method === "GET") {
-        const requestedWaba = url.searchParams.get("wabaId");
-        const wabaIds = getWabaIds();
-        if (
-          requestedWaba &&
-          !wabaIds.includes(String(requestedWaba))
-        ) {
-          return json({
-            success: false,
-            error: "Requested WABA_ID is not configured"
-          }, 400);
-        }
-        const targets = requestedWaba
-          ? [String(requestedWaba)]
-          : wabaIds;
-        const templates = [];
-        const accountErrors = [];
-        for (const wabaId of targets) {
-          try {
-            templates.push(...await getTemplatesForWaba(wabaId));
-          } catch (error) {
-            accountErrors.push({
-              wabaId,
-              error: error.meta || error.message
-            });
-          }
-        }
-        return json({
-          success: templates.length > 0,
-          count: templates.length,
-          approvedCount: templates.filter(
-            t => t.status === "APPROVED"
-          ).length,
-          templates,
-          accountErrors
-        });
-      }
-      // 4. Message history
-      if (path === "/messages" && method === "GET") {
-        if (!env.DB) {
-          return json({
-            success: false,
-            error: "D1 database binding DB is missing"
-          }, 503);
-        }
-        const result = await env.DB.prepare(`
-          SELECT * FROM messages
-          ORDER BY created_at DESC LIMIT 1000
-        `).all();
-        return json({
-          success: true,
-          messages: result.results || []
-        });
-      }   // 5. Send approved template
-      if (path === "/send-template" && method === "POST") {
-        const body = await request.json();
-        const phoneNumberId = String(
-          body.phoneNumberId ||
-          body.phone_number_id ||
-          env.PHONE_NUMBER_ID ||
-          ""
-        );
-        const to = String(body.to || "").replace(/\D/g, "");
-        const templateName = String(body.templateName || "");
-        const language = body.language || "en";
-        if (!phoneNumberId || !to || !templateName) {
-          return json({
-            success: false,
-            error: "Phone Number ID, recipient and template name are required"
-          }, 400);
-        }
-        const number = await findNumber(phoneNumberId);
-        if (!number) {
-          return json({
-            success: false,
-            error: "Phone Number ID not found in configured WABAs or token lacks access"
-          }, 400);
-        }
-        const templates = await getTemplatesForWaba(number.wabaId);
-        const template = templates.find(
-          t => t.name === templateName &&
-            t.status === "APPROVED" &&
-            t.language === language
-        );
-        if (!template) {
-          return json({
-            success: false,
-            error: "Template is not approved for the selected WABA and language",
-            selectedWabaId: number.wabaId,
-            templateName,
-            language
-          }, 400);
-        }
-        const variables = Array.isArray(body.variables)
-          ? body.variables
-          : Array.isArray(body.parameters)
-            ? body.parameters
-            : [];
-        const components = [];
-        if (body.imageUrl) {
-          components.push({
-            type: "header",
-            parameters: [{
-              type: "image",
-              image: { link: body.imageUrl }
-            }]
-          });
-        }
-        if (variables.length) {
-          components.push({
-            type: "body",
-            parameters: variables.map(value => ({
-              type: "text",
-              text: String(value)
-            }))
-          });
-        }
-        const result = await metaPost(
-          `/${phoneNumberId}/messages`,
-          {
-            messaging_product: "whatsapp",
-            recipient_type: "individual",
-            to,
-            type: "template",
-            template: {
-              name: templateName,
-              language: { code: language },
-              ...(components.length ? { components } : {})
-            }
-          }
-        );
-        const messageId = result.messages?.[0]?.id;
-        await saveOutgoing({
-          to,
-          text: `Template: ${templateName}`,
-          messageId,
-          status: "accepted"
-        });
-        return json({
-          success: true,
-          selectedPhoneNumberId: phoneNumberId,
-          selectedWabaId: number.wabaId,
-          result
-        });
-      }
-      // 6. Send ordinary text reply
-      if (path === "/send" && method === "POST") {
-        const body = await request.json();
-        const phoneNumberId = String(
-          body.phoneNumberId ||
-          body.phone_number_id ||
-          env.PHONE_NUMBER_ID ||
-          ""
-        );
-        const to = String(body.to || "").replace(/\D/g, "");
-        const text = String(body.text || "").trim();
-        if (!phoneNumberId || !to || !text) {
-          return json({
-            success: false,
-            error: "Phone Number ID, recipient and text are required"
-          }, 400);
-        }
-        const number = await findNumber(phoneNumberId);
-        if (!number) {
-          return json({
-            success: false,
-            error: "Phone Number ID not found in configured WABAs or token lacks access",
-            selectedPhoneNumberId: phoneNumberId
-          }, 400);
-        }
-        try {
-          const result = await metaPost(
-            `/${phoneNumberId}/messages`,
-            {
-              messaging_product: "whatsapp",
-              recipient_type: "individual",
-              to,
-              type: "text",
-              text: {
-                preview_url: false,
-                body: text
-              }
-            }
-          );
-          const messageId = result.messages?.[0]?.id;
-          await saveOutgoing({
-            to,
-            text,
-            messageId,
-            status: "accepted"
-          });
-          console.log("WhatsApp text send accepted", {
-            phoneNumberId,
-            wabaId: number.wabaId,
-            messageId: messageId || null
-          });
-          return json({
-            success: true,
-            selectedPhoneNumberId: phoneNumberId,
-            selectedWabaId: number.wabaId,
-            result
-          });
-        } catch (error) {
-          const details = error.meta || {
-            message: error.message || "Unknown send error"
-          };
-          console.error("WhatsApp send rejected by Meta", {
-            phoneNumberId,
-            wabaId: number.wabaId,
-            metaError: details
-          });
-          return json({
-            success: false,
-            error: details.message || error.message,
-            metaError: details,
-            selectedPhoneNumberId: phoneNumberId,
-            selectedWabaId: number.wabaId
-          }, 502);
-        }
-      }
-      // 7. Webhook verification
-      if (path === "/webhook" && method === "GET") {
-        const mode = url.searchParams.get("hub.mode");
-        const token = url.searchParams.get("hub.verify_token");
-        const challenge = url.searchParams.get("hub.challenge");
-        if (
-          mode === "subscribe" &&
-          env.WEBHOOK_VERIFY_TOKEN &&
-          token === env.WEBHOOK_VERIFY_TOKEN &&
-          challenge
-        ) {
-          return new Response(challenge, {
-            status: 200,
-            headers: cors
-          });
-        }
-        return json({
-          success: false,
-          error: "Webhook verification failed"
-        }, 403);
-      } // 8. Incoming messages, Read Receipts and delivery statuses
-      if (path === "/webhook" && method === "POST") {
-        const payload = await request.json();
-        if (!env.DB) {
-          console.error("D1 binding DB is missing");
-          return json({
-            success: false,
-            error: "D1 database binding DB is missing"
-          }, 503);
-        }
-        let savedMessages = 0;
-        let updatedStatuses = 0;
-        let readReceiptsSent = 0;
-        let readReceiptErrors = 0;
-        for (const entry of (payload.entry || [])) {
-          for (const change of (entry.changes || [])) {
-            const value = change.value || {};
-            // Incoming messages
-            for (const msg of (value.messages || [])) {
-              const waId = String(msg.from || "");
-              const messageId = String(msg.id || "");
-              if (!waId || !messageId) continue;
-              const contact = (value.contacts || []).find(
-                c => String(c.wa_id || "") === waId
-              );
-              const name = contact?.profile?.name || waId;
-              let messageText = "";
-              if (msg.type === "text") {
-                messageText = msg.text?.body || "";
-              } else if (msg.type === "interactive") {
-                const button = msg.interactive?.button_reply;
-                const list = msg.interactive?.list_reply;
-                if (button) {
-                  messageText = "Button reply: " +
-                    (button.title || button.id || "Button");
-                } else if (list) {
-                  messageText = "List reply: " +
-                    (list.title || list.id || "Option");
-                } else {
-                  messageText = "Interactive reply";
-                }
-              } else if (msg.type === "button") {
-                messageText = "Button reply: " +
-                  (msg.button?.text || msg.button?.payload || "Button");
-              } else if (msg.type === "image") {
-                messageText = "[Image received]";
-              } else if (msg.type === "document") {
-                messageText = "[Document received] " +
-                  (msg.document?.filename || "");
-              } else if (msg.type === "audio") {
-                messageText = "[Audio received]";
-              } else if (msg.type === "video") {
-                messageText = "[Video received]";
-              } else {
-                messageText = "[" +
-                  String(msg.type || "Unknown") + " received]";
-              }
-              const existing = await env.DB.prepare(
-                "SELECT id FROM messages WHERE message_id = ? LIMIT 1"
-              ).bind(messageId).first();
-              if (existing) continue;
-              const timestamp = msg.timestamp
-                ? new Date(Number(msg.timestamp) * 1000).toISOString()
-                : new Date().toISOString();
-              await env.DB.prepare(`
-                INSERT INTO messages
-                  (wa_id, name, message, direction, message_id,
-                   "timestamp", created_at, status, status_timestamp,
-                   error_details)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-              `).bind(
-                waId,
-                name,
-                messageText,
-                "incoming",
-                messageId,
-                timestamp,
-                new Date().toISOString(),
-                "received",
-                timestamp,
-                null
-              ).run();
-              savedMessages++;
-              // Send WhatsApp Read Receipt for this incoming message.
-              const phoneNumberId = String(
-                value.metadata?.phone_number_id || ""
-              );
-              if (phoneNumberId && env.WHATSAPP_TOKEN) {
-                try {
-                  await metaPost(`/${phoneNumberId}/messages`, {
-                    messaging_product: "whatsapp",
-                    status: "read",
-                    message_id: messageId
-                  });
-                  readReceiptsSent++;
-                  console.log("Incoming message marked as read", {
-                    phoneNumberId,
-                    messageId
-                  });
-                } catch (error) {
-                  readReceiptErrors++;
-                  console.error("Read receipt failed", {
-                    phoneNumberId,
-                    metaError: error.meta || error.message
-                  });
-                }
-              } else {
-                readReceiptErrors++;
-                console.error(
-                  "Read receipt skipped: phone number ID or token missing"
-                );
-              }
-            }
-            // Update outgoing message delivery statuses
-            for (const item of (value.statuses || [])) {
-              if (!item.id || !item.status) continue;
-              const statusTimestamp = item.timestamp
-                ? new Date(Number(item.timestamp) * 1000).toISOString()
-                : new Date().toISOString();
-              const errorDetails = item.errors
-                ? JSON.stringify(item.errors)
-                : null;
-              const result = await env.DB.prepare(`
-                UPDATE messages
-                SET status = ?,
-                    status_timestamp = ?,
-                    error_details = ?
-                WHERE message_id = ?
-              `).bind(
-                String(item.status),
-                statusTimestamp,
-                errorDetails,
-                String(item.id)
-              ).run();
-              updatedStatuses += result.meta?.changes || 0;
-            }
-          }
-        }
-        console.log("WhatsApp webhook processed", {
-          savedMessages,
-          updatedStatuses,
-          readReceiptsSent,
-          readReceiptErrors,
-          object: payload.object || null
-        });
-        return json({
-          success: true,
-          received: true,
-          savedMessages,
-          updatedStatuses,
-          readReceiptsSent,
-          readReceiptErrors
-        });
-      }
-      // 9. Unknown endpoint
-      return json({
-        success: false,
-        error: "Not found",
-        path,
-        routes: [
-          "/health",
-          "/phone-numbers",
-          "/templates",
-          "/messages",
-          "/send-template",
-          "/send",
-          "/webhook"
-        ]
-      }, 404);
-    } catch (error) {
-      console.error("Worker request failed", {
-        path,
-        method,
-        metaError: error.meta || null,
-        message: error.message || "Unknown Worker error"
-      });
-      return json({
-        success: false,
-        error: error.message || "Worker request failed",
-        ...(error.meta ? { metaError: error.meta } : {})
-      }, 500);
-    }
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A K Properties | WhatsApp Marketing Panel</title>
+<style>
+:root{--green:#075e54;--accent:#087f5b;--bg:#f2f6f5;--border:#dce5e0}
+*{box-sizing:border-box}
+body{margin:0;font:14px Arial,sans-serif;background:var(--bg);color:#19332e}
+header{background:var(--green);color:white;padding:17px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h2{margin:0 0 5px}
+header select{width:auto;margin:0}
+.layout{display:flex;min-height:calc(100vh - 75px)}
+nav{width:205px;flex-shrink:0;background:#123b35;padding:12px}
+nav button{display:block;width:100%;text-align:left;background:transparent;color:white}
+nav button.active,nav button:hover{background:var(--accent)}
+button{border:0;border-radius:7px;padding:10px 13px;margin:3px;background:var(--accent);color:white;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+main{flex:1;min-width:0;padding:20px}
+.view{display:none}
+.view.active{display:block}
+.panel,.card{background:white;border-radius:11px;padding:15px;margin-bottom:14px;box-shadow:0 2px 7px #0000000b}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.card h2{margin:8px 0 0;font-size:25px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #ccd8d4;border-radius:7px;margin:6px 0 13px;font:inherit;background:white}
+input[type=checkbox]{width:auto}
+textarea{min-height:85px}
+label{font-weight:bold}
+.notice{background:#fff4d5;border-radius:8px;padding:12px;margin-bottom:14px;line-height:1.6}
+.status{background:#edf6f0;padding:10px;border-radius:7px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.small{font-size:12px;color:#65746e}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;background:white}
+td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
+.template-row,.number-row{border:1px solid var(--border);padding:12px;border-radius:8px;margin:9px 0;background:#fbfdfc}
+.danger{background:#b42318}
+
+/* WhatsApp Web style chat */
+.chat-layout{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100vh - 220px);min-height:520px;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.chat-sidebar{overflow:auto;border-right:1px solid var(--border);padding:0;background:white}
+.chat-sidebar #chatSearch{width:calc(100% - 20px);margin:10px;background:#f0f2f5;border:0}
+.chat-contact{padding:13px 14px;min-height:76px;border-bottom:1px solid #edf0f2;cursor:pointer;overflow-wrap:anywhere;background:white}
+.chat-contact:hover{background:#f5f6f6}
+.chat-contact.selected{background:#e9edef}
+.chat-contact.has-unread{background:#e7f3ff;border-left:4px solid #1685e8;padding-left:10px}
+.chat-contact b{display:block;font-size:14px;color:#111b21;margin-bottom:5px}
+.chat-contact .small{color:#667781;font-size:12px}
+.preview-text{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#667781;font-size:13px;margin-top:5px}
+.unread-badge{display:inline-block;background:#2563eb;color:white;border-radius:12px;padding:3px 7px;font-size:11px;white-space:nowrap}
+.chat-main{display:flex;flex-direction:column;min-width:0;min-height:0;background:#efeae2}
+.chat-header{display:flex;align-items:center;gap:12px;min-height:62px;padding:12px 18px;background:#f0f2f5;border-bottom:1px solid #d8dfdc;color:#111b21;font-weight:bold}
+.chat-back{display:none;background:#075e54;color:#fff;white-space:nowrap;margin:0 4px 0 0;padding:9px 12px}
+.chat-header.has-chat .chat-back{display:inline-block}
+.chat-title{min-width:0;overflow-wrap:anywhere}
+.avatar{width:40px;height:40px;border-radius:50%;background:#dfe5e7;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.chat-history{flex:1;min-height:0;overflow-y:auto;padding:20px 5%;background:#efeae2}
+.bubble{width:fit-content;max-width:min(78%,600px);padding:9px 11px 7px;border-radius:8px;background:white;color:#111b21;margin:6px 0 10px;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 1px 1px #00000010;font-size:14px;line-height:1.5}
+.bubble.out{background:#d9fdd3;margin-left:auto}
+.bubble .small{text-align:right;margin-top:5px;color:#667781;font-size:10px}
+.chat-reply{padding:12px;background:#f0f2f5;border-top:1px solid #d8dfdc}
+.chat-reply textarea{min-height:46px;max-height:120px;resize:vertical;border:1px solid #d4dcda;border-radius:9px;background:white;margin:0 0 8px}
+.chat-attachment-row{padding:5px 0}
+.chat-attachment-row input{background:white;border:1px solid #d4dcda;border-radius:8px;padding:8px}
+#replyButton{border-radius:22px;padding:11px 20px}
+#toast{display:none;position:fixed;bottom:20px;right:20px;background:#123b35;color:white;padding:12px 16px;border-radius:8px;z-index:99;max-width:90vw}
+#toast.show{display:block}
+@media(max-width:700px){
+ .layout{display:block}
+ nav{width:100%;display:flex;overflow:auto}
+ nav button{min-width:max-content;width:auto}
+ main{padding:10px}
+ .grid{grid-template-columns:1fr}
+ .chat-layout{grid-template-columns:1fr;height:72vh;min-height:480px}
+ .chat-sidebar{max-height:145px;border-right:0;border-bottom:1px solid var(--border)}
+ .chat-history{padding:12px}
+ .bubble{max-width:90%}
+}
+</style>
+</head>
+<body>
+<header>
+ <div><h2>A K PROPERTIES</h2>WhatsApp Marketing Dashboard</div>
+ <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <button id="backButton" type="button" onclick="goBack()" style="background:#ffffff;color:#075e54;border:1px solid #dce5e0;font-weight:bold">← Back</button>
+  <div>
+  <label for="project" style="color:white">Project:</label>
+  <select id="project" onchange="switchProject(this.value)">
+   <option value="newlaunch">New Launch</option>
+   <option value="dosti">Dosti Group</option>
+   <option value="godrej">Godrej Properties</option>
+   <option value="delta">Delta Group</option>
+   <option value="raheja">Raheja Group</option>
+   <option value="paradise">Paradise Group</option>
+   <option value="domus">Domus</option>
+   <option value="platinum">Platinum</option>
+   <option value="piramal">Piramal</option>
+  </select>
+  <div id="connection" style="font-size:12px">Checking API...</div>
+  </div>
+ </div>
+</header>
+
+<div class="layout">
+<nav>
+ <button class="active" data-page="dashboard">Dashboard</button>
+ <button data-page="campaigns">Campaigns / Blast</button>
+ <button data-page="inbox">Live Chat</button>
+ <button data-page="leads">CRM / Contacts</button>
+ <button data-page="reports">Reports</button>
+ <button data-page="templates">Templates</button>
+ <button data-page="settings">API Settings</button>
+</nav>
+
+<main>
+<section class="view active" id="dashboard">
+ <h2>Dashboard</h2>
+ <div class="notice">फक्त WhatsApp संदेश मिळवण्यास संमती दिलेल्या ग्राहकांनाच संदेश पाठवा. Meta approval आणि messaging limits लागू आहेत.</div>
+ <div class="cards">
+  <div class="card">Total Messages<h2 id="total">0</h2></div>
+  <div class="card">Contacts<h2 id="contactCount">0</h2></div>
+  <div class="card">Incoming<h2 id="incomingCount">0</h2></div>
+  <div class="card">Outgoing<h2 id="outgoingCount">0</h2></div>
+  <div class="card">Saved Leads<h2 id="leadCount">0</h2></div>
+  <div class="card">Approved Templates<h2 id="approvedCount">0</h2></div>
+ </div>
+ <div class="panel">
+  <h3>Connected WhatsApp Numbers</h3>
+  <button onclick="syncAll()">Sync Now</button>
+  <button onclick="enableNotifications()">Enable Notifications</button>
+  <div id="numberList">Numbers not synced yet.</div>
+  <div id="dashStatus" class="status">Ready.</div>
+ </div>
+</section>
+
+<section class="view" id="campaigns">
+ <h2>WhatsApp Campaign</h2>
+ <div class="panel">
+  <label>Campaign Name</label><input id="campaignName" value="Property Campaign">
+  <label>Sending WhatsApp Number</label><select id="sendNumber"></select>
+  <label>Approved Template</label><select id="campaignTemplate" onchange="renderVariables()"></select>
+  <label>Recipient Numbers (one per line, country code required)</label>
+  <textarea id="recipients" placeholder="919876543210"></textarea>
+  <div id="variableFields"></div><div id="headerField"></div>
+  <label><input type="checkbox" id="consent"> I confirm these contacts opted in to receive messages.</label>
+  <p><button onclick="sendCampaign(true)">Send Test</button><button onclick="sendCampaign(false)">Start Campaign</button></p>
+  <div id="campaignStatus" class="status">Choose a project and sync templates.</div>
+  <pre id="sendResult"></pre>
+ </div>
+</section><section class="view" id="inbox">
+ <h2>Live Chat</h2>
+ <div class="panel">
+  <button onclick="loadMessages(true)">Refresh Chats</button>
+  <button onclick="enableNotifications()">Enable Notifications</button>
+  <div id="inboxStatus" class="status">Loading...</div>
+
+  <div class="chat-layout">
+   <div class="chat-sidebar" id="chatSidebar">
+    <input id="chatSearch" placeholder="Search phone..." oninput="renderChats()">
+    <div id="chatContacts"></div>
+   </div>
+
+   <div class="chat-main" id="chatMain">
+    <div class="chat-header" id="chatHeader">
+     <button class="chat-back" id="chatBackButton"
+       type="button" onclick="backToChats()">← Back to Chats</button>
+     <div class="avatar">👤</div>
+     <div class="chat-title">Select customer</div>
+    </div>
+
+    <div class="chat-history" id="chatHistory">
+     Select a customer to view messages.
+    </div>
+
+    <div class="chat-reply">
+     <textarea id="replyText" placeholder="Type a message or media caption"></textarea>
+     <div class="chat-attachment-row">
+      <input type="file" id="chatFile"
+       accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp">
+     </div>
+     <div id="chatFileName" class="small">No file selected</div>
+     <button id="replyButton" onclick="sendReply()">Send Reply / Photo / PDF</button>
+     <div id="replyStatus" class="small"></div>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="view" id="leads">
+ <h2>CRM / Contacts</h2>
+ <div class="panel">
+  <div class="grid">
+   <div><label>Name</label><input id="leadName" placeholder="Customer name"></div>
+   <div><label>Phone with country code</label><input id="leadPhone" placeholder="919876543210"></div>
+  </div>
+  <label>Project / Notes</label>
+  <input id="leadNotes" placeholder="Interested in 2 BHK">
+  <p>
+   <button onclick="addLead()">Add Lead</button>
+   <button onclick="exportLeads()">Export CSV</button>
+  </p>
+  <label>Import CSV</label>
+  <input type="file" id="leadFile" accept=".csv">
+  <button onclick="importLeads()">Import CSV</button>
+  <input id="leadSearch" placeholder="Search leads..." oninput="renderLeads()">
+  <div id="leadStatus" class="status"></div>
+  <div id="leadTable" class="table-wrap"></div>
+ </div>
+</section>
+
+<section class="view" id="reports">
+ <h2>Reports</h2>
+ <div class="panel">
+  <div class="grid">
+   <div><label>From date</label><input type="date" id="fromDate"></div>
+   <div><label>To date</label><input type="date" id="toDate"></div>
+   <div>
+    <label>Direction</label>
+    <select id="direction">
+     <option value="">All</option>
+     <option value="incoming">Incoming</option>
+     <option value="outgoing">Outgoing</option>
+    </select>
+   </div>
+   <div>
+    <label>Status</label>
+    <select id="reportFilter">
+     <option value="">All</option>
+     <option value="sent">Sent</option>
+     <option value="delivered">Delivered</option>
+     <option value="read">Read</option>
+     <option value="failed">Failed</option>
+    </select>
+   </div>
+  </div>
+  <button onclick="loadReports()">Apply Filters</button>
+  <button onclick="exportReports()">Export CSV</button>
+  <div id="reportStatus" class="status"></div>
+  <div id="reportTable" class="table-wrap"></div>
+ </div>
+</section>
+
+<section class="view" id="templates">
+ <h2>Approved Templates</h2>
+ <div class="panel">
+  <button onclick="syncTemplates()">Sync Templates Now</button>
+  <div id="templateStatus" class="status"></div>
+  <div id="templateList"></div>
+ </div>
+</section>
+
+<section class="view" id="settings">
+ <h2>API Settings</h2>
+ <div class="panel">
+  <p>Access Token किंवा App Secret येथे टाकू नका. ते Cloudflare Worker Secrets मध्येच ठेवा.</p>
+  <label>Selected Project Worker URL</label>
+  <input id="apiUrl" placeholder="https://your-worker.workers.dev">
+  <button onclick="saveApi()">Save Worker URL</button>
+  <button onclick="testApi()">Test API</button>
+  <button onclick="syncAll()">Sync Project</button>
+  <button onclick="addProject()">Add Project</button>
+  <div id="apiStatus" class="status"></div>
+  <hr>
+  <p><b>Worker endpoints</b></p>
+  <ul>
+   <li><code>/templates</code></li>
+   <li><code>/phone-numbers</code></li>
+   <li><code>/messages</code></li>
+   <li><code>/send-template</code></li>
+   <li><code>/send</code></li>
+   <li><code>/reports</code></li>
+   <li><code>/send-media</code> — media endpoint required</li>
+  </ul>
+ </div></main>
+</div>
+
+<div id="toast"></div>
+<script>
+"use strict";
+
+const PROJECTS={
+ newlaunch:{name:"New Launch",url:"https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"},
+ dosti:{name:"Dosti Group",url:"https://dosti-whatsapp-api.amolkolekar100000.workers.dev"},
+ godrej:{name:"Godrej Properties",url:""},
+ delta:{name:"Delta Group",url:""},
+ raheja:{name:"Raheja Group",url:""},
+ paradise:{name:"Paradise Group",url:""},
+ domus:{name:"Domus",url:""},
+ platinum:{name:"Platinum",url:""},
+ piramal:{name:"Piramal",url:""}
 };
+
+const URL_KEY="akp_project_worker_urls_v2";
+const LEAD_KEY="akp_contacts_v2";
+const CUSTOM_KEY="akp_custom_projects_v1";
+const READ_KEY="akp_read_messages_v1";
+const UNREAD_KEY="akp_unread_messages_v1";
+const $=id=>document.getElementById(id);
+
+let activeProject="newlaunch";
+let projectUrls=readURLs();
+let templates=[],numbers=[],messages=[],leads=readLeads(),selectedChat="";
+let seenIncoming=readSeen();
+let unreadIncoming=readUnread();
+let initialized=false,polling=false;
+
+function readURLs(){
+ let saved={};
+ try{saved=JSON.parse(localStorage.getItem(URL_KEY)||"{}")}catch{}
+ const result={};
+ Object.keys(PROJECTS).forEach(k=>result[k]=saved[k]||PROJECTS[k].url);
+ try{
+  const custom=JSON.parse(localStorage.getItem(CUSTOM_KEY)||"{}");
+  Object.entries(custom).forEach(([k,v])=>{
+   if(v&&v.name&&v.url){
+    PROJECTS[k]=v;
+    result[k]=saved[k]||v.url;
+   }
+  });
+ }catch{}
+ return result;
+}
+
+function readLeads(){
+ try{return JSON.parse(localStorage.getItem(LEAD_KEY)||"[]")}catch{return []}
+}
+
+function readSeen(){
+ try{return new Set(JSON.parse(localStorage.getItem(READ_KEY)||"[]"))}catch{return new Set()}
+}
+
+function saveSeen(){
+ try{localStorage.setItem(READ_KEY,JSON.stringify([...seenIncoming].slice(-5000)))}catch{}
+}
+
+function readUnread(){
+ try{return new Set(JSON.parse(localStorage.getItem(UNREAD_KEY)||"[]"))}catch{return new Set()}
+}
+
+function saveUnread(){
+ try{localStorage.setItem(UNREAD_KEY,JSON.stringify([...unreadIncoming].slice(-5000)))}catch{}
+}
+
+function esc(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function setStatus(id,text){if($(id))$(id).textContent=text}
+
+function apiURL(path){
+ const base=(projectUrls[activeProject]||"").trim().replace(/\/+$/,"");
+ if(!base)throw Error(PROJECTS[activeProject].name+" साठी API Settings मध्ये Worker URL भरा.");
+ return base+path;
+}
+
+async function request(path,options={}){
+ const response=await fetch(apiURL(path),{cache:"no-store",...options});
+ const data=await response.json().catch(()=>({error:"Worker ने JSON response दिला नाही."}));
+ if(!response.ok)throw Error(data.error||data.message||("HTTP "+response.status));
+ return data;
+}
+
+function saveURLs(){localStorage.setItem(URL_KEY,JSON.stringify(projectUrls))}
+
+function addProject(){
+ const name=prompt("नवीन Project चे नाव लिहा:");
+ if(!name||!name.trim())return;
+ const url=prompt("Project चा HTTPS Worker URL टाका:");
+ if(!url||!url.trim())return;
+ const clean=url.trim().replace(/\/+$/,"");
+ if(!clean.startsWith("https://")){alert("HTTPS URL आवश्यक आहे.");return}
+ let key=name.toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,30)||"project";
+ const base=key;let n=2;
+ while(PROJECTS[key])key=base+n++;
+ PROJECTS[key]={name:name.trim(),url:clean};projectUrls[key]=clean;
+ try{
+  const custom=JSON.parse(localStorage.getItem(CUSTOM_KEY)||"{}");
+  custom[key]=PROJECTS[key];localStorage.setItem(CUSTOM_KEY,JSON.stringify(custom));saveURLs();
+ }catch(e){alert(e.message);return}
+ const option=document.createElement("option");option.value=key;option.textContent=name.trim();$("project").appendChild(option);
+ switchProject(key);
+}
+
+function switchProject(key){
+ if(!PROJECTS[key])return;
+ activeProject=key;$("project").value=key;$("apiUrl").value=projectUrls[key]||"";
+ templates=[];numbers=[];messages=[];selectedChat="";
+ renderNumbers();renderTemplates();renderVariables();renderChats();
+ setStatus("connection","Checking "+PROJECTS[key].name+"...");
+ syncAll();
+}
+
+function saveApi(){
+ const value=$("apiUrl").value.trim().replace(/\/+$/,"");
+ if(value&&!value.startsWith("https://")){setStatus("apiStatus","HTTPS Worker URL आवश्यक आहे.");return}
+ projectUrls[activeProject]=value;saveURLs();
+ setStatus("apiStatus","URL saved for "+PROJECTS[activeProject].name);syncAll();
+}
+
+async function testApi(){
+ try{const d=await request("/templates");setStatus("apiStatus","Worker reachable:\n"+JSON.stringify(d,null,2).slice(0,2000))}
+ catch(e){setStatus("apiStatus","API error: "+e.message)}
+}
+
+function normalizeTemplates(data){
+ const rows=Array.isArray(data)?data:Array.isArray(data.templates)?data.templates:Array.isArray(data.data)?data.data:[];
+ return rows.filter(t=>{const s=String(t.status||t.state||"").toUpperCase();return !s||["APPROVED","ACTIVE"].includes(s)})
+ .map(t=>({name:t.name||t.element_name||t.templateName||"",language:t.language||t.language_code||t.languageCode||"en",category:t.category||"Unknown",status:t.status||t.state||"APPROVED",components:Array.isArray(t.components)?t.components:[]})).filter(t=>t.name);
+}
+
+function normalizeNumbers(data){
+ const rows=Array.isArray(data)?data:Array.isArray(data.phoneNumbers)?data.phoneNumbers:Array.isArray(data.phone_numbers)?data.phone_numbers:Array.isArray(data.numbers)?data.numbers:Array.isArray(data.data)?data.data:[];
+ return rows.map(n=>({id:n.id||n.phone_number_id||n.phoneNumberId||"",displayName:n.verifiedName||n.verified_name||n.display_name||n.displayName||n.name||"WhatsApp Number",phone:n.displayPhoneNumber||n.display_phone_number||n.display_phone||n.phone_number||n.phone||"",quality:n.qualityRating||n.quality_rating||n.quality||"Unknown",status:n.status||n.code_verification_status||"Available"})).filter(n=>n.id||n.phone);
+}
+
+async function syncTemplates(){
+ try{
+  templates=normalizeTemplates(await request("/templates"));renderTemplates();renderVariables();
+  $("approvedCount").textContent=templates.length;setStatus("templateStatus","Templates synced: "+templates.length);
+ }catch(e){setStatus("templateStatus","Template Sync failed: "+e.message)}
+}
+
+async function syncNumbers(){
+ try{numbers=normalizeNumbers(await request("/phone-numbers"));renderNumbers();setStatus("dashStatus","WhatsApp numbers fetched: "+numbers.length)}
+ catch(e){numbers=[];renderNumbers();setStatus("dashStatus","Number Sync failed: "+e.message)}
+}
+
+function renderNumbers(){
+ $("numberList").innerHTML=numbers.length?numbers.map((n,i)=>`<div class="number-row"><b>${esc(n.displayName)}</b><p>${esc(n.phone)}</p><small>Phone ID: ${esc(n.id)} · Status: ${esc(n.status)} · Quality: ${esc(n.quality)}</small><button onclick="chooseNumber(${i})">Use This Number</button></div>`).join(""):"<p>No numbers returned. Worker /phone-numbers endpoint तपासा.</p>";
+ $("sendNumber").innerHTML=numbers.length?numbers.map((n,i)=>`<option value="${i}">${esc(n.displayName)} — ${esc(n.phone)}</option>`).join(""):'<option value="">No WhatsApp numbers synced</option>';
+}
+
+function chooseNumber(i){$("sendNumber").value=String(i);document.querySelector('[data-page="campaigns"]').click()}
+
+function renderTemplates(){
+ $("templateList").innerHTML=templates.length?templates.map(t=>`<div class="template-row"><b>${esc(t.name)}</b><p>Language: ${esc(t.language)} · Category: ${esc(t.category)} · Status: ${esc(t.status)}</p><button onclick="useTemplate('${esc(t.name)}','${esc(t.language)}')">Use in Campaign</button></div>`).join(""):"<p>No templates synced. Sync Templates Now क्लिक करा.</p>";
+ $("campaignTemplate").innerHTML=templates.map((t,i)=>`<option value="${i}">${esc(t.name)} — ${esc(t.language)} (${esc(t.category)})</option>`).join("");
+ if(!templates.length)$("campaignTemplate").innerHTML='<option value="">No approved templates</option>';
+}
+
+function useTemplate(name,language){
+ const i=templates.findIndex(t=>t.name===name&&t.language===language);
+ if(i>=0)$("campaignTemplate").value=String(i);
+ renderVariables();document.querySelector('[data-page="campaigns"]').click();
+}
+
+function bodyVariableCount(t){
+ const body=t?.components?.find(c=>String(c.type).toUpperCase()==="BODY");
+ const matches=[...(body?.text||"").matchAll(/\{\{\s*(\d+)\s*\}\}/g)].map(m=>+m[1]);
+ return matches.length?Math.max(...matches):0;
+}
+
+function headerType(t){
+ const h=t?.components?.find(c=>String(c.type).toUpperCase()==="HEADER");
+ const f=String(h?.format||"TEXT").toUpperCase();
+ return ["IMAGE","VIDEO","DOCUMENT"].includes(f)?f:"NONE";
+}
+
+function renderVariables(){
+ const t=templates[Number($("campaignTemplate").value)];
+ if(!t){$("variableFields").innerHTML="<p>No template selected.</p>";$("headerField").innerHTML="";return}
+ const count=bodyVariableCount(t);
+ $("variableFields").innerHTML=Array.from({length:count},(_,j)=>`<label>Variable {{${j+1}}}</label><input data-variable="${j+1}" placeholder="Enter value for {{${j+1}}}">`).join("");
+ const h=headerType(t);
+ $("headerField").innerHTML=["IMAGE","VIDEO","DOCUMENT"].includes(h)?`<label>${h} header public HTTPS URL</label><input id="headerUrl" placeholder="https://example.com/media">`:"";
+}
+
+function campaignPayload(to){
+ const t=templates[Number($("campaignTemplate").value)];
+ if(!t)throw Error("Select an approved template.");
+ const params=[...document.querySelectorAll("[data-variable]")].map(e=>e.value.trim());
+ if(params.some(v=>!v))throw Error("सर्व Template Variables भरा.");
+ const h=headerType(t),url=$("headerUrl")?.value.trim()||"";
+ if(["IMAGE","VIDEO","DOCUMENT"].includes(h)&&!url.startsWith("https://"))throw Error("Template media साठी public HTTPS URL द्या.");
+ const chosen=numbers[Number($("sendNumber").value)];
+ if(!chosen)throw Error("Worker मधून पाठवणारा नंबर उपलब्ध नाही.");
+ const payload={to,name:$("campaignName").value.trim()||to,templateName:t.name,language:t.language,variables:params,parameters:params,phoneNumberId:chosen.id,phone_number_id:chosen.id};
+ if(h==="IMAGE")payload.imageUrl=url;
+ if(["VIDEO","DOCUMENT"].includes(h))payload.headerUrl=url;
+ return payload;
+}
+
+async function sendCampaign(testOnly){
+ try{
+  if(!$("consent").checked)throw Error("ग्राहकांची WhatsApp opt-in consent confirm करा.");
+  const recipients=$("recipients").value.split(/\r?\n/).map(v=>v.replace(/\D/g,"")).filter(Boolean);
+  if(!recipients.length)throw Error("किमान एक recipient number भरा.");
+  if(testOnly&&recipients.length!==1)throw Error("Test साठी फक्त एक नंबर द्या.");
+  if(recipients.some(v=>!/^\d{8,15}$/.test(v)))throw Error("Country code सहित योग्य नंबर द्या.");
+  if(!testOnly&&!confirm(recipients.length+" opted-in recipients ना template पाठवायचा आहे?"))return;
+  let sent=0,failed=0;
+  for(let i=0;i<recipients.length;i++){
+   $("campaignStatus").textContent="Sending "+(i+1)+" / "+recipients.length;
+   const result=await request("/send-template",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(campaignPayload(recipients[i]))});
+   if(result.success)sent++;else{failed++;$("sendResult").textContent=JSON.stringify(result,null,2);if(testOnly)break}
+   if(testOnly)break;
+  }
+  setStatus("campaignStatus","Worker accepted: "+sent+" · Failed: "+failed+". Delivery status Meta webhook वरून तपासा.");
+  await loadMessages(true);
+ }catch(e){setStatus("campaignStatus","Send failed: "+e.message)}
+}
+
+function phoneOf(m){return String(m.wa_id||m.from||m.phone||m.phone_number||"").replace(/\s/g,"")}
+function textOf(m){return String(m.message??m.text??m.body??m.content??m.caption??"")}
+function isIncoming(m){return ["incoming","in","received","inbound"].includes(String(m.direction||m.type||"").toLowerCase())}
+function messageKey(m){return String(m.message_id||m.id||[phoneOf(m),m.direction||m.type||"",m.timestamp||m.created_at||"",textOf(m)].join("|"))}
+function timeValue(m){
+ const v=m.timestamp||m.created_at||m.time||"";
+ if(!v)return 0;
+ const n=Number(v);
+ return Number.isFinite(n)&&n>0&&String(v).length<13?n*1000:Date.parse(v)||0;
+}
+function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():""} function renderChats(){
+ const q=($("chatSearch").value||"").replace(/\D/g,"");
+ const groups=new Map();
+
+ [...messages].sort((a,b)=>timeValue(a)-timeValue(b)).forEach(m=>{
+  const p=phoneOf(m);
+  if(!p)return;
+  if(!groups.has(p))groups.set(p,[]);
+  groups.get(p).push(m);
+ });
+
+ const chats=[...groups.entries()].map(([phone,rows])=>({
+  phone,rows,last:rows[rows.length-1],
+  unread:rows.some(m=>isIncoming(m)&&unreadIncoming.has(messageKey(m)))
+ }))
+ .filter(c=>!q||c.phone.includes(q))
+ .sort((a,b)=>timeValue(b.last)-timeValue(a.last));
+
+ $("chatContacts").innerHTML=chats.map(c=>`
+  <div class="chat-contact ${c.unread?"has-unread ":""}${selectedChat===c.phone?"selected":""}"
+       onclick="openChat('${esc(c.phone)}')">
+   <b>${esc(c.phone)}
+    ${c.unread?'<span class="unread-badge">NEW</span>':""}
+   </b>
+   <span class="preview-text">${esc(textOf(c.last)||"[Message]")}</span>
+   <div class="small">${esc(timeText(c.last))}</div>
+  </div>`).join("")||"<p style='padding:12px'>No chats found.</p>";
+
+ if(selectedChat)renderChatHistory();
+ else showChatList();
+}
+
+function openChat(phone){
+ selectedChat=phone;
+
+ messages.filter(m=>phoneOf(m)===phone&&isIncoming(m))
+  .forEach(m=>unreadIncoming.delete(messageKey(m)));
+
+ saveUnread();
+ $("chatHeader").classList.add("has-chat");
+ renderChats();
+}
+
+function backToChats(){
+ selectedChat="";
+ $("chatHeader").classList.remove("has-chat");
+ $("chatHeader").innerHTML='<button class="chat-back" type="button" onclick="backToChats()">← Back to Chats</button><div class="avatar">👤</div><div class="chat-title">Select customer</div>';
+ $("chatHistory").textContent="Select a customer to view messages.";
+ $("replyText").value="";
+ $("chatFile").value="";
+ $("chatFileName").textContent="No file selected";
+ setStatus("replyStatus","");
+ renderChats();
+ showChatList();
+}
+
+function showChatList(){
+ $("chatHeader").classList.remove("has-chat");
+ if(window.innerWidth<=700){
+  $("chatSidebar").style.display="block";
+  $("chatMain").style.display="none";
+ }else{
+  $("chatSidebar").style.display="block";
+  $("chatMain").style.display="flex";
+ }
+}
+
+function renderChatHistory(){
+ const rows=messages.filter(m=>phoneOf(m)===selectedChat)
+  .sort((a,b)=>timeValue(a)-timeValue(b));
+
+ $("chatHeader").classList.add("has-chat");
+ $("chatHeader").innerHTML=`<button class="chat-back" type="button" onclick="backToChats()">← Back to Chats</button><div class="avatar">👤</div><div class="chat-title"><div>${esc(selectedChat||"Select customer")}</div><div class="small">WhatsApp conversation</div></div>`;
+
+ const box=$("chatHistory");
+ const nearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<100;
+
+ box.innerHTML=rows.map(m=>`
+  <div class="bubble ${isIncoming(m)?"":"out"}">
+   ${esc(textOf(m))}
+   <div class="small">${esc(timeText(m))}${m.status?" · "+esc(m.status):""}</div>
+  </div>`).join("")||"<div style='text-align:center;color:#667781;padding:20px'>No messages yet</div>";
+
+ if(nearBottom)box.scrollTop=box.scrollHeight;
+
+ if(window.innerWidth<=700){
+  $("chatSidebar").style.display="none";
+  $("chatMain").style.display="flex";
+ }else{
+  $("chatSidebar").style.display="block";
+  $("chatMain").style.display="flex";
+ }
+}
+
+async function enableNotifications(){
+ if(!("Notification" in window)){
+  alert("Browser notifications supported नाहीत.");
+  return;
+ }
+ const p=await Notification.requestPermission();
+ setStatus("dashStatus",p==="granted"?"Notifications enabled.":"Notification permission दिली नाही.");
+ if(p==="granted")new Notification("A K Properties",{body:"Notifications enabled."});
+}
+
+function notifyIncoming(rows){
+ if(!("Notification" in window)||Notification.permission!=="granted")return;
+ rows.forEach(m=>{
+  try{
+   const n=new Notification("New WhatsApp message — "+phoneOf(m),{
+    body:textOf(m)||"New message",
+    tag:messageKey(m)
+   });
+   n.onclick=()=>{
+    window.focus();
+    document.querySelector('[data-page="inbox"]').click();
+    openChat(phoneOf(m));
+    n.close();
+   };
+  }catch{}
+ });
+}
+
+async function loadMessages(manual=false){
+ if(polling)return;
+ polling=true;
+
+ try{
+  const d=await request("/messages");
+  const rows=Array.isArray(d)?d:Array.isArray(d.messages)?d.messages:Array.isArray(d.data)?d.data:[];
+
+  const fresh=initialized
+   ?rows.filter(m=>isIncoming(m)&&!seenIncoming.has(messageKey(m)))
+   :[];
+
+  messages=rows;
+
+  if(!initialized){
+   rows.filter(isIncoming).forEach(m=>seenIncoming.add(messageKey(m)));
+   initialized=true;
+   saveSeen();
+  }else if(fresh.length){
+   fresh.forEach(m=>unreadIncoming.add(messageKey(m)));
+   saveUnread();
+   fresh.forEach(m=>seenIncoming.add(messageKey(m)));
+   saveSeen();
+   notifyIncoming(fresh);
+  }
+
+  $("total").textContent=messages.length;
+  $("contactCount").textContent=new Set(messages.map(phoneOf).filter(Boolean)).size;
+  $("incomingCount").textContent=messages.filter(isIncoming).length;
+  $("outgoingCount").textContent=messages.filter(m=>!isIncoming(m)).length;
+
+  setStatus("inboxStatus",fresh.length
+   ?fresh.length+" new incoming message(s)."
+   :"Loaded "+messages.length+" messages · "+new Date().toLocaleTimeString());
+
+  setStatus("dashStatus","API connected. "+messages.length+" message records.");
+  renderChats();
+
+ }catch(e){
+  setStatus("inboxStatus","Messages endpoint error: "+e.message);
+  setStatus("dashStatus","Messages API: "+e.message);
+ }finally{
+  polling=false;
+ }
+}
+
+async function sendReply(){
+ try{
+  if(!selectedChat)throw Error("आधी customer निवडा.");
+  const text=$("replyText").value.trim();
+  const file=$("chatFile").files?.[0];
+  if(!text&&!file)throw Error("Message लिहा किंवा photo/PDF attach करा.");
+
+  const chosen=numbers[Number($("sendNumber").value)]||numbers[0];
+  if(!chosen||!chosen.id)throw Error("या Project चा WhatsApp नंबर आधी Sync करा.");
+
+  const phoneNumberId=String(chosen.id);
+  const btn=$("replyButton");
+  btn.disabled=true;
+  setStatus("replyStatus",file?"Sending attachment...":"Sending message...");
+
+  let result;
+
+  if(file){
+   const allowed=["image/jpeg","image/png","image/webp","application/pdf"].includes(file.type)||/\.(pdf|jpe?g|png|webp)$/i.test(file.name);
+   if(!allowed)throw Error("फक्त JPG, PNG, WEBP किंवा PDF निवडा.");
+   if(file.size>15*1024*1024)throw Error("फाइल 15 MB पेक्षा लहान असावी.");
+
+   const form=new FormData();
+   form.append("to",selectedChat);
+   form.append("phoneNumberId",phoneNumberId);
+   form.append("caption",text);
+   form.append("file",file,file.name);
+   result=await request("/send-media",{method:"POST",body:form});
+
+  }else{
+   result=await request("/send",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+     to:selectedChat,text,phoneNumberId,phone_number_id:phoneNumberId
+    })
+   });
+  }
+
+  if(result.success===false)throw Error(result.error||"Message failed");
+
+  $("replyText").value="";
+  $("chatFile").value="";
+  $("chatFileName").textContent="No file selected";
+  setStatus("replyStatus","Request accepted by Worker. Delivery status तपासा.");
+  await loadMessages(true);
+
+ }catch(e){
+  setStatus("replyStatus","Send failed: "+e.message);
+ }finally{
+  $("replyButton").disabled=false;
+ }
+}
+
+function addLead(){
+ const name=$("leadName").value.trim();
+ const phone=$("leadPhone").value.replace(/\D/g,"");
+ const notes=$("leadNotes").value.trim();
+
+ if(!name||!/^\d{8,15}$/.test(phone)){
+  setStatus("leadStatus","Name आणि country code सहित phone भरा.");
+  return;
+ }
+
+ leads.unshift({name,phone,notes,project:PROJECTS[activeProject].name,createdAt:new Date().toISOString()});
+ localStorage.setItem(LEAD_KEY,JSON.stringify(leads));
+ $("leadName").value="";
+ $("leadPhone").value="";
+ $("leadNotes").value="";
+ renderLeads();
+}
+
+function renderLeads(){
+ const q=($("leadSearch").value||"").toLowerCase();
+ const rows=leads.filter(l=>(l.name+" "+l.phone+" "+l.notes+" "+l.project).toLowerCase().includes(q));
+ $("leadCount").textContent=leads.length;
+
+ $("leadTable").innerHTML=`<table><thead><tr><th>Name</th><th>Phone</th><th>Project</th><th>Notes</th><th>Action</th></tr></thead><tbody>${rows.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.phone)}</td><td>${esc(l.project)}</td><td>${esc(l.notes)}</td><td><button class="danger" onclick="deleteLead('${esc(l.phone)}')">Delete</button></td></tr>`).join("")}</tbody></table>`;
+}
+
+function deleteLead(phone){
+ if(!confirm("हा contact delete करायचा?"))return;
+ leads=leads.filter(l=>l.phone!==phone);
+ localStorage.setItem(LEAD_KEY,JSON.stringify(leads));
+ renderLeads();
+}
+
+function downloadCSV(name,rows){
+ const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+ const a=document.createElement("a");a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);
+}
+
+function exportLeads(){
+ downloadCSV("ak-properties-contacts.csv",[["Name","Phone","Notes","Project"],...leads.map(l=>[l.name,l.phone,l.notes,l.project])]);
+}
+
+async function importLeads(){
+ const f=$("leadFile").files[0];
+ if(!f){setStatus("leadStatus","CSV निवडा.");return}
+ const lines=(await f.text()).split(/\r?\n/).filter(Boolean);
+ if(lines.length<2){setStatus("leadStatus","CSV मध्ये header आणि contacts आवश्यक आहेत.");return}
+
+ const parse=line=>line.split(",").map(v=>v.trim().replace(/^"|"$/g,""));
+ const header=parse(lines[0]).map(v=>v.toLowerCase());
+ const ni=header.findIndex(v=>["name","customer name"].includes(v));
+ const pi=header.findIndex(v=>["phone","mobile","phone number"].includes(v));
+ const oi=header.findIndex(v=>["notes","project"].includes(v));
+
+ if(ni<0||pi<0){setStatus("leadStatus","CSV मध्ये Name आणि Phone columns आवश्यक.");return}
+
+ for(const line of lines.slice(1)){
+  const c=parse(line),name=c[ni]||"",phone=(c[pi]||"").replace(/\D/g,"");
+  if(name&&/^\d{8,15}$/.test(phone)&&!leads.some(l=>l.phone===phone)){
+   leads.push({name,phone,notes:oi>=0?c[oi]:"",project:PROJECTS[activeProject].name});
+  }
+ }
+
+ localStorage.setItem(LEAD_KEY,JSON.stringify(leads));
+ renderLeads();
+ setStatus("leadStatus","CSV import complete.");
+}
+
+async function loadReports(){
+ try{
+  const q=new URLSearchParams();
+  if($("fromDate").value)q.set("from",$("fromDate").value);
+  if($("toDate").value)q.set("to",$("toDate").value);
+  if($("direction").value)q.set("direction",$("direction").value);
+  if($("reportFilter").value)q.set("status",$("reportFilter").value);
+  q.set("limit","1000");
+
+  const d=await request("/reports?"+q.toString());
+  const rows=Array.isArray(d.messages)?d.messages:[];
+
+  $("reportTable").innerHTML=`<table><thead><tr><th>Phone</th><th>Message</th><th>Direction</th><th>Status</th><th>Time</th></tr></thead><tbody>${rows.map(m=>`<tr><td>${esc(phoneOf(m))}</td><td>${esc(textOf(m))}</td><td>${esc(m.direction||"")}</td><td>${esc(m.status||"unknown")}</td><td>${esc(m.timestamp||m.created_at||"")}</td></tr>`).join("")}</tbody></table>`;
+  setStatus("reportStatus",rows.length+" report records loaded.");
+ }catch(e){
+  setStatus("reportStatus","Reports API error: "+e.message);
+ }
+}
+
+function exportReports(){
+ const table=$("reportTable").querySelector("table");
+ if(!table){setStatus("reportStatus","आधी Reports load करा.");return}
+ downloadCSV("ak-properties-reports.csv",[...table.rows].map(row=>[...row.cells].map(c=>c.innerText)));
+}
+
+async function syncAll(){
+ setStatus("connection","Syncing "+PROJECTS[activeProject].name+"...");
+ await Promise.all([syncTemplates(),syncNumbers(),loadMessages()]);
+ setStatus("connection","Sync attempted · "+PROJECTS[activeProject].name);
+}
+
+const pageHistory=[];
+let currentPage="dashboard";
+
+function showPage(page,remember=true){
+ const target=document.getElementById(page);
+ if(!target)return;
+ if(remember&&currentPage!==page)pageHistory.push(currentPage);
+ currentPage=page;
+
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===page));
+
+ const navButton=document.querySelector('nav button[data-page="'+page+'"]');
+ if(navButton)navButton.focus({preventScroll:true});
+ if(page==="templates")syncTemplates();
+ if(page==="inbox")loadMessages(true);
+ if(page==="reports")loadReports();
+ if(page==="leads")renderLeads();
+}
+
+function goBack(){
+ const previous=pageHistory.pop();
+ showPage(previous||"dashboard",false);
+}
+
+document.querySelectorAll("nav button").forEach(btn=>btn.addEventListener("click",()=>showPage(btn.dataset.page,true)));
+
+$("chatFile").addEventListener("change",()=>{
+ const f=$("chatFile").files[0];
+ $("chatFileName").textContent=f?f.name+" ("+(f.size/1024/1024).toFixed(2)+" MB)":"No file selected";
+});
+
+$("apiUrl").value=projectUrls[activeProject]||"";
+renderNumbers();
+renderTemplates();
+renderVariables();
+renderLeads();
+renderChats();
+syncAll();
+setInterval(()=>loadMessages(false),3000);
+setInterval(()=>{syncTemplates();syncNumbers()},300000);
+
+window.addEventListener("resize",()=>{
+ if(!selectedChat)showChatList();
+ else if(window.innerWidth>700){
+  $("chatSidebar").style.display="block";
+  $("chatMain").style.display="flex";
+ }
+});
+</script>
+</body>
+</html>
+</section>
