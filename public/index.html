@@ -83,19 +83,19 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
   <button id="backButton" type="button" onclick="goBack()" style="background:#ffffff;color:#075e54;border:1px solid #dce5e0;font-weight:bold">← Back</button>
   <div>
-  <label for="project" style="color:white">Project:</label>
-  <select id="project" onchange="switchProject(this.value)">
-   <option value="newlaunch">New Launch</option>
-   <option value="dosti">Dosti Group</option>
-   <option value="godrej">Godrej Properties</option>
-   <option value="delta">Delta Group</option>
-   <option value="raheja">Raheja Group</option>
-   <option value="paradise">Paradise Group</option>
-   <option value="domus">Domus</option>
-   <option value="platinum">Platinum</option>
-   <option value="piramal">Piramal</option>
-  </select>
-  <div id="connection" style="font-size:12px">Checking API...</div>
+   <label for="project" style="color:white">Project:</label>
+   <select id="project" onchange="switchProject(this.value)">
+    <option value="newlaunch">New Launch</option>
+    <option value="dosti">Dosti Group</option>
+    <option value="godrej">Godrej Properties</option>
+    <option value="delta">Delta Group</option>
+    <option value="raheja">Raheja Group</option>
+    <option value="paradise">Paradise Group</option>
+    <option value="domus">Domus</option>
+    <option value="platinum">Platinum</option>
+    <option value="piramal">Piramal</option>
+   </select>
+   <div id="connection" style="font-size:12px">Checking API...</div>
   </div>
  </div>
 </header>
@@ -541,7 +541,7 @@ function timeText(m){
  return t?new Date(t).toLocaleString():"";
 }
 
-/* Customer name lookup: use the name supplied by the Worker or saved CRM contact. */
+/* Customer name: Worker data किंवा CRM मध्ये उपलब्ध असलेले नाव वापरा. */
 function customerName(phone,rows=[]){
  const candidates=[
   ...rows,
@@ -576,9 +576,7 @@ function renderChats(){
 
  $("chatContacts").innerHTML=chats.map(c=>`
   <div class="chat-contact ${c.unread?"has-unread ":""}${selectedChat===c.phone?"selected":""}" onclick="openChat('${esc(c.phone)}')">
-   <b>${esc(c.name)}
-    ${c.unread?'<span class="unread-badge">NEW</span>':""}
-   </b>
+   <b>${esc(c.name)} ${c.unread?'<span class="unread-badge">NEW</span>':""}</b>
    <span class="preview-text">${esc(textOf(c.last)||"[Message]")}</span>
    <div class="small">${esc(c.phone)} · ${esc(timeText(c.last))}</div>
   </div>`).join("")||"<p style='padding:12px'>No chats found.</p>";
