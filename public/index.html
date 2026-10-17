@@ -2,236 +2,415 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A K Properties WhatsApp Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A K Properties | WhatsApp Marketing Panel</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f1f6f5;color:#143e37}
-header{background:#075e54;color:white;padding:18px}
-header h2{margin:0 0 5px}
-.project-bar{background:#e2f1eb;padding:15px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.project-bar select{max-width:400px}
-.layout{display:flex;min-height:80vh}
-nav{width:235px;flex-shrink:0;background:#123f38;padding:14px}
-nav button{display:block;width:100%;text-align:left;background:transparent;color:white;margin-bottom:7px}
-button{padding:11px 15px;border:0;border-radius:8px;cursor:pointer;font-size:15px}
-nav button.active,button.primary{background:#07845f;color:white}
-main{padding:24px;flex:1;min-width:0}
-.page{display:none}
-.page.active{display:block}
-.card,.stat{background:white;border-radius:13px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #0000000b}
-.stats{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:12px}
-.stat strong{display:block;font-size:26px;margin-top:12px}
-label{display:block;font-weight:bold;margin:13px 0 7px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #ccd8d4;border-radius:8px;background:white;font:inherit}
-input[type=checkbox]{width:auto}
-textarea{min-height:100px}
-.status{padding:12px;background:#e7f4ee;border-radius:8px;margin-top:12px;overflow-wrap:anywhere}
-.error{background:#ffeded;color:#a32121}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.chat-layout{display:grid;grid-template-columns:minmax(180px,1fr) 2fr;gap:14px}
-#chatHistory{min-height:200px;max-height:400px;overflow:auto;background:#f5f0e8;padding:12px;border-radius:8px}
-.message{background:white;padding:10px;margin:8px 0;border-radius:8px;overflow-wrap:anywhere}
-.message.sent{background:#d9f7d1;margin-left:12%}
-.message.received{margin-right:12%}
-.list-item{padding:12px;border-bottom:1px solid #e1e8e5;cursor:pointer;overflow-wrap:anywhere}
-small{color:#60756e}
-@media(max-width:900px){
- .layout{display:block}
- nav{width:100%;display:flex;flex-wrap:wrap;gap:5px}
- nav button{width:auto;margin:0}
- main{padding:12px}
- .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
- .chat-layout,.grid2{grid-template-columns:1fr}
+:root {
+  --primary:#075e54;
+  --secondary:#128c7e;
+  --bg:#f3f6f9;
+  --white:#ffffff;
+  --text:#202938;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --danger:#dc2626;
+  --success:#15803d;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header {
+  background:var(--primary);
+  color:white;
+  padding:18px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+header h1 { margin:0; font-size:22px; }
+header p { margin:5px 0 0; font-size:13px; opacity:.9; }
+header select {
+  max-width:230px;
+  background:white;
+  color:#111827;
+}
+.layout {
+  display:flex;
+  min-height:calc(100vh - 75px);
+}
+.sidebar {
+  width:220px;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:15px 10px;
+  flex-shrink:0;
+}
+.nav-btn {
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#374151;
+  padding:13px 12px;
+  margin-bottom:5px;
+  border-radius:8px;
+  text-align:left;
+  cursor:pointer;
+  font-size:14px;
+}
+.nav-btn:hover,.nav-btn.active {
+  background:#e6f4f1;
+  color:var(--primary);
+  font-weight:bold;
+}
+main {
+  flex:1;
+  min-width:0;
+  padding:22px;
+}
+.page { display:none; }
+.page.active { display:block; }
+h2 { margin:0 0 18px; font-size:22px; }
+h3 { margin:0 0 12px; font-size:16px; }
+.cards {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(130px,1fr));
+  gap:14px;
+  margin-bottom:20px;
+}
+.card,.panel {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px;
+  box-shadow:0 2px 6px rgba(0,0,0,.03);
+}
+.card .label { color:var(--muted); font-size:13px; }
+.card .number {
+  font-size:26px;
+  font-weight:bold;
+  margin-top:10px;
+  overflow-wrap:anywhere;
+}
+.grid-2 {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+label {
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin:12px 0 6px;
+}
+input,select,textarea {
+  width:100%;
+  padding:11px;
+  border:1px solid #d1d5db;
+  border-radius:7px;
+  font-size:14px;
+  background:#fff;
+  color:#111827;
+}
+textarea { resize:vertical; min-height:90px; }
+button {
+  border:0;
+  border-radius:7px;
+  padding:11px 15px;
+  font-size:14px;
+  cursor:pointer;
+}
+.btn {
+  background:var(--primary);
+  color:white;
+  margin-top:12px;
+}
+.btn:hover { background:var(--secondary); }
+.btn-light {
+  background:#e5e7eb;
+  color:#111827;
+}
+.btn-danger { background:var(--danger); color:white; }
+.status {
+  margin-top:12px;
+  padding:10px;
+  border-radius:7px;
+  background:#f3f4f6;
+  font-size:13px;
+  overflow-wrap:anywhere;
+}
+.status.success { background:#dcfce7; color:#166534; }
+.status.error { background:#fee2e2; color:#991b1b; }
+.small { font-size:12px; color:var(--muted); }
+.list {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
+}
+.list-item {
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow-wrap:anywhere;
+}
+.table-wrap { overflow-x:auto; }
+table {
+  border-collapse:collapse;
+  width:100%;
+  font-size:13px;
+}
+th,td {
+  border-bottom:1px solid var(--border);
+  padding:10px;
+  text-align:left;
+  vertical-align:top;
+}
+th { background:#f9fafb; }
+.hidden { display:none !important; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; }
+@media(max-width:900px) {
+  .cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .sidebar { width:175px; }
+  main { padding:14px; }
+}
+@media(max-width:600px) {
+  .layout { display:block; }
+  .sidebar {
+    width:100%;
+    display:flex;
+    overflow-x:auto;
+    border-right:0;
+    border-bottom:1px solid var(--border);
+    padding:8px;
+  }
+  .nav-btn {
+    width:auto;
+    white-space:nowrap;
+    margin:0 4px 0 0;
+  }
+  .grid-2 { grid-template-columns:1fr; }
+  .cards { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+  .card,.panel { padding:13px; }
+  header { padding:15px; }
+  header h1 { font-size:19px; }
+  .card .number { font-size:21px; }
 }
 </style>
 </head>
 <body>
-
 <header>
-<h2>A K PROPERTIES</h2>
-<div>WhatsApp Marketing Dashboard</div>
+  <div>
+    <h1>A K Properties</h1>
+    <p>WhatsApp Marketing Dashboard</p>
+  </div>
+  <div>
+    <label for="projectSelect">Select Project</label>
+    <select id="projectSelect">
+      <option value="newlaunch">New Launch</option>
+      <option value="dosti">Dosti Group</option>
+      <option value="godrej">Godrej</option>
+      <option value="delta">Delta</option>
+      <option value="raheja">Raheja</option>
+      <option value="paradise">Paradise</option>
+      <option value="domus">Domus</option>
+      <option value="platinum">Platinum</option>
+      <option value="piramal">Piramal</option>
+    </select>
+  </div>
 </header>
-
-<div class="project-bar">
-<strong>Active Project:</strong>
-<select id="projectSelect" onchange="switchProject()">
-<option value="newlaunch">New Launch</option>
-<option value="dosti">Dosti Group</option>
-<option value="godrej">Godrej Properties</option>
-<option value="delta">Delta Group</option>
-<option value="today">Today Group</option>
-<option value="raheja">Raheja Group</option>
-<option value="paradise">Paradise Group</option>
-<option value="domus">Domus</option>
-<option value="platinum">Platinum</option>
-<option value="piramal">Piramal</option>
-</select>
-<span id="projectLabel">New Launch</span>
-</div>
-
 <div class="layout">
-<nav>
-<button class="active" data-page="dashboard">Dashboard</button>
-<button data-page="campaign">Campaign / Blast</button>
-<button data-page="chat">Live Chat</button>
-<button data-page="crm">CRM / Contacts</button>
-<button data-page="reports">Reports</button>
-<button data-page="templates">Templates</button>
-<button data-page="settings">API Settings</button>
-</nav>
+  <aside class="sidebar">
+    <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+    <button class="nav-btn" data-page="campaigns">📤 Campaigns</button>
+    <button class="nav-btn" data-page="chat">💬 Live Chat</button>
+    <button class="nav-btn" data-page="crm">👥 CRM / Leads</button>
+    <button class="nav-btn" data-page="templates">📝 Templates</button>
+    <button class="nav-btn" data-page="reports">📈 Reports</button>
+    <button class="nav-btn" data-page="settings">⚙️ API Settings</button>
+  </aside>
+  <main>
+    <section id="dashboard" class="page active">
+      <h2>Dashboard Overview</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="label">Total Messages</div>
+          <div class="number" id="totalMessages">0</div>
+        </div>
+        <div class="card">
+          <div class="label">Outgoing Messages</div>
+          <div class="number" id="outgoingMessages">0</div>
+        </div>
+        <div class="card">
+          <div class="label">Incoming Messages</div>
+          <div class="number" id="incomingMessages">0</div>
+        </div>
+        <div class="card">
+          <div class="label">Saved Leads</div>
+          <div class="number" id="savedLeads">0</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>API Connection Status</h3>
+        <div id="dashboardStatus" class="status">Checking connection...</div>
+        <button class="btn" id="refreshDashboardBtn">Refresh Dashboard</button>
+      </div>
+    </section> 
+    <section id="campaigns" class="page">
+      <h2>Send WhatsApp Campaign</h2>
+      <div class="panel">
+        <div class="grid-2">
+          <div>
+            <label for="apiUrl">Worker API URL</label>
+            <input id="apiUrl" type="url"
+              value="https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"
+              placeholder="https://your-worker.workers.dev">
+          </div>
+          <div>
+            <label for="phoneNumber">Sending WhatsApp Number</label>
+            <select id="phoneNumber">
+              <option value="">Loading sending numbers...</option>
+            </select>
+          </div>
+          <div>
+            <label for="templateName">Approved Template</label>
+            <select id="templateName">
+              <option value="">Loading approved templates...</option>
+            </select>
+          </div>
+          <div>
+            <label for="templateLanguage">Template Language</label>
+            <input id="templateLanguage" value="en" placeholder="en">
+          </div>
+        </div>
 
-<main>
-<section class="page active" id="dashboard">
-<h2>Dashboard</h2>
-<div class="card">Active Project: <strong id="dashProject">New Launch</strong></div>
-<div class="stats">
-<div class="stat">Total Messages<strong id="totalMessages">0</strong></div>
-<div class="stat">Unique Contacts<strong id="uniqueContacts">0</strong></div>
-<div class="stat">Incoming Messages<strong id="incomingMessages">0</strong></div>
-<div class="stat">Outgoing Messages<strong id="outgoingMessages">0</strong></div>
-<div class="stat">Saved Leads<strong id="savedLeads">0</strong></div>
-</div>
-<div class="card">
-<button class="primary" onclick="refreshDashboard()">Refresh Dashboard</button>
-<div class="status" id="dashboardStatus">Ready</div>
-</div>
-</section>
+        <label for="recipientNumbers">Client WhatsApp Numbers</label>
+        <textarea id="recipientNumbers"
+          placeholder="919876543210&#10;919876543211"></textarea>
+        <p class="small">प्रत्येक नंबर नवीन ओळीत टाका. Country code आवश्यक आहे.</p>
 
-<section class="page" id="campaign">
-<h2>WhatsApp Campaign / Blast</h2>
-<div class="card">
-<label>Sending WhatsApp Number</label>
-<select id="phoneNumber">
-<option value="">Select sending number</option>
-</select>
-<label>Approved Template</label>
-<select id="templateName" onchange="showTemplateFields()">
-<option value="">Select approved template</option>
-</select>
-<label>Template Language</label>
-<input id="templateLanguage" value="en_US">
-<label>Recipient Mobile Numbers — one per line</label>
-<textarea id="recipientNumbers" placeholder="919876543210"></textarea>
-<div id="templateFields"></div>
-<label>Image URL (optional)</label>
-<input id="imageUrl" placeholder="https://example.com/image.jpg">
-<label><input type="checkbox" id="optIn"> Recipients have opted in.</label>
-<button class="primary" onclick="sendCampaign()">Send Campaign</button>
-<div class="status" id="sendResult">Ready</div>
-</div>
-</section>
+        <label for="imageUrl">Header Image URL (optional)</label>
+        <input id="imageUrl" type="url"
+          placeholder="https://example.com/property.jpg">
 
-<section class="page" id="chat">
-<h2>Live Chat — Message History</h2>
-<div class="card">
-<label>Search Mobile Number</label>
-<input id="chatSearch" placeholder="Enter mobile number">
-<button class="primary" onclick="loadMessages()">Refresh Messages</button>
-<div class="status" id="chatStatus">Ready</div>
-<strong>Total Messages: <span id="chatTotal">0</span></strong>
-<br><strong>Sent Messages: <span id="chatSent">0</span></strong>
-<p><small id="chatLoaded">Loaded: 0</small></p>
-</div>
-<div class="card chat-layout">
-<div>
-<h3>Contacts</h3>
-<div id="contactsList">No contacts loaded.</div>
-</div>
-<div>
-<h3 id="chatTitle">Select a contact</h3>
-<div id="chatHistory"></div>
-<label>Reply Message</label>
-<textarea id="replyText" placeholder="Type reply"></textarea>
-<button class="primary" onclick="sendReply()">Send Reply</button>
-<button onclick="closeChat()">Close Chat</button>
-</div>
-</div>
-</section>
+        <div class="panel" style="margin-top:16px">
+          <h3>Template Parameters</h3>
+          <p class="small">तुमच्या निवडलेल्या template मध्ये {{1}} ते {{11}} parameters आहेत. प्रत्येक field मध्ये संबंधित मजकूर भरा.</p>
+          <div id="templateFields" class="grid-2"></div>
+        </div>
 
-<section class="page" id="crm">
-<h2>CRM / Contacts</h2>
-<div class="card">
-<label>Customer Name</label>
-<input id="leadName" placeholder="Customer name">
-<label>Mobile Number</label>
-<input id="leadPhone" placeholder="919876543210">
-<label>Notes / Requirement</label>
-<textarea id="leadNote"></textarea>
-<button class="primary" onclick="saveLead()">Save Lead</button>
-</div>
-<div class="card">
-<h3>Saved Leads</h3>
-<div id="leadsList">No leads saved.</div>
-</div>
-</section>
+        <label>
+          <input id="optIn" type="checkbox" style="width:auto">
+          Clients ने WhatsApp marketing messages साठी संमती दिली आहे.
+        </label>
 
-<section class="page" id="reports">
-<h2>Reports & Message History</h2>
-<div class="card">
-<button class="primary" onclick="loadReports()">Refresh Reports</button>
-<button onclick="exportReports()">Export CSV</button>
-<div class="status" id="reportsStatus">Ready</div>
-<div id="reportsContent"></div>
-</div>
-</section>
+        <div class="actions">
+          <button class="btn" id="loadNumbersBtn" type="button">Load Numbers</button>
+          <button class="btn" id="loadTemplatesBtn" type="button">Load Templates</button>
+          <button class="btn" id="sendCampaignBtn" type="button">Send Campaign</button>
+        </div>
+        <div id="sendResult" class="status">Campaign तयार करण्यासाठी template निवडा.</div>
+      </div>
+    </section>
 
-<section class="page" id="templates">
-<h2>WhatsApp Templates</h2>
-<div class="card">
-<button class="primary" onclick="loadTemplates()">Refresh Templates</button>
-<div class="status" id="templateStatus">Not loaded.</div>
-<div id="templatesList"></div>
-</div>
-</section>
+    <section id="chat" class="page">
+      <h2>Live Chat</h2>
+      <div class="panel">
+        <label for="chatSearch">Search Client Number</label>
+        <input id="chatSearch" placeholder="Enter mobile number">
+        <button class="btn" id="searchChatBtn" type="button">Search Messages</button>
+        <div id="chatStatus" class="status">Search करून message history पाहा.</div>
+        <div id="chatHistory" class="list"></div>
+        <label for="replyText">Reply Message</label>
+        <textarea id="replyText" placeholder="Type reply..."></textarea>
+        <button class="btn" id="sendReplyBtn" type="button">Send Reply</button>
+      </div>
+    </section>
 
-<section class="page" id="settings">
-<h2>API Settings</h2>
-<div class="card">
-<label>Active Project Worker URL</label>
-<input id="apiUrl" placeholder="https://your-worker.workers.dev">
-<label>WhatsApp Phone Number ID</label>
-<input id="phoneNumberId" placeholder="Meta Phone Number ID">
-<label>WhatsApp Business Account ID (WABA ID)</label>
-<input id="wabaId" placeholder="WABA ID">
-<button class="primary" onclick="saveSettings()">Save Settings</button>
-<button onclick="testConnection()">Test Connection</button>
-<div class="status" id="settingsStatus">Not tested.</div>
-</div>
-</section>
-</main>
-</div> 
- <script>
-const PROJECTS = {
-  newlaunch: {
-    name: "New Launch",
-    api: "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"
-  },
-  dosti: {
-    name: "Dosti Group",
-    api: "https://dosti-whatsapp-api.amolkolekar100000.workers.dev"
-  },
-  godrej: {name: "Godrej Properties", api: ""},
-  delta: {name: "Delta Group", api: ""},
-  today: {name: "Today Group", api: ""},
-  raheja: {name: "Raheja Group", api: ""},
-  paradise: {name: "Paradise Group", api: ""},
-  domus: {name: "Domus", api: ""},
-  platinum: {name: "Platinum", api: ""},
-  piramal: {name: "Piramal", api: ""}
-};
+    <section id="crm" class="page">
+      <h2>CRM / Leads</h2>
+      <div class="panel">
+        <div class="grid-2">
+          <div>
+            <label for="leadName">Client Name</label>
+            <input id="leadName" placeholder="Client name">
+          </div>
+          <div>
+            <label for="leadPhone">WhatsApp Number</label>
+            <input id="leadPhone" placeholder="919876543210">
+          </div>
+        </div>
+        <label for="leadNote">Notes / Interested Project</label>
+        <textarea id="leadNote" placeholder="Project, budget, follow-up notes"></textarea>
+        <button class="btn" id="saveLeadBtn" type="button">Save Lead</button>
+        <div id="crmStatus" class="status">Lead details येथे सेव्ह करा.</div>
+        <div id="leadsList" class="list"></div>
+      </div>
+    </section>
 
-let activeProject = "newlaunch";
-let API = PROJECTS.newlaunch.api;
-let allMessages = [];
-let approvedTemplates = [];
-let reportRows = [];
-let selectedPhone = "";
-let totalCount = 0;
-let incomingCount = 0;
-let outgoingCount = 0;
+    <section id="templates" class="page">
+      <h2>Approved Templates</h2>
+      <div class="panel">
+        <button class="btn" id="refreshTemplatesBtn" type="button">Refresh Templates</button>
+        <div id="templateStatus" class="status">Templates load करण्यासाठी Refresh क्लिक करा.</div>
+        <div id="templatesList" class="list"></div>
+      </div>
+    </section>
+
+    <section id="reports" class="page">
+      <h2>Campaign Reports</h2>
+      <div class="panel">
+        <button class="btn" id="refreshReportsBtn" type="button">Refresh Reports</button>
+        <div id="reportsStatus" class="status">Reports लोड होत आहेत...</div>
+        <div id="reportsContent" class="list"></div>
+      </div>
+    </section>
+
+    <section id="settings" class="page">
+      <h2>API Settings</h2>
+      <div class="panel">
+        <label for="settingsApiUrl">Cloudflare Worker URL</label>
+        <input id="settingsApiUrl" type="url"
+          value="https://whatsapp-marketinf-api.amolkolekar100000.workers.dev">
+        <p class="small">Access Token या पेजवर टाकू नका. तो Cloudflare Worker Secrets मध्येच ठेवा.</p>
+        <div class="actions">
+          <button class="btn" id="saveSettingsBtn" type="button">Save API URL</button>
+          <button class="btn" id="testConnectionBtn" type="button">Test Connection</button>
+        </div>
+        <div id="settingsStatus" class="status">API connection तपासा.</div>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html> 
+<script>
+"use strict";
 
 const $ = id => document.getElementById(id);
+
+let API = "";
+let approvedTemplates = [];
+let sendingNumbers = [];
+let selectedMessages = [];
+let savedLeads = [];
+
+const projectApis = {
+  newlaunch: "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev",
+  dosti: "https://dosti-whatsapp-api.amolkolekar100000.workers.dev"
+};
+
+function showStatus(id, message, type = "") {
+  const el = $(id);
+  if (!el) return;
+  el.textContent = message;
+  el.className = "status" + (type ? " " + type : "");
+}
 
 function esc(value) {
   return String(value ?? "").replace(/[&<>"']/g, ch => ({
@@ -240,602 +419,409 @@ function esc(value) {
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#39;"
-  })[ch]);
+  }[ch]));
 }
 
-function digits(value) {
-  return String(value ?? "").replace(/\D/g, "");
-}
-
-function status(id, message, error = false) {
-  const el = $(id);
-  if (!el) return;
-  el.textContent = message;
-  el.classList.toggle("error", error);
-}
-
-function phoneOf(m) {
-  return m.phone || m.to || m.from || m.contact || m.wa_id || "";
-}
-
-function directionOf(m) {
-  return String(m.direction || m.type || "").toLowerCase();
-}
-
-function timeOf(m) {
-  return m.created_at || m.timestamp || m.createdAt || "";
+function getApiUrl() {
+  return ($("apiUrl")?.value || "").trim().replace(/\/+$/, "");
 }
 
 async function apiFetch(path, options = {}) {
-  if (!API) throw new Error("या Project साठी Worker URL सेट केलेली नाही.");
+  const base = getApiUrl();
+  if (!base) throw new Error("Worker API URL टाका.");
 
-  const response = await fetch(API.replace(/\/+$/, "") + path, options);
-  const data = await response.json().catch(() => ({}));
+  const response = await fetch(base + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
 
-  if (!response.ok) {
-    throw new Error(data.error || data.message || `HTTP ${response.status}`);
+  const raw = await response.text();
+  let data = {};
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    throw new Error("Worker ने valid JSON response दिला नाही.");
+  }
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.error || data.message || ("HTTP " + response.status));
   }
 
   return data;
 }
 
-function switchProject() {
-  activeProject = $("projectSelect").value;
-  const project = PROJECTS[activeProject];
-
-  API = project.api || "";
-  allMessages = [];
-  approvedTemplates = [];
-  reportRows = [];
-  selectedPhone = "";
-  totalCount = 0;
-  incomingCount = 0;
-  outgoingCount = 0;
-
-  $("projectLabel").textContent = project.name;
-  $("dashProject").textContent = project.name;
-  $("apiUrl").value = API;
-  $("phoneNumberId").value = "";
-  $("wabaId").value = "";
-
-  $("phoneNumber").innerHTML =
-    '<option value="">Select sending number</option>';
-  $("templateName").innerHTML =
-    '<option value="">Select approved template</option>';
-
-  updateDashboard();
-
-  if (!API) {
-    status("dashboardStatus", "या Project साठी Worker URL सेट करा.");
-    status("chatStatus", "Worker URL आवश्यक आहे.");
-    status("templateStatus", "Worker URL आवश्यक आहे.");
-    return;
+function getArray(data, keys) {
+  for (const key of keys) {
+    if (Array.isArray(data?.[key])) return data[key];
   }
-
-  refreshDashboard();
-  loadTemplates();
-  loadSendingNumbers();
+  return [];
 }
 
-function updateDashboard() {
-  const contacts = new Set(
-    allMessages.map(phoneOf).filter(Boolean).map(digits)
-  );
-
-  $("totalMessages").textContent = totalCount;
-  $("uniqueContacts").textContent = contacts.size;
-  $("incomingMessages").textContent = incomingCount;
-  $("outgoingMessages").textContent = outgoingCount;
-  $("chatTotal").textContent = totalCount;
-  $("chatSent").textContent = outgoingCount;
-  $("chatLoaded").textContent = "Loaded: " + allMessages.length;
-
-  const leads = getLeads().filter(l => l.project === activeProject);
-  $("savedLeads").textContent = leads.length;
+function getTemplateName(t) {
+  return t.name || t.templateName || t.id || "";
 }
 
-function renderContacts() {
-  const box = $("contactsList");
-  if (!box) return;
-
-  const contacts = new Map();
-
-  allMessages.forEach(m => {
-    const phone = phoneOf(m);
-    if (!phone) return;
-
-    if (!contacts.has(phone)) {
-      contacts.set(phone, {
-        phone,
-        lastMessage: "",
-        count: 0
-      });
-    }
-
-    const c = contacts.get(phone);
-    c.count++;
-    c.lastMessage = m.text || m.message || m.body || c.lastMessage;
-  });
-
-  const search = digits($("chatSearch")?.value || "");
-
-  box.innerHTML = [...contacts.values()]
-    .filter(c => !search || digits(c.phone).includes(search))
-    .map(c => `
-      <div class="list-item" data-phone="${esc(c.phone)}">
-        <strong>${esc(c.phone)}</strong>
-        <div>${esc(c.lastMessage || "Message content unavailable")}</div>
-        <small>${c.count} loaded messages</small>
-      </div>
-    `).join("") || "No contacts found.";
-
-  box.querySelectorAll("[data-phone]").forEach(el => {
-    el.addEventListener("click", () => openChat(el.dataset.phone));
-  });
+function getNumberId(n) {
+  return n.phoneNumberId || n.phone_number_id || n.id || "";
 }
 
-async function refreshDashboard() {
-  await loadMessages();
+function getNumberLabel(n) {
+  return n.displayPhoneNumber ||
+    n.display_phone_number ||
+    n.verifiedName ||
+    n.verified_name ||
+    getNumberId(n);
 }
 
-async function loadMessages() {
-  if (!API) {
-    status("chatStatus", "Worker URL सेट केलेली नाही.", true);
-    return;
-  }
+function renderTemplateFields(template) {
+  const container = $("templateFields");
+  if (!container) return;
 
-  status("chatStatus", "Loading messages...");
+  const body = (template?.components || []).find(c => c.type === "BODY");
+  const matches = body?.text?.match(/\{\{\d+\}\}/g) || [];
+  const count = matches.length || 11;
 
-  try {
-    const [messageData, reportData] = await Promise.all([
-      apiFetch("/messages?limit=1000&offset=0"),
-      apiFetch("/reports?limit=1&offset=0").catch(() => ({}))
-    ]);
+  container.innerHTML = "";
+  for (let i = 1; i <= count; i++) {
+    const wrap = document.createElement("div");
+    const label = document.createElement("label");
+    label.htmlFor = "param" + i;
+    label.textContent = "Parameter " + i;
 
-    allMessages = messageData.messages || messageData.data || [];
+    const input = document.createElement("input");
+    input.id = "param" + i;
+    input.dataset.parameter = String(i);
+    input.placeholder = "Parameter " + i;
 
-    const summary = reportData.summary || {};
-
-    totalCount = Number(
-      summary.total ?? messageData.totalCount ?? allMessages.length
-    );
-
-    incomingCount = Number(summary.incoming ?? 0);
-    outgoingCount = Number(summary.outgoing ?? 0);
-
-    if (summary.total === undefined &&
-        summary.incoming === undefined &&
-        summary.outgoing === undefined) {
-      incomingCount = allMessages.filter(m =>
-        directionOf(m).includes("incoming") ||
-        directionOf(m).includes("inbound")
-      ).length;
-
-      outgoingCount = allMessages.filter(m =>
-        directionOf(m).includes("outgoing") ||
-        directionOf(m).includes("outbound")
-      ).length;
-    }
-
-    updateDashboard();
-    renderContacts();
-    renderChatHistory();
-
-    status("chatStatus", "Messages loaded.");
-    status("dashboardStatus", "Dashboard refreshed successfully.");
-  } catch (error) {
-    status("chatStatus", "Loading failed: " + error.message, true);
-    status("dashboardStatus", "Connection failed: " + error.message, true);
-  }
-}
-
-async function testConnection() {
-  API = $("apiUrl").value.trim().replace(/\/+$/, "");
-
-  try {
-    const data = await apiFetch("/health");
-    status("settingsStatus", "API connected: " + JSON.stringify(data));
-  } catch (error) {
-    status("settingsStatus", "Connection failed: " + error.message, true);
-  }
-}
-
-function saveSettings() {
-  PROJECTS[activeProject].api =
-    $("apiUrl").value.trim().replace(/\/+$/, "");
-
-  API = PROJECTS[activeProject].api;
-
-  status("settingsStatus",
-    "Settings applied for this session. Refresh to verify connection.");
-
-  refreshDashboard();
-  loadTemplates();
-  loadSendingNumbers();
-}
-
-function getLeads() {
-  try {
-    return JSON.parse(localStorage.getItem("ak_property_leads") || "[]");
-  } catch {
-    return [];
-  }
-}
-
-document.querySelectorAll("nav button[data-page]").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll("nav button").forEach(b =>
-      b.classList.remove("active")
-    );
-
-    document.querySelectorAll(".page").forEach(p =>
-      p.classList.remove("active")
-    );
-
-    button.classList.add("active");
-    $(button.dataset.page).classList.add("active");
-
-    if (button.dataset.page === "chat") loadMessages();
-    if (button.dataset.page === "crm") showLeads();
-    if (button.dataset.page === "reports") loadReports();
-    if (button.dataset.page === "templates") loadTemplates();
-  });
-});
-</script> 
- async function loadTemplates() {
-  if (!API) return;
-
-  status("templateStatus", "Loading templates...");
-
-  try {
-    const data = await apiFetch("/templates");
-    approvedTemplates = data.templates || data.data || [];
-
-    $("templateName").innerHTML =
-      '<option value="">Select approved template</option>' +
-      approvedTemplates.map(t => {
-        const name = t.name || t.id || "";
-        return `<option value="${esc(name)}">${esc(name)}</option>`;
-      }).join("");
-
-    $("templatesList").innerHTML = approvedTemplates.map(t => `
-      <div class="list-item">
-        <strong>${esc(t.name || t.id)}</strong>
-        <div>Status: ${esc(t.status || "Unknown")}</div>
-        <small>Language: ${esc(t.language || "")}</small>
-      </div>
-    `).join("") || "No templates returned.";
-
-    status("templateStatus", "Templates loaded: " + approvedTemplates.length);
-  } catch (error) {
-    status("templateStatus", "Template API error: " + error.message, true);
+    wrap.append(label, input);
+    container.appendChild(wrap);
   }
 }
 
 async function loadSendingNumbers() {
-  if (!API) return;
+  showStatus("sendResult", "Sending numbers लोड होत आहेत...");
 
   try {
     const data = await apiFetch("/phone-numbers");
-    const numbers = data.phoneNumbers || data.data || [];
+    sendingNumbers = getArray(data, ["phoneNumbers", "data", "numbers"]);
 
-    $("phoneNumber").innerHTML =
-      '<option value="">Select sending number</option>' +
-      numbers.map(n => {
-        const id = n.id || n.phone_number_id || "";
-        const label = n.display_phone_number || n.verified_name || id;
-        return `<option value="${esc(id)}">${esc(label)}</option>`;
-      }).join("");
+    const select = $("phoneNumber");
+    select.innerHTML = "";
 
-    if (!numbers.length) {
-      status("sendResult", "No sending numbers returned by Worker.");
-    }
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = sendingNumbers.length
+      ? "Select sending number"
+      : "No sending numbers found";
+    select.appendChild(placeholder);
+
+    sendingNumbers.forEach(n => {
+      const id = getNumberId(n);
+      if (!id) return;
+
+      const option = document.createElement("option");
+      option.value = id;
+      option.textContent = getNumberLabel(n);
+      option.dataset.wabaId = n.wabaId || n.waba_id || "";
+      select.appendChild(option);
+    });
+
+    showStatus(
+      "sendResult",
+      "Sending numbers loaded: " + sendingNumbers.length,
+      "success"
+    );
   } catch (error) {
-    status("sendResult", "Sending number API error: " + error.message, true);
+    $("phoneNumber").innerHTML =
+      '<option value="">Unable to load numbers</option>';
+    showStatus("sendResult", "Numbers API error: " + error.message, "error");
   }
 }
 
-function showTemplateFields() {
-  const name = $("templateName").value;
-  const template = approvedTemplates.find(t =>
-    (t.name || t.id) === name
+async function loadTemplates() {
+  showStatus("templateStatus", "Approved templates लोड होत आहेत...");
+
+  try {
+    const data = await apiFetch("/templates");
+    approvedTemplates = getArray(data, ["templates", "data", "approvedTemplates"]);
+
+    const select = $("templateName");
+    select.innerHTML = "";
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = approvedTemplates.length
+      ? "Select approved template"
+      : "No templates found";
+    select.appendChild(placeholder);
+
+    approvedTemplates.forEach(t => {
+      const name = getTemplateName(t);
+      if (!name) return;
+
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    });
+
+    $("templatesList").innerHTML = approvedTemplates.map(t => {
+      const name = getTemplateName(t);
+      return '<div class="list-item"><strong>' + esc(name) +
+        '</strong><div class="small">Status: ' + esc(t.status || "Unknown") +
+        " | Language: " + esc(t.language || "en") +
+        "</div></div>";
+    }).join("") || '<div class="list-item">No templates returned.</div>';
+
+    showStatus(
+      "templateStatus",
+      "Templates loaded: " + approvedTemplates.length,
+      "success"
+    );
+  } catch (error) {
+    $("templateName").innerHTML =
+      '<option value="">Unable to load templates</option>';
+    showStatus("templateStatus", "Templates API error: " + error.message, "error");
+    showStatus("sendResult", "Templates API error: " + error.message, "error");
+  }
+}
+
+async function refreshDashboard() {
+  showStatus("dashboardStatus", "Connecting to Worker...");
+
+  try {
+    const health = await apiFetch("/health");
+    showStatus(
+      "dashboardStatus",
+      "API ACTIVE — " + (health.project || "WhatsApp Worker"),
+      "success"
+    );
+  } catch (error) {
+    showStatus("dashboardStatus", "Connection error: " + error.message, "error");
+  }
+
+  try {
+    const data = await apiFetch("/reports");
+    const report = data.summary || data.report || data.data || data;
+
+    const total =
+      report.totalMessages ?? report.total_messages ?? report.total ?? 0;
+    const outgoing =
+      report.outgoingMessages ?? report.outgoing_messages ?? report.outgoing ?? 0;
+    const incoming =
+      report.incomingMessages ?? report.incoming_messages ?? report.incoming ?? 0;
+
+    $("totalMessages").textContent = total;
+    $("outgoingMessages").textContent = outgoing;
+    $("incomingMessages").textContent = incoming;
+  } catch (error) {
+    console.warn("Reports load:", error.message);
+  }
+
+  $("savedLeads").textContent = savedLeads.length;
+}
+
+function switchPage(pageId) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.toggle("active", page.id === pageId);
+  });
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.page === pageId);
+  });
+}
+
+function switchProject() {
+  const project = $("projectSelect").value;
+  if (projectApis[project]) {
+    $("apiUrl").value = projectApis[project];
+    $("settingsApiUrl").value = projectApis[project];
+  } else {
+    showStatus(
+      "settingsStatus",
+      "या project साठी Worker URL configure केलेला नाही. योग्य URL Settings मध्ये भरा.",
+      "error"
+    );
+  }
+
+  loadSendingNumbers();
+  loadTemplates();
+  refreshDashboard();
+}
+
+$("projectSelect").addEventListener("change", switchProject);
+
+document.querySelectorAll(".nav-btn").forEach(btn => {
+  btn.addEventListener("click", () => switchPage(btn.dataset.page));
+});
+
+$("loadNumbersBtn").addEventListener("click", loadSendingNumbers);
+$("loadTemplatesBtn").addEventListener("click", loadTemplates);
+$("refreshTemplatesBtn").addEventListener("click", loadTemplates);
+$("refreshDashboardBtn").addEventListener("click", refreshDashboard);
+
+$("templateName").addEventListener("change", () => {
+  const selected = approvedTemplates.find(
+    t => getTemplateName(t) === $("templateName").value
   );
 
-  if (!template) {
-    $("templateFields").innerHTML = "";
+  if (selected) {
+    $("templateLanguage").value = selected.language || "en";
+    renderTemplateFields(selected);
+  }
+});
+
+$("saveSettingsBtn").addEventListener("click", () => {
+  const url = $("settingsApiUrl").value.trim().replace(/\/+$/, "");
+  if (!url.startsWith("https://")) {
+    showStatus("settingsStatus", "Valid HTTPS Worker URL टाका.", "error");
     return;
   }
 
-  const body = (template.components || [])
-    .filter(c => c.type === "BODY")
-    .map(c => c.text || "")
-    .join(" ");
+  $("apiUrl").value = url;
+  showStatus("settingsStatus", "Worker URL updated.", "success");
+});
 
-  const matches = body.match(/\{\{\d+\}\}/g) || [];
-  const count = new Set(matches).size;
+$("testConnectionBtn").addEventListener("click", async () => {
+  $("apiUrl").value = $("settingsApiUrl").value.trim().replace(/\/+$/, "");
+  try {
+    const data = await apiFetch("/health");
+    showStatus(
+      "settingsStatus",
+      "API connected: " + (data.project || "Worker active"),
+      "success"
+    );
+  } catch (error) {
+    showStatus("settingsStatus", "Connection failed: " + error.message, "error");
+  }
+});
 
-  $("templateFields").innerHTML =
-    Array.from({length: count}, (_, i) => `
-      <label>Template parameter {{${i + 1}}}</label>
-      <input id="param${i + 1}" placeholder="Enter value">
-    `).join("");
-}
+$("sendCampaignBtn").addEventListener("click", async () => {
+  const numbers = $("recipientNumbers").value
+    .split(/[\n,;]+/)
+    .map(n => n.trim().replace(/[+\s()-]/g, ""))
+    .filter(Boolean);
 
-function openChat(phone) {
-  selectedPhone = digits(phone);
-  $("chatTitle").textContent = selectedPhone;
-  renderChatHistory();
-}
+  const templateName = $("templateName").value;
+  const phoneNumberId = $("phoneNumber").value;
 
-function closeChat() {
-  selectedPhone = "";
-  $("chatTitle").textContent = "Select a contact";
-  $("chatHistory").innerHTML = "";
-}
-
-function renderChatHistory() {
-  const box = $("chatHistory");
-  if (!box) return;
-
-  const rows = allMessages.filter(m =>
-    digits(phoneOf(m)) === selectedPhone
-  );
-
-  box.innerHTML = rows.map(m => {
-    const direction = directionOf(m);
-    const sent = direction.includes("outgoing") ||
-                 direction.includes("outbound");
-    const message = m.text || m.message || m.body || "[Message]";
-
-    return `<div class="message ${sent ? "sent" : "received"}">
-      ${esc(message)}
-      <br><small>${esc(timeOf(m))}</small>
-    </div>`;
-  }).join("") || "No messages found for this contact.";
-}
-
-async function sendReply() {
-  const message = $("replyText").value.trim();
-
-  if (!selectedPhone) {
-    alert("आधी contact निवडा.");
+  if (!phoneNumberId) {
+    showStatus("sendResult", "आधी Sending WhatsApp Number निवडा.", "error");
+    return;
+  }
+  if (!templateName) {
+    showStatus("sendResult", "Approved Template निवडा.", "error");
+    return;
+  }
+  if (!numbers.length) {
+    showStatus("sendResult", "Client numbers टाका.", "error");
+    return;
+  }
+  if (!$("optIn").checked) {
+    showStatus("sendResult", "Client consent checkbox निवडा.", "error");
     return;
   }
 
-  if (!message) {
-    alert("Reply message लिहा.");
+  const parameters = Array.from(
+    $("templateFields").querySelectorAll("input")
+  ).map(input => input.value);
+
+  const selected = approvedTemplates.find(
+    t => getTemplateName(t) === templateName
+  );
+  const body = (selected?.components || []).find(c => c.type === "BODY");
+  const needed = (body?.text?.match(/\{\{\d+\}\}/g) || []).length;
+
+  if (needed && parameters.length < needed) {
+    showStatus("sendResult", "Template चे सर्व parameters उपलब्ध नाहीत. Template पुन्हा निवडा.", "error");
+    return;
+  }
+
+  showStatus(
+    "sendResult",
+    "Campaign थांबवली आहे: Worker चा multi-number routing व template payload format आधी validate करणे आवश्यक आहे.",
+    "error"
+  );
+});
+
+$("searchChatBtn").addEventListener("click", async () => {
+  const query = $("chatSearch").value.trim();
+  if (!query) {
+    showStatus("chatStatus", "Client number टाका.", "error");
     return;
   }
 
   try {
-    status("chatStatus", "Sending reply...");
-
-    const result = await apiFetch("/send", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        to: selectedPhone,
-        message
-      })
-    });
-
-    if (result.error) throw new Error(result.error);
-
-    $("replyText").value = "";
-    status("chatStatus", "Reply request submitted. Delivery status तपासा.");
-    await loadMessages();
-  } catch (error) {
-    status("chatStatus", "Reply failed: " + error.message, true);
-  }
-}
-
-async function sendCampaign() {
-  if (!API) {
-    alert("Project Worker URL सेट करा.");
-    return;
-  }
-
-  const recipients = $("recipientNumbers").value
-    .split(/\r?\n/)
-    .map(n => digits(n.trim()))
-    .filter(Boolean);
-
-  const templateName = $("templateName").value;
-  const language = $("templateLanguage").value.trim() || "en_US";
-  const imageUrl = $("imageUrl").value.trim();
-  const phoneNumberId = $("phoneNumber").value;
-
-  if (!$("optIn").checked) {
-    alert("फक्त opt-in दिलेल्या ग्राहकांनाच संदेश पाठवा.");
-    return;
-  }
-
-  if (!recipients.length || !templateName) {
-    alert("Recipient numbers आणि approved template निवडा.");
-    return;
-  }
-
-  if (recipients.some(n => n.length < 10 || n.length > 15)) {
-    alert("कृपया recipient mobile numbers तपासा.");
-    return;
-  }
-
-  const template = approvedTemplates.find(t =>
-    (t.name || t.id) === templateName
-  );
-
-  const body = (template?.components || [])
-    .filter(c => c.type === "BODY")
-    .map(c => c.text || "")
-    .join(" ");
-
-  const count = new Set(body.match(/\{\{\d+\}\}/g) || []).size;
-  const parameters = [];
-
-  for (let i = 1; i <= count; i++) {
-    const value = $("param" + i)?.value.trim() || "";
-    if (!value) {
-      alert(`Template parameter {{${i}}} भरा.`);
-      return;
-    }
-    parameters.push(value);
-  }
-
-  if (!confirm(`${recipients.length} ग्राहकांना campaign request पाठवायची?`)) {
-    return;
-  }
-
-  let accepted = 0;
-  let failed = 0;
-
-  for (const to of recipients) {
-    try {
-      const result = await apiFetch("/send-template", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          to,
-          templateName,
-          language,
-          imageUrl,
-          parameters,
-          phoneNumberId
-        })
-      });
-
-      if (result.error) throw new Error(result.error);
-      accepted++;
-    } catch (error) {
-      failed++;
-    }
-
-    status("sendResult",
-      `Requests accepted: ${accepted} | Failed: ${failed} | Total: ${recipients.length}`,
-      failed > 0
+    const data = await apiFetch("/messages");
+    const all = getArray(data, ["messages", "data", "results"]);
+    const filtered = all.filter(m =>
+      JSON.stringify(m).includes(query)
     );
+
+    $("chatHistory").innerHTML = filtered.map(m =>
+      '<div class="list-item">' + esc(JSON.stringify(m)) + "</div>"
+    ).join("") || '<div class="list-item">या number साठी history मिळाली नाही.</div>';
+
+    showStatus("chatStatus", "Messages found: " + filtered.length, "success");
+  } catch (error) {
+    showStatus("chatStatus", "Chat error: " + error.message, "error");
   }
+});
 
-  status("sendResult",
-    `Completed: ${accepted} accepted by Worker, ${failed} failed. Delivery status Reports मध्ये तपासा.`,
-    failed > 0
+$("sendReplyBtn").addEventListener("click", () => {
+  showStatus(
+    "chatStatus",
+    "Reply पाठवण्याआधी Worker चा योग्य send endpoint आणि recipient format तपासणे आवश्यक आहे.",
+    "error"
   );
+});
 
-  await loadMessages();
-}
-
-function saveLead() {
+$("saveLeadBtn").addEventListener("click", () => {
   const name = $("leadName").value.trim();
-  const phone = digits($("leadPhone").value);
+  const phone = $("leadPhone").value.trim();
   const note = $("leadNote").value.trim();
 
-  if (phone.length < 10 || phone.length > 15) {
-    alert("योग्य mobile number टाका.");
+  if (!name || !phone) {
+    showStatus("crmStatus", "Client name आणि phone number आवश्यक आहेत.", "error");
     return;
   }
 
-  const leads = getLeads();
-  leads.push({
-    name,
-    phone,
-    note,
-    project: activeProject,
-    createdAt: new Date().toISOString()
-  });
-
-  localStorage.setItem("ak_property_leads", JSON.stringify(leads));
+  savedLeads.push({name, phone, note});
+  $("savedLeads").textContent = savedLeads.length;
+  $("leadsList").innerHTML = savedLeads.map(lead =>
+    '<div class="list-item"><strong>' + esc(lead.name) +
+    '</strong><div>' + esc(lead.phone) +
+    '</div><div class="small">' + esc(lead.note) + "</div></div>"
+  ).join("");
 
   $("leadName").value = "";
   $("leadPhone").value = "";
   $("leadNote").value = "";
+  showStatus("crmStatus", "Lead या browser session मध्ये सेव्ह झाला.", "success");
+});
 
-  showLeads();
-  updateDashboard();
-  status("dashboardStatus", "Lead saved in this browser.");
-}
-
-function showLeads() {
-  const leads = getLeads().filter(l => l.project === activeProject);
-
-  $("leadsList").innerHTML = leads.map(l => `
-    <div class="list-item">
-      <strong>${esc(l.name || "Unnamed Lead")}</strong>
-      <div>${esc(l.phone)}</div>
-      <div>${esc(l.note || "")}</div>
-    </div>
-  `).join("") || "No leads saved.";
-
-  updateDashboard();
-}
-
-$("chatSearch").addEventListener("input", renderContacts);
-   async function loadReports() {
-  if (!API) {
-    status("reportsStatus", "Worker URL सेट केलेली नाही.", true);
-    return;
-  }
-
+$("refreshReportsBtn").addEventListener("click", async () => {
+  showStatus("reportsStatus", "Reports लोड होत आहेत...");
   try {
-    status("reportsStatus", "Loading reports...");
-
-    const result = await apiFetch("/reports?limit=1000&offset=0");
-    reportRows = result.messages || result.data || [];
-
-    const summary = result.summary || {};
-
-    $("reportsContent").innerHTML = `
-      <p>Total Messages: ${Number(summary.total ?? totalCount)}</p>
-      <p>Incoming Messages: ${Number(summary.incoming ?? incomingCount)}</p>
-      <p>Outgoing Messages: ${Number(summary.outgoing ?? outgoingCount)}</p>
-      <p>Records returned: ${reportRows.length}</p>
-    `;
-
-    status("reportsStatus", "Reports loaded successfully.");
+    const data = await apiFetch("/reports");
+    $("reportsContent").innerHTML =
+      '<div class="list-item"><pre style="white-space:pre-wrap;overflow-wrap:anywhere">' +
+      esc(JSON.stringify(data, null, 2)) + "</pre></div>";
+    showStatus("reportsStatus", "Reports loaded.", "success");
   } catch (error) {
-    status("reportsStatus", "Reports failed: " + error.message, true);
+    showStatus("reportsStatus", "Reports error: " + error.message, "error");
   }
-}
+});
 
-function exportReports() {
-  const rows = reportRows.length ? reportRows : allMessages;
-
-  if (!rows.length) {
-    alert("Export करण्यासाठी message records उपलब्ध नाहीत.");
-    return;
-  }
-
-  const keys = [
-    "id", "to", "from", "phone", "direction",
-    "status", "text", "message", "created_at", "timestamp"
-  ];
-
-  const cell = value =>
-    '"' + String(value ?? "").replace(/"/g, '""') + '"';
-
-  const csv = [
-    keys.join(","),
-    ...rows.map(row =>
-      keys.map(key => cell(row[key])).join(",")
-    )
-  ].join("\r\n");
-
-  const blob = new Blob(["\uFEFF" + csv], {
-    type: "text/csv;charset=utf-8"
-  });
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-
-  a.href = url;
-  a.download = activeProject + "-whatsapp-reports.csv";
-
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  URL.revokeObjectURL(url);
-}
-
-switchProject();
-</script>
+(async function init() {
+  $("settingsApiUrl").value = $("apiUrl").value;
+  renderTemplateFields(null);
+  await refreshDashboard();
+  await loadSendingNumbers();
+  await loadTemplates();
+})();
+</script> 
 </body>
-</html>
+</html> 
