@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>A K Properties | WhatsApp Marketing</title>
+<title>A K Properties | WhatsApp Marketing Dashboard</title>
 
 <style>
 *{box-sizing:border-box}
 body{margin:0;font:15px Arial,sans-serif;background:#f2f6f5;color:#19332e}
-header{background:#075e54;color:white;padding:17px 20px}
-.projectbar{background:#e1f1e9;padding:12px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.projectbar select{max-width:300px;margin:0}
+header{background:#075e54;color:white;padding:18px 20px}
+.projectbar{background:#e3f1eb;padding:12px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.projectbar select{max-width:280px;margin:0}
 .layout{display:flex;min-height:calc(100vh - 110px)}
-nav{width:210px;flex-shrink:0;background:#123b35;padding:12px}
+nav{background:#123b35;color:white;width:210px;flex-shrink:0;padding:12px}
 nav button{display:block;width:100%;text-align:left;background:transparent;color:white;margin:4px 0}
 button{padding:10px 13px;border:0;border-radius:7px;background:#087f5b;color:white;cursor:pointer;margin:3px}
 button:hover{opacity:.88}
@@ -21,17 +21,17 @@ main{padding:20px;flex:1;min-width:0}
 .view{display:none}
 .view.active{display:block}
 .panel,.card{background:white;border-radius:12px;padding:15px;margin-bottom:14px;box-shadow:0 2px 8px #0001}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
 input,textarea,select{width:100%;padding:10px;border:1px solid #ccd8d4;border-radius:7px;margin:6px 0 12px;font:inherit}
-textarea{min-height:85px}
+textarea{min-height:80px}
 label{font-weight:bold;display:block;margin-top:8px}
 .status{padding:10px;background:#e9f5ef;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
-.small{font-size:12px;color:#526963}
 .notice{background:#fff5d8;padding:12px;border-radius:8px;margin-bottom:14px}
+.small{font-size:12px;color:#526963}
 .tablewrap{overflow:auto}
 table{width:100%;border-collapse:collapse}
 th,td{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}
-.chatlayout{display:grid;grid-template-columns:minmax(220px,34%) minmax(0,1fr);height:65vh;min-height:420px;background:white;border:1px solid #ddd;border-radius:12px;overflow:hidden}
+.chatlayout{display:grid;grid-template-columns:minmax(210px,34%) minmax(0,1fr);height:65vh;min-height:420px;background:white;border:1px solid #ddd;border-radius:12px;overflow:hidden}
 .chatlist{overflow-y:auto;border-right:1px solid #ddd;padding:8px}
 .contact{padding:12px;border-bottom:1px solid #eee;cursor:pointer;overflow-wrap:anywhere}
 .contact:hover,.contact.selected{background:#e7f5ec}
@@ -58,255 +58,241 @@ th,td{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:any
 <body>
 
 <header>
-  <b>A K PROPERTIES</b><br>
-  WhatsApp Marketing Dashboard
+ <b>A K PROPERTIES</b><br>
+ WhatsApp Marketing Dashboard
 </header>
 
 <div class="projectbar">
-  <label for="projectSelect">Active Project:</label>
-  <select id="projectSelect" onchange="switchProject()">
-    <option value="newlaunch">New Launch</option>
-    <option value="dosti">Dosti Group</option>
-    <option value="godrej">Godrej</option>
-    <option value="delta">Delta</option>
-    <option value="today">Today</option>
-    <option value="raheja">Raheja</option>
-    <option value="paradise">Paradise</option>
-    <option value="domus">Domus</option>
-    <option value="platinum">Platinum</option>
-    <option value="piramal">Piramal</option>
-  </select>
-  <span id="projectStatus" class="small">New Launch selected</span>
+ <label for="projectSelect">Active Project:</label>
+ <select id="projectSelect" onchange="switchProject()">
+  <option value="newlaunch">New Launch</option>
+  <option value="dosti">Dosti Group</option>
+  <option value="godrej">Godrej</option>
+  <option value="delta">Delta</option>
+  <option value="today">Today</option>
+  <option value="raheja">Raheja</option>
+  <option value="paradise">Paradise</option>
+  <option value="domus">Domus</option>
+  <option value="platinum">Platinum</option>
+  <option value="piramal">Piramal</option>
+ </select>
+ <span id="projectStatus" class="small">New Launch</span>
 </div>
 
 <div class="layout">
 <nav>
-  <button class="active" data-page="dashboard">Dashboard</button>
-  <button data-page="campaigns">Campaign / Blast</button>
-  <button data-page="inbox">Live Chat</button>
-  <button data-page="leads">CRM / Contacts</button>
-  <button data-page="reports">Reports</button>
-  <button data-page="templates">Templates</button>
-  <button data-page="settings">API Settings</button>
+ <button class="active" data-page="dashboard">Dashboard</button>
+ <button data-page="campaigns">Campaign / Blast</button>
+ <button data-page="inbox">Live Chat</button>
+ <button data-page="leads">CRM / Contacts</button>
+ <button data-page="reports">Reports</button>
+ <button data-page="templates">Templates</button>
+ <button data-page="settings">API Settings</button>
 </nav>
 
 <main>
 <section id="dashboard" class="view active">
-  <h2>Dashboard</h2>
-  <div class="notice">
-    Selected project: <b id="dashProject">New Launch</b>.
-    Send messages only to recipients who have opted in.
-  </div>
+ <h2>Dashboard</h2>
+ <div class="notice">
+  Active Project: <b id="dashProject">New Launch</b>
+ </div>
 
-  <div class="cards">
-    <div class="card">Total Messages<h2 id="total">0</h2></div>
-    <div class="card">Unique Contacts<h2 id="chats">0</h2></div>
-    <div class="card">Incoming Messages<h2 id="incoming">0</h2></div>
-    <div class="card">Outgoing Messages<h2 id="outgoing">0</h2></div>
-    <div class="card">Saved Leads<h2 id="leadCount">0</h2></div>
-  </div>
+ <div class="cards">
+  <div class="card">Total Messages<h2 id="total">0</h2></div>
+  <div class="card">Unique Contacts<h2 id="chats">0</h2></div>
+  <div class="card">Incoming Messages<h2 id="incoming">0</h2></div>
+  <div class="card">Outgoing Messages<h2 id="outgoing">0</h2></div>
+  <div class="card">Saved Leads<h2 id="leadCount">0</h2></div>
+ </div>
 
-  <div class="panel">
-    <button onclick="loadMessages(true)">Refresh Dashboard</button>
-    <div id="dashStatus" class="status">Connecting...</div>
-  </div>
+ <div class="panel">
+  <button onclick="loadMessages(true)">Refresh Dashboard</button>
+  <div id="dashStatus" class="status">Connecting...</div>
+ </div>
 </section>
 
 <section id="campaigns" class="view">
-  <h2>WhatsApp Campaign / Blast</h2>
-  <div class="panel">
-    <label>Sending WhatsApp Number</label>
-    <select id="phoneNumber">
-      <option value="">Loading numbers...</option>
-    </select>
-
-    <label>Approved Template</label>
-    <select id="templateName" onchange="showTemplateFields()">
-      <option value="">Select approved template</option>
-    </select>
-
-    <div id="templateStatus" class="status">
-      Templates will load after the Worker API is configured.
-    </div>
-
-    <div id="templateFields"></div>
-
-    <label>Recipient Mobile Numbers (one per line)</label>
-    <textarea id="numbers" placeholder="919876543210"></textarea>
-
-    <label>
-      <input id="consent" type="checkbox" style="width:auto">
-      I confirm recipients have opted in.
-    </label>
-
-    <button onclick="sendCampaign()">Send Campaign</button>
-    <div id="campStatus" class="status">Ready</div>
-    <pre id="sendResult"></pre>
-  </div>
-</section>  
-  <section id="inbox" class="view">
-  <h2>Live Chat — Message History</h2>
-
-  <div class="panel">
-    <label>Search Mobile Number</label>
-    <input id="chatSearch"
-      placeholder="Enter mobile number"
-      oninput="renderContacts()">
-
-    <button onclick="loadMessages(true)">Refresh Messages</button>
-
-    <div id="inboxStatus" class="status">Loading messages...</div>
-
-    <b>Total Messages: <span id="inboxTotal">0</span></b>
-    <br>
-    <b>Sent Messages: <span id="inboxOutgoing">0</span></b>
-    <br>
-    <span class="small">Loaded messages: <span id="loadedCount">0</span></span>
+ <h2>WhatsApp Campaign / Blast</h2>
+ <div class="panel">
+  <label>Sending WhatsApp Number</label>
+  <select id="phoneNumber">
+   <option value="">Select sending number</option>
+  </select>
+  <div id="numberStatus" class="small">
+   Number will appear when the selected project's API provides it.
   </div>
 
-  <div class="chatlayout" id="chatLayout">
-    <div class="chatlist" id="chatList"></div>
+  <label>Approved Template</label>
+  <select id="templateName">
+   <option value="">Loading templates...</option>
+  </select>
 
-    <div class="chatmain">
-      <div class="chathead">
-        <button onclick="closeChat()">Back</button>
-        <span id="chatTitle">Select a contact</span>
-      </div>
+  <label>Recipient Mobile Numbers — one per line</label>
+  <textarea id="numbers" placeholder="919876543210"></textarea>
 
-      <div class="chathistory" id="chatHistory"></div>
+  <div id="templateFields"></div>
 
-      <div class="reply">
-        <textarea id="replyText" placeholder="Type your reply..."></textarea>
-        <button onclick="sendReply()">Send Reply</button>
-        <div id="replyStatus" class="small"></div>
-      </div>
-    </div>
+  <label>
+   <input id="consent" type="checkbox" style="width:auto">
+   Recipients have opted in.
+  </label>
+
+  <button onclick="sendCampaign()">Send Campaign</button>
+  <div id="campStatus" class="status">Ready</div>
+  <pre id="sendResult"></pre>
+ </div>
+</section> 
+ <section id="inbox" class="view">
+ <h2>Live Chat — Message History</h2>
+
+ <div class="panel">
+  <label>Search Mobile Number</label>
+  <input id="chatSearch" placeholder="Enter mobile number"
+         oninput="renderContacts()">
+
+  <button onclick="loadMessages(true)">Refresh Messages</button>
+
+  <div id="inboxStatus" class="status">Loading messages...</div>
+
+  <b>Total Messages: <span id="inboxTotal">0</span></b><br>
+  <b>Sent Messages: <span id="inboxOutgoing">0</span></b><br>
+  <span class="small">Loaded: <span id="loadedCount">0</span></span>
+ </div>
+
+ <div class="chatlayout" id="chatLayout">
+  <div class="chatlist" id="chatList"></div>
+
+  <div class="chatmain">
+   <div class="chathead">
+    <button onclick="closeChat()">Back</button>
+    <span id="chatTitle">Select a contact</span>
+   </div>
+
+   <div class="chathistory" id="chatHistory"></div>
+
+   <div class="reply">
+    <textarea id="replyText" placeholder="Type your reply..."></textarea>
+    <button onclick="sendReply()">Send Reply</button>
+    <div id="replyStatus" class="small"></div>
+   </div>
   </div>
+ </div>
 
-  <div class="panel">
-    <button onclick="loadOlderMessages()">Load Older Messages</button>
-    <div id="olderStatus" class="status">Load more history when needed.</div>
-  </div>
+ <div class="panel">
+  <button onclick="loadOlderMessages()">Load Older Messages</button>
+  <div id="olderStatus" class="status">Load more history when needed.</div>
+ </div>
 </section>
 
 <section id="leads" class="view">
-  <h2>CRM / Contacts</h2>
+ <h2>CRM / Contacts</h2>
 
-  <div class="panel">
-    <label>Customer Name</label>
-    <input id="leadName" placeholder="Customer name">
+ <div class="panel">
+  <label>Customer Name</label>
+  <input id="leadName" placeholder="Customer name">
 
-    <label>Mobile Number</label>
-    <input id="leadPhone" placeholder="919876543210">
+  <label>Mobile Number</label>
+  <input id="leadPhone" placeholder="919876543210">
 
-    <button onclick="saveLead()">Save Contact</button>
-    <div id="leadStatus" class="status"></div>
+  <button onclick="saveLead()">Save Contact</button>
+  <div id="leadStatus" class="status"></div>
+ </div>
+
+ <div class="panel">
+  <button onclick="showLeads()">Refresh Contacts</button>
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Name</th><th>Mobile</th></tr></thead>
+    <tbody id="leadTable"></tbody>
+   </table>
   </div>
-
-  <div class="panel">
-    <button onclick="showLeads()">Refresh Contacts</button>
-
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Mobile</th></tr>
-        </thead>
-        <tbody id="leadTable"></tbody>
-      </table>
-    </div>
-  </div>
+ </div>
 </section>
 
 <section id="reports" class="view">
-  <h2>Message Reports</h2>
+ <h2>Message Reports</h2>
 
-  <div class="panel">
-    <label>From Date</label>
-    <input type="date" id="reportFrom">
+ <div class="panel">
+  <label>From Date</label>
+  <input type="date" id="reportFrom">
 
-    <label>To Date</label>
-    <input type="date" id="reportTo">
+  <label>To Date</label>
+  <input type="date" id="reportTo">
 
-    <button onclick="loadReports()">Load Reports</button>
-    <button onclick="exportReports()">Export CSV</button>
+  <button onclick="loadReports()">Load Reports</button>
+  <button onclick="exportReports()">Export CSV</button>
 
-    <div id="reportStatus" class="status">Ready</div>
+  <div id="reportStatus" class="status">Ready</div>
 
-    <div class="cards">
-      <div class="card">Total<h2 id="rTotal">0</h2></div>
-      <div class="card">Incoming<h2 id="rIncoming">0</h2></div>
-      <div class="card">Outgoing<h2 id="rOutgoing">0</h2></div>
-      <div class="card">Delivered<h2 id="rDelivered">0</h2></div>
-      <div class="card">Read<h2 id="rRead">0</h2></div>
-      <div class="card">Failed<h2 id="rFailed">0</h2></div>
-    </div>
-
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Mobile</th>
-            <th>Direction</th>
-            <th>Message</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="reportTable"></tbody>
-      </table>
-    </div>
+  <div class="cards">
+   <div class="card">Total<h2 id="rTotal">0</h2></div>
+   <div class="card">Incoming<h2 id="rIncoming">0</h2></div>
+   <div class="card">Outgoing<h2 id="rOutgoing">0</h2></div>
+   <div class="card">Delivered<h2 id="rDelivered">0</h2></div>
+   <div class="card">Read<h2 id="rRead">0</h2></div>
+   <div class="card">Failed<h2 id="rFailed">0</h2></div>
   </div>
+
+  <div class="tablewrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Date</th><th>Mobile</th><th>Direction</th>
+      <th>Message</th><th>Status</th>
+     </tr>
+    </thead>
+    <tbody id="reportTable"></tbody>
+   </table>
+  </div>
+ </div>
 </section>
 
 <section id="templates" class="view">
-  <h2>Approved WhatsApp Templates</h2>
+ <h2>Approved WhatsApp Templates</h2>
 
-  <div class="panel">
-    <p>Templates are loaded from the selected project's Worker API.</p>
-    <button onclick="loadTemplates()">Refresh Templates</button>
-    <div id="templatesStatus" class="status">
-      Select a project and load templates.
-    </div>
+ <div class="panel">
+  <p>Templates are loaded for the selected project.</p>
+  <button onclick="loadTemplates()">Refresh Templates</button>
+  <div id="templatesStatus" class="status">
+   Select a project to load templates.
   </div>
+ </div>
 </section>
 
 <section id="settings" class="view">
-  <h2>API Settings</h2>
+ <h2>API Settings</h2>
 
-  <div class="panel">
-    <label>Selected Project</label>
-    <div id="settingsProject" class="status">New Launch</div>
+ <div class="panel">
+  <label>Selected Project</label>
+  <div id="settingsProject" class="status">New Launch</div>
 
-    <label>Cloudflare Worker URL</label>
-    <input id="apiUrl"
-      value="https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"
-      placeholder="https://your-worker.workers.dev">
+  <label>Cloudflare Worker URL</label>
+  <input id="apiUrl"
+   value="https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"
+   placeholder="https://your-worker.workers.dev">
 
-    <label>WhatsApp Phone Number ID</label>
-    <input id="phoneNumberId" placeholder="Enter Meta Phone Number ID">
+  <label>WhatsApp Phone Number ID</label>
+  <input id="phoneNumberId" placeholder="Meta Phone Number ID">
 
-    <label>WhatsApp Business Account ID (WABA ID)</label>
-    <input id="wabaId" placeholder="Enter WABA ID">
+  <label>WhatsApp Business Account ID (WABA ID)</label>
+  <input id="wabaId" placeholder="Meta WABA ID">
 
-    <button onclick="saveSettings()">Save Project Settings</button>
-    <button onclick="testConnection()">Test Connection</button>
+  <button onclick="saveSettings()">Save Project Settings</button>
+  <button onclick="testConnection()">Test Connection</button>
 
-    <div id="apiStatus" class="status">Not tested</div>
+  <div id="apiStatus" class="status">Not tested</div>
 
-    <p class="small">
-      Keep Meta access tokens in Cloudflare Worker secrets.
-      Do not paste access tokens into this HTML page.
-    </p>
-  </div>
-</section>  
-  <script>
-const DEFAULT_API =
-  "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
-
+  <p class="small">
+   Keep Meta access tokens in Cloudflare Worker secrets.
+   Do not paste access tokens into this HTML file.
+  </p>
+ </div>
+</section> 
+ <script>
 const PROJECTS = {
   newlaunch: {
     name: "New Launch",
-    api: DEFAULT_API,
+    api: "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev",
     phoneNumberId: "",
     wabaId: ""
   },
@@ -327,12 +313,11 @@ const PROJECTS = {
 };
 
 let activeProject = "newlaunch";
-let API = DEFAULT_API;
+let API = PROJECTS.newlaunch.api;
 let allMessages = [];
 let totalMessages = 0;
 let totalOutgoing = 0;
 let totalIncoming = 0;
-let currentOffset = 0;
 const PAGE_SIZE = 1000;
 let selectedPhone = "";
 let savedLeads = [];
@@ -352,8 +337,8 @@ function digits(v) {
   return String(v || "").replace(/\D/g, "");
 }
 
-function status(id, text) {
-  if ($(id)) $(id).textContent = text;
+function status(id, message) {
+  if ($(id)) $(id).textContent = message;
 }
 
 function phoneOf(m) {
@@ -392,7 +377,7 @@ async function apiFetch(path, options = {}) {
   return data;
 }
 
-/* Switch selected project */
+/* Switch active project */
 function switchProject() {
   activeProject = $("projectSelect").value;
   const project = PROJECTS[activeProject];
@@ -400,7 +385,6 @@ function switchProject() {
   if (!project) return;
 
   API = project.api || "";
-
   $("dashProject").textContent = project.name;
   $("settingsProject").textContent = project.name;
   $("apiUrl").value = project.api;
@@ -411,54 +395,31 @@ function switchProject() {
   totalMessages = 0;
   totalOutgoing = 0;
   totalIncoming = 0;
-  currentOffset = 0;
   selectedPhone = "";
-  approvedTemplates = [];
-
-  $("templateName").innerHTML =
-    '<option value="">Select approved template</option>';
 
   $("phoneNumber").innerHTML =
-    '<option value="">Configure Phone Number ID</option>';
+    '<option value="">Loading sending number...</option>';
+
+  $("templateName").innerHTML =
+    '<option value="">Loading templates...</option>';
 
   updateDashboard();
   renderContacts();
   renderChatHistory();
 
   if (!API) {
-    status("projectStatus",
-      project.name + ": Add Worker URL in API Settings.");
-    status("dashStatus", "Worker URL not configured.");
+    status("projectStatus", project.name + ": Worker URL not configured.");
+    status("numberStatus", "Add this project's Worker URL in API Settings.");
     status("templatesStatus", "Worker URL not configured.");
+    status("dashStatus", "Worker URL not configured.");
     return;
   }
 
   status("projectStatus", "Selected: " + project.name);
-  testConnection();
   loadMessages(true);
-  loadTemplates();
-}
-
-/* Save project configuration */
-function saveSettings() {
-  const project = PROJECTS[activeProject];
-  const url = $("apiUrl").value.trim().replace(/\/+$/, "");
-
-  if (!/^https:\/\/.+/i.test(url)) {
-    status("apiStatus", "Enter a valid HTTPS Worker URL.");
-    return;
-  }
-
-  project.api = url;
-  project.phoneNumberId = $("phoneNumberId").value.trim();
-  project.wabaId = $("wabaId").value.trim();
-
-  API = url;
-
-  status("apiStatus", "Settings applied for " + project.name + ".");
   testConnection();
-  loadMessages(true);
   loadTemplates();
+  loadSendingNumber();
 }
 
 /* Dashboard counters */
@@ -476,14 +437,12 @@ function updateDashboard() {
   $("leadCount").textContent = savedLeads.length;
 }
 
-/* Load messages and full report summary */
+/* Load messages and complete counts */
 async function loadMessages(showStatus = false) {
   if (!API) return;
 
   try {
     if (showStatus) status("dashStatus", "Loading messages...");
-
-    currentOffset = 0;
 
     const [messageData, reportData] = await Promise.all([
       apiFetch("/messages?limit=" + PAGE_SIZE + "&offset=0"),
@@ -496,6 +455,7 @@ async function loadMessages(showStatus = false) {
     totalMessages = Number(
       summary.total ?? messageData.totalCount ?? allMessages.length
     );
+
     totalOutgoing = Number(summary.outgoing ?? 0);
     totalIncoming = Number(summary.incoming ?? 0);
 
@@ -504,27 +464,30 @@ async function loadMessages(showStatus = false) {
     renderChatHistory();
 
     status("dashStatus",
-      "Connected: " + PROJECTS[activeProject].name +
-      " | Total: " + totalMessages +
+      projectName() + " | Total: " + totalMessages +
       " | Sent: " + totalOutgoing);
 
     status("inboxStatus",
-      "Total: " + totalMessages +
-      " | Sent: " + totalOutgoing);
+      "Total messages: " + totalMessages +
+      " | Sent messages: " + totalOutgoing);
   } catch (e) {
     status("dashStatus", "API error: " + e.message);
-    status("inboxStatus", "History error: " + e.message);
+    status("inboxStatus", "Could not load history: " + e.message);
   }
 }
 
-/* Load older history */
+function projectName() {
+  return PROJECTS[activeProject]?.name || activeProject;
+}
+
+/* Load older message history */
 async function loadOlderMessages() {
   if (!API) return;
 
   try {
-    const nextOffset = allMessages.length;
+    const offset = allMessages.length;
 
-    if (nextOffset >= totalMessages) {
+    if (offset >= totalMessages) {
       status("olderStatus", "All available messages are loaded.");
       return;
     }
@@ -532,14 +495,14 @@ async function loadOlderMessages() {
     status("olderStatus", "Loading older messages...");
 
     const data = await apiFetch(
-      "/messages?limit=" + PAGE_SIZE + "&offset=" + nextOffset
+      "/messages?limit=" + PAGE_SIZE + "&offset=" + offset
     );
 
     const rows = data.messages || data.data || [];
-    const seen = new Set(allMessages.map(m => String(m.id)));
+    const existing = new Set(allMessages.map(m => String(m.id)));
 
     allMessages = allMessages.concat(
-      rows.filter(m => !seen.has(String(m.id)))
+      rows.filter(m => !existing.has(String(m.id)))
     );
 
     totalMessages = Number(data.totalCount ?? totalMessages);
@@ -555,111 +518,83 @@ async function loadOlderMessages() {
   }
 }
 
-/* Live Chat contact list */
-function renderContacts() {
-  if (!$("chatList")) return;
+/* Load sending number from Worker */
+async function loadSendingNumber() {
+  if (!API) return;
 
-  const query = digits($("chatSearch").value);
-  const grouped = new Map();
-
-  allMessages.forEach(m => {
-    const phone = phoneOf(m);
-    if (!phone || (query && !phone.includes(query))) return;
-
-    if (!grouped.has(phone)) grouped.set(phone, []);
-    grouped.get(phone).push(m);
-  });
-
-  const contacts = [...grouped.entries()].map(([phone, messages]) => {
-    messages.sort((a,b) =>
-      new Date(a.timestamp || a.created_at || 0) -
-      new Date(b.timestamp || b.created_at || 0)
-    );
-
-    return {phone, messages, last:messages[messages.length - 1]};
-  }).sort((a,b) =>
-    new Date(b.last.timestamp || b.last.created_at || 0) -
-    new Date(a.last.timestamp || a.last.created_at || 0)
-  );
-
-  $("chatList").innerHTML = contacts.length
-    ? contacts.map(c => `
-      <div class="contact ${selectedPhone === c.phone ? "selected" : ""}"
-           onclick="openChat('${c.phone}')">
-        <b>${esc(c.last.name || c.phone)}</b>
-        <div>${esc(c.phone)}</div>
-        <div class="small">${esc(c.last.message || "")}</div>
-        <div class="small">${esc(timeOf(c.last))}</div>
-      </div>
-    `).join("")
-    : "<p>No contacts found.</p>";
-}
-
-function openChat(phone) {
-  selectedPhone = phone;
-  $("chatTitle").textContent = phone;
-  $("chatLayout").classList.add("chatopen");
-  renderContacts();
-  renderChatHistory();
-}
-
-function closeChat() {
-  $("chatLayout").classList.remove("chatopen");
-}
-
-function renderChatHistory() {
-  if (!$("chatHistory")) return;
-
-  const messages = allMessages
-    .filter(m => phoneOf(m) === selectedPhone)
-    .sort((a,b) =>
-      new Date(a.timestamp || a.created_at || 0) -
-      new Date(b.timestamp || b.created_at || 0)
-    );
-
-  $("chatHistory").innerHTML = messages.map(m => `
-    <div class="bubble ${directionOf(m)}">
-      ${esc(m.message || "")}
-      <span class="chattime">
-        ${esc(timeOf(m))} · ${esc(m.status || "")}
-      </span>
-    </div>
-  `).join("");
-
-  $("chatHistory").scrollTop = $("chatHistory").scrollHeight;
-}
-
-/* Send reply to selected contact */
-async function sendReply() {
-  const text = $("replyText").value.trim();
-
-  if (!selectedPhone) {
-    status("replyStatus", "Select a contact first.");
-    return;
-  }
-
-  if (!text) {
-    status("replyStatus", "Type a message first.");
-    return;
-  }
+  const project = PROJECTS[activeProject];
 
   try {
-    status("replyStatus", "Sending...");
+    /*
+      Worker should return:
+      {success:true, phoneNumbers:[{display_phone_number:"...",id:"..."}]}
+      This endpoint must be implemented securely in the Worker.
+    */
+    const data = await apiFetch("/phone-numbers");
+    const numbers = data.phoneNumbers || data.data || [];
 
-    await apiFetch("/send", {
-      method: "POST",
-      body: JSON.stringify({to:selectedPhone,text})
-    });
+    $("phoneNumber").innerHTML =
+      '<option value="">Select sending number</option>' +
+      numbers.map(n => {
+        const number = n.display_phone_number || n.displayPhoneNumber || "";
+        const id = n.id || n.phoneNumberId || "";
+        return `<option value="${esc(id)}">${esc(number)}</option>`;
+      }).join("");
 
-    $("replyText").value = "";
-    status("replyStatus", "API accepted. Refreshing history...");
-    await loadMessages(true);
+    if (!numbers.length) {
+      status("numberStatus",
+        "Worker returned no sending numbers. Check its /phone-numbers endpoint.");
+      return;
+    }
+
+    status("numberStatus", numbers.length + " sending number(s) loaded.");
   } catch (e) {
-    status("replyStatus", "Send failed: " + e.message);
+    $("phoneNumber").innerHTML =
+      '<option value="">Sending number unavailable</option>';
+
+    status("numberStatus",
+      "Could not load number: " + e.message +
+      ". Worker must implement GET /phone-numbers.");
   }
 }
 
-/* Test API */
+/* Load approved templates */
+async function loadTemplates() {
+  if (!API) return;
+
+  status("templatesStatus", "Loading approved templates...");
+
+  try {
+    const data = await apiFetch("/templates");
+    approvedTemplates = data.templates || data.data || [];
+
+    $("templateName").innerHTML =
+      '<option value="">Select approved template</option>' +
+      approvedTemplates.map(t => {
+        const name = typeof t === "string" ? t : t.name;
+        const language = typeof t === "string" ? "en" : (t.language || "en");
+        return `<option value="${esc(name)}"
+          data-language="${esc(language)}">${esc(name)} (${esc(language)})</option>`;
+      }).join("");
+
+    status("templatesStatus",
+      approvedTemplates.length
+        ? approvedTemplates.length + " templates loaded."
+        : "No approved templates returned.");
+
+    status("templateStatus",
+      approvedTemplates.length
+        ? "Approved templates loaded."
+        : "No templates available.");
+  } catch (e) {
+    status("templatesStatus",
+      "Templates API error: " + e.message);
+    status("templateStatus",
+      "Worker must implement GET /templates.");
+  }
+}
+
+/* Test Worker connection */
 async function testConnection() {
   if (!API) {
     status("apiStatus", "Configure the Worker URL first.");
@@ -674,256 +609,30 @@ async function testConnection() {
   }
 }
 
-/* Load approved templates from Worker */
-async function loadTemplates() {
-  if (!API) return;
+/* Save selected project's settings */
+function saveSettings() {
+  const project = PROJECTS[activeProject];
+  const url = $("apiUrl").value.trim().replace(/\/+$/, "");
 
-  status("templatesStatus", "Checking approved templates...");
-
-  try {
-    const data = await apiFetch("/templates");
-    approvedTemplates = data.templates || data.data || [];
-
-    $("templateName").innerHTML =
-      '<option value="">Select approved template</option>' +
-      approvedTemplates.map(t => {
-        const name = typeof t === "string" ? t : t.name;
-        const language = typeof t === "string" ? "" : (t.language || "");
-        return `<option value="${esc(name)}"
-          data-language="${esc(language)}">${esc(name)}</option>`;
-      }).join("");
-
-    status("templatesStatus",
-      approvedTemplates.length
-        ? approvedTemplates.length + " templates loaded."
-        : "No templates returned by Worker.");
-    status("templateStatus",
-      approvedTemplates.length
-        ? "Approved templates loaded."
-        : "No templates available.");
-  } catch (e) {
-    status("templatesStatus",
-      "Template API unavailable: " + e.message +
-      ". Worker must implement GET /templates.");
-    status("templateStatus",
-      "Templates cannot load until GET /templates is implemented.");
-  }
-}
-
-function showTemplateFields() {
-  const selected = $("templateName").selectedOptions[0];
-  if (!selected || !selected.value) {
-    $("templateFields").innerHTML = "";
+  if (!/^https:\/\/.+/i.test(url)) {
+    status("apiStatus", "Enter a valid HTTPS Worker URL.");
     return;
   }
 
-  const language = selected.dataset.language || "en";
-  $("templateFields").innerHTML = `
-    <label>Template Language</label>
-    <input id="templateLanguage" value="${esc(language)}">
-    <label>Template Variables (one per line)</label>
-    <textarea id="templateVariables"
-      placeholder="Variable 1&#10;Variable 2"></textarea>
-    <label>Header Image URL (if required)</label>
-    <input id="templateImage" placeholder="https://example.com/image.jpg">
-  `;
+  project.api = url;
+  project.phoneNumberId = $("phoneNumberId").value.trim();
+  project.wabaId = $("wabaId").value.trim();
+  API = url;
+
+  status("apiStatus", "Settings applied to " + project.name + " for this session.");
+
+  testConnection();
+  loadMessages(true);
+  loadTemplates();
+  loadSendingNumber();
 }
 
-/* Campaign using approved template */
-async function sendCampaign() {
-  if (!API) {
-    status("campStatus", "Configure the project Worker URL first.");
-    return;
-  }
-
-  try {
-    if (!$("consent").checked) {
-      throw new Error("Confirm recipient opt-in first.");
-    }
-
-    const numbers = [...new Set(
-      $("numbers").value.split(/\r?\n/)
-        .map(digits)
-        .filter(n => n.length >= 8 && n.length <= 15)
-    )];
-
-    const templateName = $("templateName").value.trim();
-
-    if (!numbers.length) throw new Error("Enter recipient numbers.");
-    if (!templateName) throw new Error("Select an approved template.");
-
-    const variables = $("templateVariables")
-      ? $("templateVariables").value.split(/\r?\n/)
-          .map(v => v.trim()).filter(Boolean)
-      : [];
-
-    const language = $("templateLanguage")
-      ? $("templateLanguage").value.trim() || "en"
-      : "en";
-
-    const imageUrl = $("templateImage")
-      ? $("templateImage").value.trim()
-      : "";
-
-    if (imageUrl && !/^https:\/\//i.test(imageUrl)) {
-      throw new Error("Image URL must use HTTPS.");
-    }
-
-    if (!confirm(
-      "Project: " + PROJECTS[activeProject].name +
-      "\nTemplate: " + templateName +
-      "\nRecipients: " + numbers.length +
-      "\nContinue?"
-    )) return;
-
-    let sent = 0;
-    const failures = [];
-
-    for (const to of numbers) {
-      try {
-        const body = {
-          to,
-          templateName,
-          language,
-          parameters: variables
-        };
-
-        if (imageUrl) body.imageUrl = imageUrl;
-
-        await apiFetch("/send-template", {
-          method: "POST",
-          body: JSON.stringify(body)
-        });
-
-        sent++;
-      } catch (e) {
-        failures.push({to,error:e.message});
-      }
-
-      status("campStatus",
-        "API accepted: " + sent + "/" + numbers.length +
-        " | Failed: " + failures.length);
-    }
-
-    $("sendResult").textContent =
-      JSON.stringify({accepted:sent,failures},null,2);
-
-    status("campStatus",
-      "Finished. Accepted: " + sent +
-      " | Failed: " + failures.length);
-
-    await loadMessages(true);
-  } catch (e) {
-    status("campStatus", "Campaign error: " + e.message);
-  }
-}
-
-/* CRM contacts */
-function saveLead() {
-  const name = $("leadName").value.trim();
-  const phone = digits($("leadPhone").value);
-
-  if (phone.length < 8 || phone.length > 15) {
-    status("leadStatus", "Enter a valid number with country code.");
-    return;
-  }
-
-  if (savedLeads.some(l => l.phone === phone)) {
-    status("leadStatus", "Contact already exists.");
-    return;
-  }
-
-  savedLeads.push({name,phone});
-  showLeads();
-  updateDashboard();
-
-  status("leadStatus", "Contact saved for this page session.");
-  $("leadName").value = "";
-  $("leadPhone").value = "";
-}
-
-function showLeads() {
-  $("leadTable").innerHTML = savedLeads.length
-    ? savedLeads.map(l => `
-      <tr><td>${esc(l.name)}</td><td>${esc(l.phone)}</td></tr>
-    `).join("")
-    : "<tr><td colspan='2'>No manually saved contacts.</td></tr>";
-}
-
-/* Reports */
-async function loadReports() {
-  if (!API) return;
-
-  try {
-    status("reportStatus", "Loading reports...");
-
-    const params = new URLSearchParams({
-      limit:"1000",
-      offset:"0"
-    });
-
-    if ($("reportFrom").value) params.set("from",$("reportFrom").value);
-    if ($("reportTo").value) params.set("to",$("reportTo").value);
-
-    const data = await apiFetch("/reports?" + params.toString());
-    reportRows = data.messages || [];
-
-    const s = data.summary || {};
-    $("rTotal").textContent = s.total ?? data.totalCount ?? reportRows.length;
-    $("rIncoming").textContent = s.incoming ?? 0;
-    $("rOutgoing").textContent = s.outgoing ?? 0;
-    $("rDelivered").textContent = s.delivered ?? 0;
-    $("rRead").textContent = s.read ?? 0;
-    $("rFailed").textContent = s.failed ?? 0;
-
-    $("reportTable").innerHTML = reportRows.map(m => `
-      <tr>
-        <td>${esc(timeOf(m))}</td>
-        <td>${esc(phoneOf(m))}</td>
-        <td>${esc(m.direction)}</td>
-        <td>${esc(m.message)}</td>
-        <td>${esc(m.status || "")}</td>
-      </tr>
-    `).join("");
-
-    status("reportStatus",
-      "Showing " + reportRows.length +
-      " rows. Total matching: " +
-      (data.totalCount ?? reportRows.length));
-  } catch (e) {
-    status("reportStatus", "Report error: " + e.message);
-  }
-}
-
-function exportReports() {
-  if (!reportRows.length) {
-    status("reportStatus", "Load reports before exporting.");
-    return;
-  }
-
-  const cols = [
-    "timestamp","wa_id","name","direction","message","status"
-  ];
-
-  const cell = v => '"' + String(v ?? "").replace(/"/g,'""') + '"';
-  const csv = [
-    cols.join(","),
-    ...reportRows.map(m => cols.map(k => cell(m[k])).join(","))
-  ].join("\r\n");
-
-  const blob = new Blob(["\uFEFF" + csv], {
-    type:"text/csv;charset=utf-8"
-  });
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "ak-properties-report.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* Navigation buttons */
+/* Navigation */
 document.querySelectorAll("nav button[data-page]").forEach(button => {
   button.addEventListener("click", () => {
     document.querySelectorAll("nav button").forEach(b =>
@@ -943,13 +652,319 @@ document.querySelectorAll("nav button[data-page]").forEach(button => {
     if (button.dataset.page === "templates") loadTemplates();
   });
 });
+</script> 
+ function renderContacts() {
+  const box = $("contactsList");
+  if (!box) return;
 
-/* Start dashboard */
-showLeads();
-switchProject();
-setInterval(() => loadMessages(false), 15000);
-</script>  
-  </main>
+  const contacts = new Map();
+
+  allMessages.forEach(m => {
+    const phone = phoneOf(m);
+    if (!phone) return;
+
+    if (!contacts.has(phone)) {
+      contacts.set(phone, {
+        phone,
+        lastMessage: "",
+        lastTime: "",
+        count: 0
+      });
+    }
+
+    const c = contacts.get(phone);
+    c.count++;
+
+    const msg = m.text || m.message || m.body || "";
+    if (msg) c.lastMessage = msg;
+    c.lastTime = timeOf(m);
+  });
+
+  box.innerHTML = [...contacts.values()].map(c => `
+    <div class="contact-item"
+         onclick="openChat('${esc(c.phone)}')">
+      <strong>${esc(c.phone)}</strong>
+      <div>${esc(c.lastMessage || "No message text")}</div>
+      <small>${c.count} messages</small>
+    </div>
+  `).join("") || "<p>No contacts found.</p>";
+}
+
+function openChat(phone) {
+  selectedPhone = digits(phone);
+
+  const title = $("chatTitle");
+  if (title) title.textContent = selectedPhone;
+
+  const panel = $("chatPanel");
+  if (panel) panel.style.display = "block";
+
+  renderChatHistory();
+}
+
+function closeChat() {
+  const panel = $("chatPanel");
+  if (panel) panel.style.display = "none";
+  selectedPhone = "";
+}
+
+function renderChatHistory() {
+  const box = $("chatHistory");
+  if (!box) return;
+
+  const rows = allMessages
+    .filter(m => digits(phoneOf(m)) === selectedPhone)
+    .sort((a, b) => new Date(timeOf(a)) - new Date(timeOf(b)));
+
+  box.innerHTML = rows.map(m => {
+    const outgoing = directionOf(m) === "outgoing";
+    const msg = m.text || m.message || m.body || "";
+    return `
+      <div class="message ${outgoing ? "sent" : "received"}">
+        <div>${esc(msg || "[Media or template message]")}</div>
+        <small>${esc(timeOf(m))}</small>
+      </div>
+    `;
+  }).join("") || "<p>No message history loaded for this contact.</p>";
+}
+
+async function sendReply() {
+  if (!API || !selectedPhone) {
+    alert("Project API किंवा contact निवडलेला नाही.");
+    return;
+  }
+
+  const input = $("replyText");
+  const message = input?.value.trim();
+
+  if (!message) {
+    alert("Message लिहा.");
+    return;
+  }
+
+  try {
+    const result = await apiFetch("/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: selectedPhone,
+        message
+      })
+    });
+
+    if (result.error) throw new Error(result.error);
+
+    input.value = "";
+    status("chatStatus", "Reply request sent. Refreshing history...");
+    await loadMessages();
+  } catch (error) {
+    status("chatStatus", "Reply failed: " + error.message, true);
+  }
+}
+
+function showTemplateFields() {
+  const select = $("templateName");
+  const box = $("templateFields");
+  if (!select || !box) return;
+
+  const template = approvedTemplates.find(t =>
+    (t.name || t.id) === select.value
+  );
+
+  if (!template) {
+    box.innerHTML = "";
+    return;
+  }
+
+  const bodyText = (template.components || [])
+    .filter(c => c.type === "BODY")
+    .map(c => c.text || "")
+    .join(" ");
+
+  const matches = bodyText.match(/\{\{\d+\}\}/g) || [];
+  const count = new Set(matches).size;
+
+  box.innerHTML = Array.from({ length: count }, (_, i) => `
+    <label>Template parameter {{${i + 1}}}</label>
+    <input id="templateParam${i + 1}"
+           placeholder="Enter value for {{${i + 1}}}">
+  `).join("");
+}
+
+async function sendCampaign() {
+  if (!API) {
+    alert("आधी Project API सेट करा.");
+    return;
+  }
+
+  const to = digits($("phoneNumber")?.value || "");
+  const templateName = $("templateName")?.value || "";
+  const language = $("templateLanguage")?.value || "en_US";
+  const imageUrl = $("imageUrl")?.value.trim() || "";
+
+  if (!to) {
+    alert("ग्राहकाचा WhatsApp नंबर टाका.");
+    return;
+  }
+
+  if (!templateName) {
+    alert("Approved template निवडा.");
+    return;
+  }
+
+  const template = approvedTemplates.find(t =>
+    (t.name || t.id) === templateName
+  );
+
+  const bodyText = (template?.components || [])
+    .filter(c => c.type === "BODY")
+    .map(c => c.text || "")
+    .join(" ");
+
+  const count = new Set(bodyText.match(/\{\{\d+\}\}/g) || []).size;
+  const parameters = [];
+
+  for (let i = 1; i <= count; i++) {
+    const value = $(`templateParam${i}`)?.value.trim() || "";
+    if (!value) {
+      alert(`Template parameter {{${i}}} भरा.`);
+      return;
+    }
+    parameters.push(value);
+  }
+
+  try {
+    status("sendResult", "Sending...");
+    const result = await apiFetch("/send-template", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to,
+        templateName,
+        language,
+        imageUrl,
+        parameters
+      })
+    });
+
+    if (result.error) throw new Error(result.error);
+
+    status("sendResult", "Request submitted. Provider response: " +
+      JSON.stringify(result));
+    await loadMessages();
+  } catch (error) {
+    status("sendResult", "Send failed: " + error.message, true);
+  }
+}
+
+function saveLead() {
+  const phone = digits($("leadPhone")?.value || "");
+  const name = $("leadName")?.value.trim() || "";
+  const note = $("leadNote")?.value.trim() || "";
+
+  if (!phone) {
+    alert("Lead चा फोन नंबर टाका.");
+    return;
+  }
+
+  const leads = JSON.parse(
+    localStorage.getItem("ak_property_leads") || "[]"
+  );
+
+  leads.push({
+    phone,
+    name,
+    note,
+    project: activeProject,
+    createdAt: new Date().toISOString()
+  });
+
+  localStorage.setItem("ak_property_leads", JSON.stringify(leads));
+  alert("Lead या browser मध्ये save झाला.");
+  showLeads();
+  updateDashboard();
+}
+
+function showLeads() {
+  const box = $("leadsList");
+  if (!box) return;
+
+  const leads = JSON.parse(
+    localStorage.getItem("ak_property_leads") || "[]"
+  ).filter(l => l.project === activeProject);
+
+  box.innerHTML = leads.map(l => `
+    <div class="lead-item">
+      <strong>${esc(l.name || "Unnamed Lead")}</strong>
+      <div>${esc(l.phone)}</div>
+      <div>${esc(l.note || "")}</div>
+      <small>${esc(l.createdAt)}</small>
+    </div>
+  `).join("") || "<p>No leads saved for this project.</p>";
+}
+
+async function loadReports() {
+  if (!API) {
+    status("reportsStatus", "Project API सेट केलेली नाही.", true);
+    return;
+  }
+
+  try {
+    const result = await apiFetch("/reports?limit=1000&offset=0");
+    reportRows = result.messages || result.data || [];
+
+    const summary = result.summary || {};
+    const box = $("reportsContent");
+
+    if (box) {
+      box.innerHTML = `
+        <p>Total messages: ${Number(summary.total ?? totalMessages)}</p>
+        <p>Outgoing: ${Number(summary.outgoing ?? totalOutgoing)}</p>
+        <p>Incoming: ${Number(summary.incoming ?? totalIncoming)}</p>
+      `;
+    }
+
+    status("reportsStatus", "Reports loaded.");
+  } catch (error) {
+    status("reportsStatus", "Reports failed: " + error.message, true);
+  }
+}
+
+function exportReports() {
+  const rows = reportRows.length ? reportRows : allMessages;
+
+  if (!rows.length) {
+    alert("Export करण्यासाठी report data उपलब्ध नाही.");
+    return;
+  }
+
+  const columns = ["id", "to", "from", "phone", "direction",
+                   "status", "text", "message", "created_at", "timestamp"];
+
+  const csvCell = value =>
+    '"' + String(value ?? "").replace(/"/g, '""') + '"';
+
+  const csv = [
+    columns.join(","),
+    ...rows.map(row =>
+      columns.map(key => csvCell(row[key])).join(",")
+    )
+  ].join("\r\n");
+
+  const blob = new Blob(["\uFEFF" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${activeProject}-whatsapp-reports.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+} 
+   </script>
+</main>
 </div>
+
 </body>
 </html>
