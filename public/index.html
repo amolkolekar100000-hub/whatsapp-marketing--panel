@@ -36,8 +36,6 @@ table{width:100%;border-collapse:collapse;background:white}
 td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
 .template-row,.number-row{border:1px solid var(--border);padding:12px;border-radius:8px;margin:9px 0;background:#fbfdfc}
 .danger{background:#b42318}
-
-/* WhatsApp Web style chat */
 .chat-layout{display:grid;grid-template-columns:330px minmax(0,1fr);height:calc(100vh - 220px);min-height:520px;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .chat-sidebar{overflow:auto;border-right:1px solid var(--border);padding:0;background:white}
 .chat-sidebar #chatSearch{width:calc(100% - 20px);margin:10px;background:#f0f2f5;border:0}
@@ -148,36 +146,30 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
   <div id="campaignStatus" class="status">Choose a project and sync templates.</div>
   <pre id="sendResult"></pre>
  </div>
-</section><section class="view" id="inbox">
+</section>
+
+<section class="view" id="inbox">
  <h2>Live Chat</h2>
  <div class="panel">
   <button onclick="loadMessages(true)">Refresh Chats</button>
   <button onclick="enableNotifications()">Enable Notifications</button>
   <div id="inboxStatus" class="status">Loading...</div>
-
   <div class="chat-layout">
    <div class="chat-sidebar" id="chatSidebar">
-    <input id="chatSearch" placeholder="Search phone..." oninput="renderChats()">
+    <input id="chatSearch" placeholder="Search name or phone..." oninput="renderChats()">
     <div id="chatContacts"></div>
    </div>
-
    <div class="chat-main" id="chatMain">
     <div class="chat-header" id="chatHeader">
-     <button class="chat-back" id="chatBackButton"
-       type="button" onclick="backToChats()">← Back to Chats</button>
+     <button class="chat-back" id="chatBackButton" type="button" onclick="backToChats()">← Back to Chats</button>
      <div class="avatar">👤</div>
      <div class="chat-title">Select customer</div>
     </div>
-
-    <div class="chat-history" id="chatHistory">
-     Select a customer to view messages.
-    </div>
-
+    <div class="chat-history" id="chatHistory">Select a customer to view messages.</div>
     <div class="chat-reply">
      <textarea id="replyText" placeholder="Type a message or media caption"></textarea>
      <div class="chat-attachment-row">
-      <input type="file" id="chatFile"
-       accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp">
+      <input type="file" id="chatFile" accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp">
      </div>
      <div id="chatFileName" class="small">No file selected</div>
      <button id="replyButton" onclick="sendReply()">Send Reply / Photo / PDF</button>
@@ -208,9 +200,7 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
   <div id="leadStatus" class="status"></div>
   <div id="leadTable" class="table-wrap"></div>
  </div>
-</section>
-
-<section class="view" id="reports">
+</section> <section class="view" id="reports">
  <h2>Reports</h2>
  <div class="panel">
   <div class="grid">
@@ -273,7 +263,9 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
    <li><code>/reports</code></li>
    <li><code>/send-media</code> — media endpoint required</li>
   </ul>
- </div></main>
+ </div>
+</section>
+</main>
 </div>
 
 <div id="toast"></div>
@@ -347,7 +339,9 @@ function esc(s){
  return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
-function setStatus(id,text){if($(id))$(id).textContent=text}
+function setStatus(id,text){
+ if($(id))$(id).textContent=text;
+}
 
 function apiURL(path){
  const base=(projectUrls[activeProject]||"").trim().replace(/\/+$/,"");
@@ -362,7 +356,9 @@ async function request(path,options={}){
  return data;
 }
 
-function saveURLs(){localStorage.setItem(URL_KEY,JSON.stringify(projectUrls))}
+function saveURLs(){
+ localStorage.setItem(URL_KEY,JSON.stringify(projectUrls));
+}
 
 function addProject(){
  const name=prompt("नवीन Project चे नाव लिहा:");
@@ -379,7 +375,8 @@ function addProject(){
   const custom=JSON.parse(localStorage.getItem(CUSTOM_KEY)||"{}");
   custom[key]=PROJECTS[key];localStorage.setItem(CUSTOM_KEY,JSON.stringify(custom));saveURLs();
  }catch(e){alert(e.message);return}
- const option=document.createElement("option");option.value=key;option.textContent=name.trim();$("project").appendChild(option);
+ const option=document.createElement("option");
+ option.value=key;option.textContent=name.trim();$("project").appendChild(option);
  switchProject(key);
 }
 
@@ -400,31 +397,53 @@ function saveApi(){
 }
 
 async function testApi(){
- try{const d=await request("/templates");setStatus("apiStatus","Worker reachable:\n"+JSON.stringify(d,null,2).slice(0,2000))}
- catch(e){setStatus("apiStatus","API error: "+e.message)}
+ try{
+  const d=await request("/templates");
+  setStatus("apiStatus","Worker reachable:\n"+JSON.stringify(d,null,2).slice(0,2000));
+ }catch(e){setStatus("apiStatus","API error: "+e.message)}
 }
 
 function normalizeTemplates(data){
  const rows=Array.isArray(data)?data:Array.isArray(data.templates)?data.templates:Array.isArray(data.data)?data.data:[];
- return rows.filter(t=>{const s=String(t.status||t.state||"").toUpperCase();return !s||["APPROVED","ACTIVE"].includes(s)})
- .map(t=>({name:t.name||t.element_name||t.templateName||"",language:t.language||t.language_code||t.languageCode||"en",category:t.category||"Unknown",status:t.status||t.state||"APPROVED",components:Array.isArray(t.components)?t.components:[]})).filter(t=>t.name);
+ return rows.filter(t=>{
+  const s=String(t.status||t.state||"").toUpperCase();
+  return !s||["APPROVED","ACTIVE"].includes(s);
+ }).map(t=>({
+  name:t.name||t.element_name||t.templateName||"",
+  language:t.language||t.language_code||t.languageCode||"en",
+  category:t.category||"Unknown",
+  status:t.status||t.state||"APPROVED",
+  components:Array.isArray(t.components)?t.components:[]
+ })).filter(t=>t.name);
 }
 
 function normalizeNumbers(data){
  const rows=Array.isArray(data)?data:Array.isArray(data.phoneNumbers)?data.phoneNumbers:Array.isArray(data.phone_numbers)?data.phone_numbers:Array.isArray(data.numbers)?data.numbers:Array.isArray(data.data)?data.data:[];
- return rows.map(n=>({id:n.id||n.phone_number_id||n.phoneNumberId||"",displayName:n.verifiedName||n.verified_name||n.display_name||n.displayName||n.name||"WhatsApp Number",phone:n.displayPhoneNumber||n.display_phone_number||n.display_phone||n.phone_number||n.phone||"",quality:n.qualityRating||n.quality_rating||n.quality||"Unknown",status:n.status||n.code_verification_status||"Available"})).filter(n=>n.id||n.phone);
+ return rows.map(n=>({
+  id:n.id||n.phone_number_id||n.phoneNumberId||"",
+  displayName:n.verifiedName||n.verified_name||n.display_name||n.displayName||n.name||"WhatsApp Number",
+  phone:n.displayPhoneNumber||n.display_phone_number||n.display_phone||n.phone_number||n.phone||"",
+  quality:n.qualityRating||n.quality_rating||n.quality||"Unknown",
+  status:n.status||n.code_verification_status||"Available"
+ })).filter(n=>n.id||n.phone);
 }
 
 async function syncTemplates(){
  try{
-  templates=normalizeTemplates(await request("/templates"));renderTemplates();renderVariables();
-  $("approvedCount").textContent=templates.length;setStatus("templateStatus","Templates synced: "+templates.length);
+  templates=normalizeTemplates(await request("/templates"));
+  renderTemplates();renderVariables();
+  $("approvedCount").textContent=templates.length;
+  setStatus("templateStatus","Templates synced: "+templates.length);
  }catch(e){setStatus("templateStatus","Template Sync failed: "+e.message)}
 }
 
 async function syncNumbers(){
- try{numbers=normalizeNumbers(await request("/phone-numbers"));renderNumbers();setStatus("dashStatus","WhatsApp numbers fetched: "+numbers.length)}
- catch(e){numbers=[];renderNumbers();setStatus("dashStatus","Number Sync failed: "+e.message)}
+ try{
+  numbers=normalizeNumbers(await request("/phone-numbers"));
+  renderNumbers();setStatus("dashStatus","WhatsApp numbers fetched: "+numbers.length);
+ }catch(e){
+  numbers=[];renderNumbers();setStatus("dashStatus","Number Sync failed: "+e.message);
+ }
 }
 
 function renderNumbers(){
@@ -432,18 +451,21 @@ function renderNumbers(){
  $("sendNumber").innerHTML=numbers.length?numbers.map((n,i)=>`<option value="${i}">${esc(n.displayName)} — ${esc(n.phone)}</option>`).join(""):'<option value="">No WhatsApp numbers synced</option>';
 }
 
-function chooseNumber(i){$("sendNumber").value=String(i);document.querySelector('[data-page="campaigns"]').click()}
+function chooseNumber(i){
+ $("sendNumber").value=String(i);
+ document.querySelector('[data-page="campaigns"]').click();
+}
 
 function renderTemplates(){
  $("templateList").innerHTML=templates.length?templates.map(t=>`<div class="template-row"><b>${esc(t.name)}</b><p>Language: ${esc(t.language)} · Category: ${esc(t.category)} · Status: ${esc(t.status)}</p><button onclick="useTemplate('${esc(t.name)}','${esc(t.language)}')">Use in Campaign</button></div>`).join(""):"<p>No templates synced. Sync Templates Now क्लिक करा.</p>";
  $("campaignTemplate").innerHTML=templates.map((t,i)=>`<option value="${i}">${esc(t.name)} — ${esc(t.language)} (${esc(t.category)})</option>`).join("");
  if(!templates.length)$("campaignTemplate").innerHTML='<option value="">No approved templates</option>';
 }
-
-function useTemplate(name,language){
+</script> function useTemplate(name,language){
  const i=templates.findIndex(t=>t.name===name&&t.language===language);
  if(i>=0)$("campaignTemplate").value=String(i);
- renderVariables();document.querySelector('[data-page="campaigns"]').click();
+ renderVariables();
+ document.querySelector('[data-page="campaigns"]').click();
 }
 
 function bodyVariableCount(t){
@@ -506,14 +528,35 @@ function phoneOf(m){return String(m.wa_id||m.from||m.phone||m.phone_number||"").
 function textOf(m){return String(m.message??m.text??m.body??m.content??m.caption??"")}
 function isIncoming(m){return ["incoming","in","received","inbound"].includes(String(m.direction||m.type||"").toLowerCase())}
 function messageKey(m){return String(m.message_id||m.id||[phoneOf(m),m.direction||m.type||"",m.timestamp||m.created_at||"",textOf(m)].join("|"))}
+
 function timeValue(m){
  const v=m.timestamp||m.created_at||m.time||"";
  if(!v)return 0;
  const n=Number(v);
  return Number.isFinite(n)&&n>0&&String(v).length<13?n*1000:Date.parse(v)||0;
 }
-function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():""} function renderChats(){
- const q=($("chatSearch").value||"").replace(/\D/g,"");
+
+function timeText(m){
+ const t=timeValue(m);
+ return t?new Date(t).toLocaleString():"";
+}
+
+/* Customer name lookup: use the name supplied by the Worker or saved CRM contact. */
+function customerName(phone,rows=[]){
+ const candidates=[
+  ...rows,
+  ...messages.filter(m=>phoneOf(m)===phone)
+ ];
+ for(const m of candidates){
+  const name=String(m.name||m.profile_name||m.contact_name||m.customer_name||"").trim();
+  if(name&&name!==phone&&!/^\+?\d+$/.test(name))return name;
+ }
+ const lead=leads.find(l=>String(l.phone||"").replace(/\D/g,"")===phone);
+ return lead?.name||phone;
+}
+
+function renderChats(){
+ const q=($("chatSearch").value||"").toLowerCase().trim();
  const groups=new Map();
 
  [...messages].sort((a,b)=>timeValue(a)-timeValue(b)).forEach(m=>{
@@ -525,19 +568,19 @@ function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():
 
  const chats=[...groups.entries()].map(([phone,rows])=>({
   phone,rows,last:rows[rows.length-1],
+  name:customerName(phone,rows),
   unread:rows.some(m=>isIncoming(m)&&unreadIncoming.has(messageKey(m)))
  }))
- .filter(c=>!q||c.phone.includes(q))
+ .filter(c=>!q||c.phone.toLowerCase().includes(q)||c.name.toLowerCase().includes(q))
  .sort((a,b)=>timeValue(b.last)-timeValue(a.last));
 
  $("chatContacts").innerHTML=chats.map(c=>`
-  <div class="chat-contact ${c.unread?"has-unread ":""}${selectedChat===c.phone?"selected":""}"
-       onclick="openChat('${esc(c.phone)}')">
-   <b>${esc(c.phone)}
+  <div class="chat-contact ${c.unread?"has-unread ":""}${selectedChat===c.phone?"selected":""}" onclick="openChat('${esc(c.phone)}')">
+   <b>${esc(c.name)}
     ${c.unread?'<span class="unread-badge">NEW</span>':""}
    </b>
    <span class="preview-text">${esc(textOf(c.last)||"[Message]")}</span>
-   <div class="small">${esc(timeText(c.last))}</div>
+   <div class="small">${esc(c.phone)} · ${esc(timeText(c.last))}</div>
   </div>`).join("")||"<p style='padding:12px'>No chats found.</p>";
 
  if(selectedChat)renderChatHistory();
@@ -546,10 +589,7 @@ function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():
 
 function openChat(phone){
  selectedChat=phone;
-
- messages.filter(m=>phoneOf(m)===phone&&isIncoming(m))
-  .forEach(m=>unreadIncoming.delete(messageKey(m)));
-
+ messages.filter(m=>phoneOf(m)===phone&&isIncoming(m)).forEach(m=>unreadIncoming.delete(messageKey(m)));
  saveUnread();
  $("chatHeader").classList.add("has-chat");
  renderChats();
@@ -580,15 +620,13 @@ function showChatList(){
 }
 
 function renderChatHistory(){
- const rows=messages.filter(m=>phoneOf(m)===selectedChat)
-  .sort((a,b)=>timeValue(a)-timeValue(b));
-
+ const rows=messages.filter(m=>phoneOf(m)===selectedChat).sort((a,b)=>timeValue(a)-timeValue(b));
+ const name=customerName(selectedChat,rows);
  $("chatHeader").classList.add("has-chat");
- $("chatHeader").innerHTML=`<button class="chat-back" type="button" onclick="backToChats()">← Back to Chats</button><div class="avatar">👤</div><div class="chat-title"><div>${esc(selectedChat||"Select customer")}</div><div class="small">WhatsApp conversation</div></div>`;
+ $("chatHeader").innerHTML=`<button class="chat-back" type="button" onclick="backToChats()">← Back to Chats</button><div class="avatar">👤</div><div class="chat-title"><div>${esc(name)}</div><div class="small">${esc(selectedChat)}</div></div>`;
 
  const box=$("chatHistory");
  const nearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<100;
-
  box.innerHTML=rows.map(m=>`
   <div class="bubble ${isIncoming(m)?"":"out"}">
    ${esc(textOf(m))}
@@ -604,9 +642,7 @@ function renderChatHistory(){
   $("chatSidebar").style.display="block";
   $("chatMain").style.display="flex";
  }
-}
-
-async function enableNotifications(){
+} async function enableNotifications(){
  if(!("Notification" in window)){
   alert("Browser notifications supported नाहीत.");
   return;
@@ -620,7 +656,7 @@ function notifyIncoming(rows){
  if(!("Notification" in window)||Notification.permission!=="granted")return;
  rows.forEach(m=>{
   try{
-   const n=new Notification("New WhatsApp message — "+phoneOf(m),{
+   const n=new Notification("New WhatsApp message — "+customerName(phoneOf(m)),{
     body:textOf(m)||"New message",
     tag:messageKey(m)
    });
@@ -637,15 +673,10 @@ function notifyIncoming(rows){
 async function loadMessages(manual=false){
  if(polling)return;
  polling=true;
-
  try{
   const d=await request("/messages");
   const rows=Array.isArray(d)?d:Array.isArray(d.messages)?d.messages:Array.isArray(d.data)?d.data:[];
-
-  const fresh=initialized
-   ?rows.filter(m=>isIncoming(m)&&!seenIncoming.has(messageKey(m)))
-   :[];
-
+  const fresh=initialized?rows.filter(m=>isIncoming(m)&&!seenIncoming.has(messageKey(m))):[];
   messages=rows;
 
   if(!initialized){
@@ -664,14 +695,9 @@ async function loadMessages(manual=false){
   $("contactCount").textContent=new Set(messages.map(phoneOf).filter(Boolean)).size;
   $("incomingCount").textContent=messages.filter(isIncoming).length;
   $("outgoingCount").textContent=messages.filter(m=>!isIncoming(m)).length;
-
-  setStatus("inboxStatus",fresh.length
-   ?fresh.length+" new incoming message(s)."
-   :"Loaded "+messages.length+" messages · "+new Date().toLocaleTimeString());
-
+  setStatus("inboxStatus",fresh.length?fresh.length+" new incoming message(s).":"Loaded "+messages.length+" messages · "+new Date().toLocaleTimeString());
   setStatus("dashStatus","API connected. "+messages.length+" message records.");
   renderChats();
-
  }catch(e){
   setStatus("inboxStatus","Messages endpoint error: "+e.message);
   setStatus("dashStatus","Messages API: "+e.message);
@@ -686,7 +712,6 @@ async function sendReply(){
   const text=$("replyText").value.trim();
   const file=$("chatFile").files?.[0];
   if(!text&&!file)throw Error("Message लिहा किंवा photo/PDF attach करा.");
-
   const chosen=numbers[Number($("sendNumber").value)]||numbers[0];
   if(!chosen||!chosen.id)throw Error("या Project चा WhatsApp नंबर आधी Sync करा.");
 
@@ -694,39 +719,32 @@ async function sendReply(){
   const btn=$("replyButton");
   btn.disabled=true;
   setStatus("replyStatus",file?"Sending attachment...":"Sending message...");
-
   let result;
 
   if(file){
    const allowed=["image/jpeg","image/png","image/webp","application/pdf"].includes(file.type)||/\.(pdf|jpe?g|png|webp)$/i.test(file.name);
    if(!allowed)throw Error("फक्त JPG, PNG, WEBP किंवा PDF निवडा.");
    if(file.size>15*1024*1024)throw Error("फाइल 15 MB पेक्षा लहान असावी.");
-
    const form=new FormData();
    form.append("to",selectedChat);
    form.append("phoneNumberId",phoneNumberId);
    form.append("caption",text);
    form.append("file",file,file.name);
    result=await request("/send-media",{method:"POST",body:form});
-
   }else{
    result=await request("/send",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-     to:selectedChat,text,phoneNumberId,phone_number_id:phoneNumberId
-    })
+    body:JSON.stringify({to:selectedChat,text,phoneNumberId,phone_number_id:phoneNumberId})
    });
   }
 
   if(result.success===false)throw Error(result.error||"Message failed");
-
   $("replyText").value="";
   $("chatFile").value="";
   $("chatFileName").textContent="No file selected";
   setStatus("replyStatus","Request accepted by Worker. Delivery status तपासा.");
   await loadMessages(true);
-
  }catch(e){
   setStatus("replyStatus","Send failed: "+e.message);
  }finally{
@@ -738,17 +756,13 @@ function addLead(){
  const name=$("leadName").value.trim();
  const phone=$("leadPhone").value.replace(/\D/g,"");
  const notes=$("leadNotes").value.trim();
-
  if(!name||!/^\d{8,15}$/.test(phone)){
   setStatus("leadStatus","Name आणि country code सहित phone भरा.");
   return;
  }
-
  leads.unshift({name,phone,notes,project:PROJECTS[activeProject].name,createdAt:new Date().toISOString()});
  localStorage.setItem(LEAD_KEY,JSON.stringify(leads));
- $("leadName").value="";
- $("leadPhone").value="";
- $("leadNotes").value="";
+ $("leadName").value="";$("leadPhone").value="";$("leadNotes").value="";
  renderLeads();
 }
 
@@ -756,7 +770,6 @@ function renderLeads(){
  const q=($("leadSearch").value||"").toLowerCase();
  const rows=leads.filter(l=>(l.name+" "+l.phone+" "+l.notes+" "+l.project).toLowerCase().includes(q));
  $("leadCount").textContent=leads.length;
-
  $("leadTable").innerHTML=`<table><thead><tr><th>Name</th><th>Phone</th><th>Project</th><th>Notes</th><th>Action</th></tr></thead><tbody>${rows.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.phone)}</td><td>${esc(l.project)}</td><td>${esc(l.notes)}</td><td><button class="danger" onclick="deleteLead('${esc(l.phone)}')">Delete</button></td></tr>`).join("")}</tbody></table>`;
 }
 
@@ -782,22 +795,18 @@ async function importLeads(){
  if(!f){setStatus("leadStatus","CSV निवडा.");return}
  const lines=(await f.text()).split(/\r?\n/).filter(Boolean);
  if(lines.length<2){setStatus("leadStatus","CSV मध्ये header आणि contacts आवश्यक आहेत.");return}
-
  const parse=line=>line.split(",").map(v=>v.trim().replace(/^"|"$/g,""));
  const header=parse(lines[0]).map(v=>v.toLowerCase());
  const ni=header.findIndex(v=>["name","customer name"].includes(v));
  const pi=header.findIndex(v=>["phone","mobile","phone number"].includes(v));
  const oi=header.findIndex(v=>["notes","project"].includes(v));
-
  if(ni<0||pi<0){setStatus("leadStatus","CSV मध्ये Name आणि Phone columns आवश्यक.");return}
-
  for(const line of lines.slice(1)){
   const c=parse(line),name=c[ni]||"",phone=(c[pi]||"").replace(/\D/g,"");
   if(name&&/^\d{8,15}$/.test(phone)&&!leads.some(l=>l.phone===phone)){
    leads.push({name,phone,notes:oi>=0?c[oi]:"",project:PROJECTS[activeProject].name});
   }
  }
-
  localStorage.setItem(LEAD_KEY,JSON.stringify(leads));
  renderLeads();
  setStatus("leadStatus","CSV import complete.");
@@ -811,15 +820,11 @@ async function loadReports(){
   if($("direction").value)q.set("direction",$("direction").value);
   if($("reportFilter").value)q.set("status",$("reportFilter").value);
   q.set("limit","1000");
-
   const d=await request("/reports?"+q.toString());
   const rows=Array.isArray(d.messages)?d.messages:[];
-
   $("reportTable").innerHTML=`<table><thead><tr><th>Phone</th><th>Message</th><th>Direction</th><th>Status</th><th>Time</th></tr></thead><tbody>${rows.map(m=>`<tr><td>${esc(phoneOf(m))}</td><td>${esc(textOf(m))}</td><td>${esc(m.direction||"")}</td><td>${esc(m.status||"unknown")}</td><td>${esc(m.timestamp||m.created_at||"")}</td></tr>`).join("")}</tbody></table>`;
   setStatus("reportStatus",rows.length+" report records loaded.");
- }catch(e){
-  setStatus("reportStatus","Reports API error: "+e.message);
- }
+ }catch(e){setStatus("reportStatus","Reports API error: "+e.message)}
 }
 
 function exportReports(){
@@ -842,10 +847,8 @@ function showPage(page,remember=true){
  if(!target)return;
  if(remember&&currentPage!==page)pageHistory.push(currentPage);
  currentPage=page;
-
  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===page));
-
  const navButton=document.querySelector('nav button[data-page="'+page+'"]');
  if(navButton)navButton.focus({preventScroll:true});
  if(page==="templates")syncTemplates();
@@ -886,4 +889,3 @@ window.addEventListener("resize",()=>{
 </script>
 </body>
 </html>
-</section>
