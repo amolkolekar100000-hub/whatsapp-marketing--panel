@@ -201,6 +201,19 @@ td, th {
 }
 .chat-item strong { display: block; margin-bottom: 5px; font-size: 14px; }
 .chat-item .small { margin-top: 4px; }
+/* New unread client replies: light blue highlight */
+.chat-item.has-incoming {
+  background: #dbeafe !important;
+  box-shadow: inset 4px 0 #2563eb;
+}
+.chat-item.has-incoming:hover { background: #bfdbfe !important; }
+.chat-item.has-incoming.active { background: #bfdbfe !important; box-shadow: inset 4px 0 #1d4ed8; }
+.incoming-badge {
+  display: inline-block; margin-left: 5px; padding: 3px 7px;
+  border-radius: 10px; background: #2563eb; color: #fff;
+  font-size: 10px; font-weight: 700; vertical-align: middle;
+}
+
 .chat-back {
   display: inline-flex;
   align-items: center;
@@ -775,6 +788,14 @@ let messages = [];
 let localContacts = [];
 let selectedChatNumber = "";
 let unreadChats = {};
+// Latest incoming message signature already read by the user, persisted per browser.
+let readReplySignatures = {};
+try { readReplySignatures = JSON.parse(localStorage.getItem("ak_read_reply_signatures") || "{}"); } catch { readReplySignatures = {}; }
+
+function messageSignature(message) {
+  return String(message?.id || message?.message_id || message?.wamid || message?.created_at || message?.timestamp || "") + "|" + String(getMessageText(message));
+}
+
 
 function showToast(message) {
   const toast = $("toast");
@@ -1078,8 +1099,10 @@ function renderChatList() {
     const time = latest
       ? formatDate(latest.created_at || latest.timestamp || latest.sent_at)
       : "";
-    // Latest incoming message means the client replied. Highlight that row red.
-    const incoming = Boolean(latest) && !isOutgoingMessage(latest);
+    // Only show NEW REPLY until this latest incoming message is opened.
+    const latestIsIncoming = Boolean(latest) && !isOutgoingMessage(latest);
+    const signature = latestIsIncoming ? messageSignature(latest) : "";
+    const incoming = latestIsIncoming && readReplySignatures[chat.phone] !== signature;
 
     return `
       <button
@@ -1109,6 +1132,15 @@ function selectChat(phone) {
   const chat = getChatGroups().find(
     (item) => item.phone === selectedChatNumber
   );
+
+  // Opening the client chat marks its current latest incoming message as read.
+  if (chat && chat.messages.length) {
+    const latest = chat.messages[chat.messages.length - 1];
+    if (latest && !isOutgoingMessage(latest)) {
+      readReplySignatures[chat.phone] = messageSignature(latest);
+      try { localStorage.setItem("ak_read_reply_signatures", JSON.stringify(readReplySignatures)); } catch {}
+    }
+  }
 
   if ($("chatTitle")) {
     $("chatTitle").textContent = chat
