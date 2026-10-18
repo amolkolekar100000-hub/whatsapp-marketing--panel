@@ -516,7 +516,7 @@ td, th {
           <div class="chat-reply">
             <label for="replyFile">Attach Image / PDF</label>
             <input id="replyFile" type="file"
-              accept="image/jpeg,image/png,image/webp,application/pdf">
+              accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf">
 
             <label for="replyText">Reply Message</label>
             <textarea id="replyText"
@@ -1264,65 +1264,125 @@ $("refreshChatButton")?.addEventListener("click", loadChats);
 
 async function sendChatReply() {
   const textInput = $("replyText");
+  const fileInput = $("replyFile");
   const sendButton = $("replyButton");
-  const text = textInput?.value.trim();
+  const text = textInput?.value.trim() || "";
+  const file = fileInput?.files?.[0] || null;
 
   if (!selectedChatNumber) {
     showToast("कृपया आधी client ची chat निवडा.");
     return;
   }
 
-  if (!text) {
-    showToast("कृपया reply message लिहा.");
+  if (!text && !file) {
+    showToast("कृपया message लिहा किंवा Image/PDF निवडा.");
     return;
   }
 
+  // Supported file types and a practical upload-size guard.
+  if (file) {
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "application/pdf"
+    ];
+    const extension = (file.name.split(".").pop() || "").toLowerCase();
+    const allowedExtensions = ["jpg", "jpeg", "png", "webp", "pdf"];
+
+    if (
+      (file.type && !allowedTypes.includes(file.type)) ||
+      !allowedExtensions.includes(extension)
+    ) {
+      showToast("फक्त JPG, PNG, WEBP किंवा PDF फाइल निवडा.");
+      return;
+    }
+
+    if (file.size > 16 * 1024 * 1024) {
+      showToast("फाइल 16 MB पेक्षा लहान निवडा.");
+      return;
+    }
+  }
+
   if (sendButton) sendButton.disabled = true;
-  setStatus("chatStatus", "Sending reply...");
+  setStatus("chatStatus", file ? "Uploading Image/PDF and sending..." : "Sending reply...");
 
   try {
-    const response = await apiRequest("/send", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        to: selectedChatNumber,
-        message: text
-      })
-    });
+    let response;
 
-    if (response.success === false) {
-      throw new Error(response.error || "Message send failed.");
+    if (file) {
+      // IMPORTANT: Do not manually set Content-Type for FormData.
+      // The browser adds the multipart boundary automatically.
+      const formData = new FormData();
+      formData.append("to", selectedChatNumber);
+      formData.append("file", file, file.name);
+      formData.append("caption", text);
+      formData.append("message", text);
+      formData.append("mediaType", file.type || "");
+
+      const fetchResponse = await fetch(
+        getProjectWorkerUrl(currentProject) + "/send-media",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+      const raw = await fetchResponse.text();
+      let data = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        throw new Error("Worker ने वैध JSON response दिला नाही: " + raw.slice(0, 180));
+      }
+
+      if (!fetchResponse.ok || data.success === false || data.error) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          ("Media send failed (HTTP " + fetchResponse.status + ")")
+        );
+      }
+
+      response = data;
+    } else {
+      response = await apiRequest("/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: selectedChatNumber,
+          message: text
+        })
+      });
+
+      if (response.success === false || response.error) {
+        throw new Error(response.error || "Message send failed.");
+      }
     }
 
     if (textInput) textInput.value = "";
+    if (fileInput) fileInput.value = "";
 
     setStatus(
       "chatStatus",
-      "Reply request accepted. Refreshing message history..."
+      (file ? "Image/PDF send request accepted." : "Reply request accepted.") +
+      " Delivery status Worker/API मध्ये तपासा."
     );
 
     await loadChats();
+    if (selectedChatNumber) selectChat(selectedChatNumber);
 
-    // नव्याने load झालेल्या history मध्ये हाच client निवडा.
-    selectChat(selectedChatNumber);
-
-    showToast(
-      "Reply request accepted. Delivery status Worker/API मध्ये तपासा."
+    showToast(file
+      ? "Image/PDF request accepted. Delivery status तपासा."
+      : "Reply request accepted. Delivery status तपासा."
     );
   } catch (error) {
-    setStatus(
-      "chatStatus",
-      "Reply failed: " + error.message
-    );
-
-    showToast("Reply failed: " + error.message);
+    setStatus("chatStatus", "Reply failed: " + error.message);
+    showToast("Send failed: " + error.message);
   } finally {
     if (sendButton) sendButton.disabled = false;
   }
 }
-
 $("replyButton")?.addEventListener("click", sendChatReply);
 
 /* Enter ने reply पाठवा; Shift+Enter ने नवीन ओळ */
