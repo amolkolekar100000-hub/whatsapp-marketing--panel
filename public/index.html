@@ -1,3 +1,8 @@
+A K PROPERTIES - COMPLETE HTML CODE
+Back Button + Light Red Incoming Messages + Light Green Outgoing Messages
+
+Copy the entire code below into index.html.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -164,36 +169,9 @@ td, th {
 }
 
 .chat-contact.has-unread {
-  background: #ffffff;
-  border-left: 4px solid #ffffff;
+  background: #e7f3ff;
+  border-left: 4px solid #1685e8;
   padding-left: 10px;
-}
-
-/* Keep the existing chat-list layout, but remove the green button fill */
-.chat-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  margin: 0 0 8px;
-  padding: 13px 14px;
-  border: 1px solid #edf0f2;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #111b21;
-  box-shadow: none;
-}
-.chat-item:hover {
-  background: #f7f9fa;
-}
-.chat-item.active {
-  background: #ffffff;
-  border-left: 3px solid #ffffff;
-}
-.chat-item strong {
-  color: #111b21;
-}
-.chat-item .small {
-  color: #667781;
 }
 
 .chat-contact b {
@@ -206,6 +184,43 @@ td, th {
 .chat-contact .preview-text {
   color: #54656f;
 }
+
+/* WhatsApp-style conversation rows (the JavaScript renders .chat-item) */
+.chat-item {
+  display: block;
+  width: 100%;
+  padding: 13px 14px;
+  border: 0;
+  border-bottom: 1px solid #edf0f2;
+  border-radius: 0;
+  margin: 0;
+  background: #fff;
+  color: #111b21;
+  text-align: left;
+  cursor: pointer;
+}
+.chat-item:hover { background: #f5f7f8; }
+.chat-item.active {
+  background: #d9fdd3;
+  box-shadow: inset 4px 0 #087f5b;
+}
+.chat-item strong { display: block; margin-bottom: 5px; font-size: 14px; }
+.chat-item .small { margin-top: 4px; }
+.chat-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 20px;
+  background: #e1e7e9;
+  color: #19332e;
+  font-weight: 700;
+}
+.chat-back:hover { background: #d3dcdf; }
+.chat-header .chat-title { flex: 1; }
+
 .chat-contact b {
   display: block;
   font-size: 14px;
@@ -234,7 +249,7 @@ td, th {
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  background: #ffffff;
+  background: #efeae2;
 }
 .chat-header {
   display: flex;
@@ -264,7 +279,7 @@ td, th {
   min-height: 0;
   overflow-y: auto;
   padding: 20px 5%;
-  background: #ffffff;
+  background: #efeae2;
 }
 .bubble {
   width: fit-content;
@@ -280,15 +295,8 @@ td, th {
   font-size: 14px;
   line-height: 1.5;
 }
-.bubble:not(.out) {
-  background: #dbeafe;
-  border: 1px solid #bfdbfe;
-  margin-right: auto;
-}
-.bubble.out {
-  background: #d9fdd3;
-  margin-left: auto;
-}
+.bubble:not(.out) { background: #fee2e2; border-left: 4px solid #dc2626; }
+.bubble.out { background: #d9fdd3; margin-left: auto; }
 .bubble .small { text-align: right; margin-top: 5px; }
 .chat-reply {
   padding: 12px;
@@ -326,10 +334,16 @@ td, th {
     min-height: 480px;
   }
   .chat-sidebar {
-    max-height: 145px;
+    max-height: 100%;
+    min-height: 0;
     border-right: 0;
     border-bottom: 1px solid var(--border);
   }
+  /* Mobile: show list first, then only the selected conversation */
+  .chat-layout:not(.chat-open) .chat-main { display: none; }
+  .chat-layout.chat-open .chat-sidebar { display: none; }
+  .chat-layout.chat-open .chat-main { display: flex; height: 100%; }
+  .chat-header { padding: 9px 10px; gap: 8px; }
   .chat-history { padding: 12px; }
   .bubble { max-width: 90%; }
 }
@@ -467,7 +481,7 @@ td, th {
         Loading conversations...
       </div>
 
-      <div class="chat-layout">
+      <div class="chat-layout" id="chatLayout">
         <div class="chat-sidebar">
           <input id="chatSearch" type="search"
             placeholder="Search name or number...">
@@ -478,6 +492,7 @@ td, th {
 
         <div class="chat-main">
           <div class="chat-header">
+            <button type="button" id="backToChats" class="chat-back" aria-label="Back to client list">← Back</button>
             <div class="avatar">👤</div>
             <div class="chat-title" id="chatTitle">
               Select a conversation
@@ -1063,7 +1078,6 @@ function renderChatList() {
         type="button"
         class="chat-item ${active ? "active" : ""}"
         data-chat-phone="${escapeHTML(chat.phone)}"
-        style="display:block;width:100%;text-align:left;margin-bottom:8px;"
       >
         <strong>${escapeHTML(chat.name)}</strong>
         <div class="small">${escapeHTML(chat.phone)}</div>
@@ -1082,6 +1096,7 @@ function renderChatList() {
 
 function selectChat(phone) {
   selectedChatNumber = normalizePhone(phone);
+  $("chatLayout")?.classList.add("chat-open");
 
   const chat = getChatGroups().find(
     (item) => item.phone === selectedChatNumber
@@ -1096,6 +1111,18 @@ function selectChat(phone) {
   renderChatList();
   renderSelectedChat();
 }
+
+function showChatList() {
+  selectedChatNumber = "";
+  $("chatLayout")?.classList.remove("chat-open");
+  if ($("chatTitle")) $("chatTitle").textContent = "Select a conversation";
+  if ($("chatHistory")) {
+    $("chatHistory").innerHTML = '<div class="small">Select a contact to view message history.</div>';
+  }
+  renderChatList();
+}
+
+$("backToChats")?.addEventListener("click", showChatList);
 
 function renderSelectedChat() {
   const history = $("chatHistory");
