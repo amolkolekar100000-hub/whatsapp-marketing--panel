@@ -210,8 +210,8 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
  </div>
 </section>
 
-<section class="view" id="reports">
- <h2>Reports</h2>
+<section class="view" id="reports"> 
+  <h2>Reports</h2>
  <div class="panel">
   <div class="grid">
    <div><label>From date</label><input type="date" id="fromDate"></div>
@@ -273,16 +273,25 @@ td,th{text-align:left;padding:9px;border-bottom:1px solid var(--border);overflow
    <li><code>/reports</code></li>
    <li><code>/send-media</code> — media endpoint required</li>
   </ul>
- </div></main>
+ </div>
+</section>
+</main>
 </div>
 
 <div id="toast"></div>
+
 <script>
 "use strict";
 
 const PROJECTS={
- newlaunch:{name:"New Launch",url:"https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"},
- dosti:{name:"Dosti Group",url:"https://dosti-whatsapp-api.amolkolekar100000.workers.dev"},
+ newlaunch:{
+  name:"New Launch",
+  url:"https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"
+ },
+ dosti:{
+  name:"Dosti Group",
+  url:"https://dosti-whatsapp-api.amolkolekar100000.workers.dev"
+ },
  godrej:{name:"Godrej Properties",url:""},
  delta:{name:"Delta Group",url:""},
  raheja:{name:"Raheja Group",url:""},
@@ -297,6 +306,7 @@ const LEAD_KEY="akp_contacts_v2";
 const CUSTOM_KEY="akp_custom_projects_v1";
 const READ_KEY="akp_read_messages_v1";
 const UNREAD_KEY="akp_unread_messages_v1";
+
 const $=id=>document.getElementById(id);
 
 let activeProject="newlaunch";
@@ -308,9 +318,16 @@ let initialized=false,polling=false;
 
 function readURLs(){
  let saved={};
- try{saved=JSON.parse(localStorage.getItem(URL_KEY)||"{}")}catch{}
+ try{
+  saved=JSON.parse(localStorage.getItem(URL_KEY)||"{}");
+ }catch{}
+
  const result={};
- Object.keys(PROJECTS).forEach(k=>result[k]=saved[k]||PROJECTS[k].url);
+
+ Object.keys(PROJECTS).forEach(
+  k=>result[k]=saved[k]||PROJECTS[k].url
+ );
+
  try{
   const custom=JSON.parse(localStorage.getItem(CUSTOM_KEY)||"{}");
   Object.entries(custom).forEach(([k,v])=>{
@@ -320,189 +337,433 @@ function readURLs(){
    }
   });
  }catch{}
+
  return result;
 }
 
 function readLeads(){
- try{return JSON.parse(localStorage.getItem(LEAD_KEY)||"[]")}catch{return []}
+ try{
+  return JSON.parse(localStorage.getItem(LEAD_KEY)||"[]");
+ }catch{
+  return [];
+ }
 }
 
 function readSeen(){
- try{return new Set(JSON.parse(localStorage.getItem(READ_KEY)||"[]"))}catch{return new Set()}
+ try{
+  return new Set(JSON.parse(localStorage.getItem(READ_KEY)||"[]"));
+ }catch{
+  return new Set();
+ }
 }
 
 function saveSeen(){
- try{localStorage.setItem(READ_KEY,JSON.stringify([...seenIncoming].slice(-5000)))}catch{}
+ try{
+  localStorage.setItem(READ_KEY,JSON.stringify([...seenIncoming].slice(-5000)));
+ }catch{}
 }
 
 function readUnread(){
- try{return new Set(JSON.parse(localStorage.getItem(UNREAD_KEY)||"[]"))}catch{return new Set()}
+ try{
+  return new Set(JSON.parse(localStorage.getItem(UNREAD_KEY)||"[]"));
+ }catch{
+  return new Set();
+ }
 }
 
 function saveUnread(){
- try{localStorage.setItem(UNREAD_KEY,JSON.stringify([...unreadIncoming].slice(-5000)))}catch{}
+ try{
+  localStorage.setItem(UNREAD_KEY,JSON.stringify([...unreadIncoming].slice(-5000)));
+ }catch{}
 }
 
 function esc(s){
- return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ return String(s??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ }[c]));
 }
 
-function setStatus(id,text){if($(id))$(id).textContent=text}
+function setStatus(id,text){
+ if($(id))$(id).textContent=text;
+}
 
 function apiURL(path){
- const base=(projectUrls[activeProject]||"").trim().replace(/\/+$/,"");
- if(!base)throw Error(PROJECTS[activeProject].name+" साठी API Settings मध्ये Worker URL भरा.");
+ const base=(projectUrls[activeProject]||"")
+  .trim().replace(/\/+$/,"");
+
+ if(!base){
+  throw Error(PROJECTS[activeProject].name+
+   " साठी API Settings मध्ये Worker URL भरा.");
+ }
+
  return base+path;
 }
 
 async function request(path,options={}){
- const response=await fetch(apiURL(path),{cache:"no-store",...options});
- const data=await response.json().catch(()=>({error:"Worker ने JSON response दिला नाही."}));
- if(!response.ok)throw Error(data.error||data.message||("HTTP "+response.status));
+ const response=await fetch(apiURL(path),{
+  cache:"no-store",
+  ...options
+ });
+
+ const data=await response.json().catch(
+  ()=>({error:"Worker ने JSON response दिला नाही."})
+ );
+
+ if(!response.ok){
+  throw Error(data.error||data.message||("HTTP "+response.status));
+ }
+
  return data;
 }
 
-function saveURLs(){localStorage.setItem(URL_KEY,JSON.stringify(projectUrls))}
+function saveURLs(){
+ localStorage.setItem(URL_KEY,JSON.stringify(projectUrls));
+}
 
 function addProject(){
  const name=prompt("नवीन Project चे नाव लिहा:");
  if(!name||!name.trim())return;
+
  const url=prompt("Project चा HTTPS Worker URL टाका:");
  if(!url||!url.trim())return;
+
  const clean=url.trim().replace(/\/+$/,"");
- if(!clean.startsWith("https://")){alert("HTTPS URL आवश्यक आहे.");return}
- let key=name.toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,30)||"project";
- const base=key;let n=2;
+
+ if(!clean.startsWith("https://")){
+  alert("HTTPS URL आवश्यक आहे.");
+  return;
+ }
+
+ let key=name.toLowerCase()
+  .replace(/[^a-z0-9]+/g,"").slice(0,30)||"project";
+
+ const base=key;
+ let n=2;
+
  while(PROJECTS[key])key=base+n++;
- PROJECTS[key]={name:name.trim(),url:clean};projectUrls[key]=clean;
+
+ PROJECTS[key]={name:name.trim(),url:clean};
+ projectUrls[key]=clean;
+
  try{
-  const custom=JSON.parse(localStorage.getItem(CUSTOM_KEY)||"{}");
-  custom[key]=PROJECTS[key];localStorage.setItem(CUSTOM_KEY,JSON.stringify(custom));saveURLs();
- }catch(e){alert(e.message);return}
- const option=document.createElement("option");option.value=key;option.textContent=name.trim();$("project").appendChild(option);
+  const custom=JSON.parse(
+   localStorage.getItem(CUSTOM_KEY)||"{}"
+  );
+
+  custom[key]=PROJECTS[key];
+  localStorage.setItem(CUSTOM_KEY,JSON.stringify(custom));
+  saveURLs();
+ }catch(e){
+  alert(e.message);
+  return;
+ }
+
+ const option=document.createElement("option");
+ option.value=key;
+ option.textContent=name.trim();
+ $("project").appendChild(option);
+
  switchProject(key);
 }
 
 function switchProject(key){
  if(!PROJECTS[key])return;
- activeProject=key;$("project").value=key;$("apiUrl").value=projectUrls[key]||"";
- templates=[];numbers=[];messages=[];selectedChat="";
- renderNumbers();renderTemplates();renderVariables();renderChats();
+
+ activeProject=key;
+ $("project").value=key;
+ $("apiUrl").value=projectUrls[key]||"";
+
+ templates=[];
+ numbers=[];
+ messages=[];
+ selectedChat="";
+
+ renderNumbers();
+ renderTemplates();
+ renderVariables();
+ renderChats();
+
  setStatus("connection","Checking "+PROJECTS[key].name+"...");
  syncAll();
 }
 
 function saveApi(){
  const value=$("apiUrl").value.trim().replace(/\/+$/,"");
- if(value&&!value.startsWith("https://")){setStatus("apiStatus","HTTPS Worker URL आवश्यक आहे.");return}
- projectUrls[activeProject]=value;saveURLs();
- setStatus("apiStatus","URL saved for "+PROJECTS[activeProject].name);syncAll();
+
+ if(value&&!value.startsWith("https://")){
+  setStatus("apiStatus","HTTPS Worker URL आवश्यक आहे.");
+  return;
+ }
+
+ projectUrls[activeProject]=value;
+ saveURLs();
+
+ setStatus("apiStatus","URL saved for "+PROJECTS[activeProject].name);
+ syncAll();
 }
 
 async function testApi(){
- try{const d=await request("/templates");setStatus("apiStatus","Worker reachable:\n"+JSON.stringify(d,null,2).slice(0,2000))}
- catch(e){setStatus("apiStatus","API error: "+e.message)}
+ try{
+  const d=await request("/templates");
+  setStatus("apiStatus","Worker reachable:\n"+
+   JSON.stringify(d,null,2).slice(0,2000));
+ }catch(e){
+  setStatus("apiStatus","API error: "+e.message);
+ }
 }
 
 function normalizeTemplates(data){
- const rows=Array.isArray(data)?data:Array.isArray(data.templates)?data.templates:Array.isArray(data.data)?data.data:[];
- return rows.filter(t=>{const s=String(t.status||t.state||"").toUpperCase();return !s||["APPROVED","ACTIVE"].includes(s)})
- .map(t=>({name:t.name||t.element_name||t.templateName||"",language:t.language||t.language_code||t.languageCode||"en",category:t.category||"Unknown",status:t.status||t.state||"APPROVED",components:Array.isArray(t.components)?t.components:[]})).filter(t=>t.name);
+ const rows=Array.isArray(data)?data:
+  Array.isArray(data.templates)?data.templates:
+  Array.isArray(data.data)?data.data:[];
+
+ return rows.filter(t=>{
+  const s=String(t.status||t.state||"").toUpperCase();
+  return !s||["APPROVED","ACTIVE"].includes(s);
+ }).map(t=>({
+  name:t.name||t.element_name||t.templateName||"",
+  language:t.language||t.language_code||t.languageCode||"en",
+  category:t.category||"Unknown",
+  status:t.status||t.state||"APPROVED",
+  components:Array.isArray(t.components)?t.components:[]
+ })).filter(t=>t.name);
 }
 
 function normalizeNumbers(data){
- const rows=Array.isArray(data)?data:Array.isArray(data.phoneNumbers)?data.phoneNumbers:Array.isArray(data.phone_numbers)?data.phone_numbers:Array.isArray(data.numbers)?data.numbers:Array.isArray(data.data)?data.data:[];
- return rows.map(n=>({id:n.id||n.phone_number_id||n.phoneNumberId||"",displayName:n.verifiedName||n.verified_name||n.display_name||n.displayName||n.name||"WhatsApp Number",phone:n.displayPhoneNumber||n.display_phone_number||n.display_phone||n.phone_number||n.phone||"",quality:n.qualityRating||n.quality_rating||n.quality||"Unknown",status:n.status||n.code_verification_status||"Available"})).filter(n=>n.id||n.phone);
+ const rows=Array.isArray(data)?data:
+  Array.isArray(data.phoneNumbers)?data.phoneNumbers:
+  Array.isArray(data.phone_numbers)?data.phone_numbers:
+  Array.isArray(data.numbers)?data.numbers:
+  Array.isArray(data.data)?data.data:[];
+
+ return rows.map(n=>({
+  id:n.id||n.phone_number_id||n.phoneNumberId||"",
+  displayName:n.verifiedName||n.verified_name||
+   n.display_name||n.displayName||n.name||"WhatsApp Number",
+  phone:n.displayPhoneNumber||n.display_phone_number||
+   n.display_phone||n.phone_number||n.phone||"",
+  quality:n.qualityRating||n.quality_rating||n.quality||"Unknown",
+  status:n.status||n.code_verification_status||"Available"
+ })).filter(n=>n.id||n.phone);
 }
 
 async function syncTemplates(){
  try{
-  templates=normalizeTemplates(await request("/templates"));renderTemplates();renderVariables();
-  $("approvedCount").textContent=templates.length;setStatus("templateStatus","Templates synced: "+templates.length);
- }catch(e){setStatus("templateStatus","Template Sync failed: "+e.message)}
+  templates=normalizeTemplates(await request("/templates"));
+  renderTemplates();
+  renderVariables();
+
+  $("approvedCount").textContent=templates.length;
+  setStatus("templateStatus","Templates synced: "+templates.length);
+ }catch(e){
+  setStatus("templateStatus","Template Sync failed: "+e.message);
+ }
 }
 
 async function syncNumbers(){
- try{numbers=normalizeNumbers(await request("/phone-numbers"));renderNumbers();setStatus("dashStatus","WhatsApp numbers fetched: "+numbers.length)}
- catch(e){numbers=[];renderNumbers();setStatus("dashStatus","Number Sync failed: "+e.message)}
+ try{
+  numbers=normalizeNumbers(await request("/phone-numbers"));
+  renderNumbers();
+  setStatus("dashStatus","WhatsApp numbers fetched: "+numbers.length);
+ }catch(e){
+  numbers=[];
+  renderNumbers();
+  setStatus("dashStatus","Number Sync failed: "+e.message);
+ }
 }
 
 function renderNumbers(){
- $("numberList").innerHTML=numbers.length?numbers.map((n,i)=>`<div class="number-row"><b>${esc(n.displayName)}</b><p>${esc(n.phone)}</p><small>Phone ID: ${esc(n.id)} · Status: ${esc(n.status)} · Quality: ${esc(n.quality)}</small><button onclick="chooseNumber(${i})">Use This Number</button></div>`).join(""):"<p>No numbers returned. Worker /phone-numbers endpoint तपासा.</p>";
- $("sendNumber").innerHTML=numbers.length?numbers.map((n,i)=>`<option value="${i}">${esc(n.displayName)} — ${esc(n.phone)}</option>`).join(""):'<option value="">No WhatsApp numbers synced</option>';
+ $("numberList").innerHTML=numbers.length?
+  numbers.map((n,i)=>`
+   <div class="number-row">
+    <b>${esc(n.displayName)}</b>
+    <p>${esc(n.phone)}</p>
+    <small>Phone ID: ${esc(n.id)} · Status: ${esc(n.status)} · Quality: ${esc(n.quality)}</small>
+    <button onclick="chooseNumber(${i})">Use This Number</button>
+   </div>
+  `).join(""):"<p>No numbers returned. Worker /phone-numbers endpoint तपासा.</p>";
+
+ $("sendNumber").innerHTML=numbers.length?
+  numbers.map((n,i)=>`
+   <option value="${i}">${esc(n.displayName)} — ${esc(n.phone)}</option>
+  `).join(""):'<option value="">No WhatsApp numbers synced</option>';
 }
 
-function chooseNumber(i){$("sendNumber").value=String(i);document.querySelector('[data-page="campaigns"]').click()}
+function chooseNumber(i){
+ $("sendNumber").value=String(i);
+ document.querySelector('[data-page="campaigns"]').click();
+}
 
 function renderTemplates(){
- $("templateList").innerHTML=templates.length?templates.map(t=>`<div class="template-row"><b>${esc(t.name)}</b><p>Language: ${esc(t.language)} · Category: ${esc(t.category)} · Status: ${esc(t.status)}</p><button onclick="useTemplate('${esc(t.name)}','${esc(t.language)}')">Use in Campaign</button></div>`).join(""):"<p>No templates synced. Sync Templates Now क्लिक करा.</p>";
- $("campaignTemplate").innerHTML=templates.map((t,i)=>`<option value="${i}">${esc(t.name)} — ${esc(t.language)} (${esc(t.category)})</option>`).join("");
- if(!templates.length)$("campaignTemplate").innerHTML='<option value="">No approved templates</option>';
+ $("templateList").innerHTML=templates.length?
+  templates.map(t=>`
+   <div class="template-row">
+    <b>${esc(t.name)}</b>
+    <p>Language: ${esc(t.language)} · Category: ${esc(t.category)} · Status: ${esc(t.status)}</p>
+    <button onclick="useTemplate('${esc(t.name)}','${esc(t.language)}')">Use in Campaign</button>
+   </div>
+  `).join(""):"<p>No templates synced. Sync Templates Now क्लिक करा.</p>";
+
+ $("campaignTemplate").innerHTML=templates.map((t,i)=>`
+  <option value="${i}">${esc(t.name)} — ${esc(t.language)} (${esc(t.category)})</option>
+ `).join("");
+
+ if(!templates.length){
+  $("campaignTemplate").innerHTML='<option value="">No approved templates</option>';
+ }
 }
 
 function useTemplate(name,language){
- const i=templates.findIndex(t=>t.name===name&&t.language===language);
+ const i=templates.findIndex(
+  t=>t.name===name&&t.language===language
+ );
+
  if(i>=0)$("campaignTemplate").value=String(i);
- renderVariables();document.querySelector('[data-page="campaigns"]').click();
+
+ renderVariables();
+ document.querySelector('[data-page="campaigns"]').click();
 }
 
 function bodyVariableCount(t){
- const body=t?.components?.find(c=>String(c.type).toUpperCase()==="BODY");
- const matches=[...(body?.text||"").matchAll(/\{\{\s*(\d+)\s*\}\}/g)].map(m=>+m[1]);
+ const body=t?.components?.find(
+  c=>String(c.type).toUpperCase()==="BODY"
+ );
+
+ const matches=[...(body?.text||"").matchAll(/\{\{\s*(\d+)\s*\}\}/g)]
+  .map(m=>+m[1]);
+
  return matches.length?Math.max(...matches):0;
 }
 
 function headerType(t){
- const h=t?.components?.find(c=>String(c.type).toUpperCase()==="HEADER");
+ const h=t?.components?.find(
+  c=>String(c.type).toUpperCase()==="HEADER"
+ );
+
  const f=String(h?.format||"TEXT").toUpperCase();
+
  return ["IMAGE","VIDEO","DOCUMENT"].includes(f)?f:"NONE";
 }
 
 function renderVariables(){
  const t=templates[Number($("campaignTemplate").value)];
- if(!t){$("variableFields").innerHTML="<p>No template selected.</p>";$("headerField").innerHTML="";return}
+
+ if(!t){
+  $("variableFields").innerHTML="<p>No template selected.</p>";
+  $("headerField").innerHTML="";
+  return;
+ }
+
  const count=bodyVariableCount(t);
- $("variableFields").innerHTML=Array.from({length:count},(_,j)=>`<label>Variable {{${j+1}}}</label><input data-variable="${j+1}" placeholder="Enter value for {{${j+1}}}">`).join("");
+
+ $("variableFields").innerHTML=Array.from(
+  {length:count},(_,j)=>`
+   <label>Variable {{${j+1}}}</label>
+   <input data-variable="${j+1}" placeholder="Enter value for {{${j+1}}}">
+  `
+ ).join("");
+
  const h=headerType(t);
- $("headerField").innerHTML=["IMAGE","VIDEO","DOCUMENT"].includes(h)?`<label>${h} header public HTTPS URL</label><input id="headerUrl" placeholder="https://example.com/media">`:"";
+
+ $("headerField").innerHTML=["IMAGE","VIDEO","DOCUMENT"].includes(h)?
+  `<label>${h} header public HTTPS URL</label>
+   <input id="headerUrl" placeholder="https://example.com/media">`:"";
 }
 
 function campaignPayload(to){
  const t=templates[Number($("campaignTemplate").value)];
+
  if(!t)throw Error("Select an approved template.");
- const params=[...document.querySelectorAll("[data-variable]")].map(e=>e.value.trim());
- if(params.some(v=>!v))throw Error("सर्व Template Variables भरा.");
- const h=headerType(t),url=$("headerUrl")?.value.trim()||"";
- if(["IMAGE","VIDEO","DOCUMENT"].includes(h)&&!url.startsWith("https://"))throw Error("Template media साठी public HTTPS URL द्या.");
+
+ const params=[...document.querySelectorAll("[data-variable]")]
+  .map(e=>e.value.trim());
+
+ if(params.some(v=>!v)){
+  throw Error("सर्व Template Variables भरा.");
+ }
+
+ const h=headerType(t);
+ const url=$("headerUrl")?.value.trim()||"";
+
+ if(["IMAGE","VIDEO","DOCUMENT"].includes(h)&&!url.startsWith("https://")){
+  throw Error("Template media साठी public HTTPS URL द्या.");
+ }
+
  const chosen=numbers[Number($("sendNumber").value)];
+
  if(!chosen)throw Error("Worker मधून पाठवणारा नंबर उपलब्ध नाही.");
- const payload={to,name:$("campaignName").value.trim()||to,templateName:t.name,language:t.language,variables:params,parameters:params,phoneNumberId:chosen.id,phone_number_id:chosen.id};
+
+ const payload={
+  to,
+  name:$("campaignName").value.trim()||to,
+  templateName:t.name,
+  language:t.language,
+  variables:params,
+  parameters:params,
+  phoneNumberId:chosen.id,
+  phone_number_id:chosen.id
+ };
+
  if(h==="IMAGE")payload.imageUrl=url;
  if(["VIDEO","DOCUMENT"].includes(h))payload.headerUrl=url;
+
  return payload;
 }
 
 async function sendCampaign(testOnly){
  try{
-  if(!$("consent").checked)throw Error("ग्राहकांची WhatsApp opt-in consent confirm करा.");
-  const recipients=$("recipients").value.split(/\r?\n/).map(v=>v.replace(/\D/g,"")).filter(Boolean);
+  if(!$("consent").checked){
+   throw Error("ग्राहकांची WhatsApp opt-in consent confirm करा.");
+  }
+
+  const recipients=$("recipients").value.split(/\r?\n/)
+   .map(v=>v.replace(/\D/g,"")).filter(Boolean);
+
   if(!recipients.length)throw Error("किमान एक recipient number भरा.");
   if(testOnly&&recipients.length!==1)throw Error("Test साठी फक्त एक नंबर द्या.");
-  if(recipients.some(v=>!/^\d{8,15}$/.test(v)))throw Error("Country code सहित योग्य नंबर द्या.");
-  if(!testOnly&&!confirm(recipients.length+" opted-in recipients ना template पाठवायचा आहे?"))return;
+
+  if(recipients.some(v=>!/^\d{8,15}$/.test(v))){
+   throw Error("Country code सहित योग्य नंबर द्या.");
+  }
+
+  if(!testOnly&&!confirm(recipients.length+" opted-in recipients ना template पाठवायचा आहे?")){
+   return;
+  }
+
   let sent=0,failed=0;
+
   for(let i=0;i<recipients.length;i++){
    $("campaignStatus").textContent="Sending "+(i+1)+" / "+recipients.length;
-   const result=await request("/send-template",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(campaignPayload(recipients[i]))});
-   if(result.success)sent++;else{failed++;$("sendResult").textContent=JSON.stringify(result,null,2);if(testOnly)break}
+
+   const result=await request("/send-template",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(campaignPayload(recipients[i]))
+   });
+
+   if(result.success)sent++;
+   else{
+    failed++;
+    $("sendResult").textContent=JSON.stringify(result,null,2);
+    if(testOnly)break;
+   }
+
    if(testOnly)break;
   }
-  setStatus("campaignStatus","Worker accepted: "+sent+" · Failed: "+failed+". Delivery status Meta webhook वरून तपासा.");
-  await loadMessages(true);
- }catch(e){setStatus("campaignStatus","Send failed: "+e.message)}
-}
 
-function phoneOf(m){return String(m.wa_id||m.from||m.phone||m.phone_number||"").replace(/\s/g,"")}
+  setStatus("campaignStatus","Worker accepted: "+sent+
+   " · Failed: "+failed+". Delivery status Meta webhook वरून तपासा.");
+
+  await loadMessages(true);
+ }catch(e){
+  setStatus("campaignStatus","Send failed: "+e.message);
+ }
+} 
+ function phoneOf(m){return String(m.wa_id||m.from||m.phone||m.phone_number||"").replace(/\s/g,"")}
 function textOf(m){return String(m.message??m.text??m.body??m.content??m.caption??"")}
 function isIncoming(m){return ["incoming","in","received","inbound"].includes(String(m.direction||m.type||"").toLowerCase())}
 function messageKey(m){return String(m.message_id||m.id||[phoneOf(m),m.direction||m.type||"",m.timestamp||m.created_at||"",textOf(m)].join("|"))}
@@ -512,7 +773,9 @@ function timeValue(m){
  const n=Number(v);
  return Number.isFinite(n)&&n>0&&String(v).length<13?n*1000:Date.parse(v)||0;
 }
-function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():""} function renderChats(){
+function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():""}
+
+function renderChats(){
  const q=($("chatSearch").value||"").replace(/\D/g,"");
  const groups=new Map();
 
@@ -546,10 +809,8 @@ function timeText(m){const t=timeValue(m);return t?new Date(t).toLocaleString():
 
 function openChat(phone){
  selectedChat=phone;
-
  messages.filter(m=>phoneOf(m)===phone&&isIncoming(m))
   .forEach(m=>unreadIncoming.delete(messageKey(m)));
-
  saveUnread();
  $("chatHeader").classList.add("has-chat");
  renderChats();
@@ -885,5 +1146,4 @@ window.addEventListener("resize",()=>{
 });
 </script>
 </body>
-</html>
-</section>
+</html> 
