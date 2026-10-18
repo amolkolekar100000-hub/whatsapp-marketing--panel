@@ -1,8 +1,3 @@
-A K PROPERTIES - COMPLETE HTML CODE
-Back Button + Light Red Incoming Messages + Light Green Outgoing Messages
-
-Copy the entire code below into index.html.
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1031,13 +1026,24 @@ function getChatGroups() {
 }
 
 function isOutgoingMessage(message) {
-  const direction = String(message.direction || "").toLowerCase();
+  const direction = String(
+    message.direction || message.message_type || message.type || ""
+  ).toLowerCase();
 
-  return [
-    "outgoing",
-    "sent",
-    "outbound"
-  ].includes(direction);
+  if (message.from_me === true || message.fromMe === true || message.is_outgoing === true) {
+    return true;
+  }
+
+  if (["outgoing", "sent", "outbound", "out"].includes(direction)) {
+    return true;
+  }
+
+  if (["incoming", "received", "inbound", "in", "customer"].includes(direction)) {
+    return false;
+  }
+
+  // If the API omits direction, do not guess that it was sent by this dashboard.
+  return false;
 }
 
 function getMessageText(message) {
@@ -1070,16 +1076,18 @@ function renderChatList() {
     const active = chat.phone === selectedChatNumber;
     const preview = getMessageText(latest);
     const time = latest
-      ? formatDate(latest.created_at || latest.timestamp)
+      ? formatDate(latest.created_at || latest.timestamp || latest.sent_at)
       : "";
+    // Latest incoming message means the client replied. Highlight that row red.
+    const incoming = Boolean(latest) && !isOutgoingMessage(latest);
 
     return `
       <button
         type="button"
-        class="chat-item ${active ? "active" : ""}"
+        class="chat-item ${active ? "active" : ""} ${incoming ? "has-incoming" : ""}"
         data-chat-phone="${escapeHTML(chat.phone)}"
       >
-        <strong>${escapeHTML(chat.name)}</strong>
+        <strong>${escapeHTML(chat.name)} ${incoming ? '<span class="incoming-badge">NEW REPLY</span>' : ''}</strong>
         <div class="small">${escapeHTML(chat.phone)}</div>
         <div class="small">${escapeHTML(preview)}</div>
         <div class="small">${escapeHTML(time)}</div>
