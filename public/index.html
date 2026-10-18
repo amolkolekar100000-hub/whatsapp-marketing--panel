@@ -123,7 +123,6 @@ td, th {
   background: #fbfdfc;
 }
 .danger { background: #b42318; }
-
 .chat-layout {
   display: grid;
   grid-template-columns: 330px minmax(0, 1fr);
@@ -279,8 +278,8 @@ td, th {
   .bubble { max-width: 90%; }
 }
 </style>
-</head> 
- <body>
+</head>  
+  <body>
 
 <header>
   <div>
@@ -396,16 +395,14 @@ td, th {
           First test with one recipient before sending a campaign.
         </div>
 
-        <button type="button" id="sendTestButton"
-          onclick="sendCampaign(true)">Send Test</button>
-
-        <button type="button" id="startCampaignButton"
-          onclick="sendCampaign(false)">Start Campaign</button>
+        <button type="button" id="sendTestButton">Send Test</button>
+        <button type="button" id="startCampaignButton">Start Campaign</button>
 
         <div class="status" id="campaignStatus">Ready.</div>
         <pre class="status" id="sendResult"></pre>
       </div>
-    </section> 
+    </section>
+
     <!-- LIVE CHAT -->
     <section class="view" id="inbox">
       <h2>Live Chat / Inbox</h2>
@@ -446,9 +443,7 @@ td, th {
             <textarea id="replyText"
               placeholder="Type your reply..."></textarea>
 
-            <button type="button" id="replyButton">
-              Send Reply
-            </button>
+            <button type="button" id="replyButton">Send Reply</button>
 
             <div class="small">
               Replies require a valid WhatsApp number and API permission.
@@ -458,9 +453,8 @@ td, th {
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- CONTACTS -->
+    </section>  
+      <!-- CONTACTS -->
     <section class="view" id="leads">
       <h2>Contacts / Leads</h2>
 
@@ -479,8 +473,9 @@ td, th {
         <input id="leadTag" type="text"
           placeholder="Example: Godrej Properties">
 
-        <button type="button" id="saveContactButton"
-          onclick="addLead()">Save Contact</button>
+        <button type="button" id="saveContactButton">
+          Save Contact
+        </button>
 
         <button type="button" id="exportContactsButton">
           Export Contacts CSV
@@ -495,14 +490,12 @@ td, th {
       <div class="panel">
         <label for="leadSearch">Search Contacts</label>
         <input id="leadSearch" type="search"
-          placeholder="Search name, number or project..."
-          oninput="renderLeads()">
+          placeholder="Search name, number or project...">
 
-        <div id="leadList">
-          No contacts loaded.
-        </div>
+        <div id="leadList">No contacts loaded.</div>
       </div>
-    </section> 
+    </section>
+
     <!-- REPORTS AND MESSAGE HISTORY -->
     <section class="view" id="reports">
       <h2>Reports / Message History</h2>
@@ -603,7 +596,8 @@ td, th {
           </table>
         </div>
       </div>
-    </section> 
+    </section>
+
     <!-- API SETTINGS -->
     <section class="view" id="settings">
       <h2>API Settings</h2>
@@ -694,10 +688,8 @@ td, th {
   </main>
 </div>
 
-<div id="toast" role="status" aria-live="polite"></div>
-
-
-<script>
+<div id="toast" role="status" aria-live="polite"></div>  
+    <script>
 "use strict";
 
 /* =====================================
@@ -720,6 +712,7 @@ let unreadChats = {};
 
 function showToast(message) {
   const toast = $("toast");
+
   if (!toast) {
     alert(message);
     return;
@@ -763,6 +756,7 @@ function getWorkerUrl() {
 function getProjectWorkerUrl(project) {
   const key = "ak_project_worker_" + project;
   const saved = localStorage.getItem(key);
+
   return (saved || getWorkerUrl()).replace(/\/+$/, "");
 }
 
@@ -852,452 +846,405 @@ $("projectSelect")?.addEventListener("change", (event) => {
 });
 
 $("projectSettingsSelect")?.addEventListener("change", (event) => {
-  const project = event.target.value;
-  currentProject = project;
+  currentProject = event.target.value || "New Launch";
 
-  const headerSelect = $("projectSelect");
-  if (headerSelect) headerSelect.value = project;
-
-  const projectUrl = localStorage.getItem("ak_project_worker_" + project);
-  if ($("projectWorkerUrl")) {
-    $("projectWorkerUrl").value = projectUrl || "";
-  }
-});
-
-/* SAVE MAIN WORKER URL */
-
-$("saveWorkerButton")?.addEventListener("click", () => {
-  const input = $("workerUrl");
-  const value = input?.value.trim();
-
-  if (!value) {
-    showToast("कृपया Worker URL भरा.");
-    return;
-  }
-
-  try {
-    const parsed = new URL(value);
-
-    if (parsed.protocol !== "https:") {
-      showToast("Worker URL HTTPS असणे आवश्यक आहे.");
-      return;
-    }
-  } catch {
-    showToast("Worker URL योग्य नाही.");
-    return;
-  }
-
-  localStorage.setItem("ak_worker_url", value.replace(/\/+$/, ""));
-  workerUrl = value.replace(/\/+$/, "");
-
-  setStatus("workerStatus", "Worker URL सेव्ह झाला.");
-  showToast("Worker URL saved.");
-});
-
-/* SAVE PROJECT WORKER URL */
-
-$("saveProjectButton")?.addEventListener("click", () => {
-  const project = $("projectSettingsSelect")?.value || currentProject;
-  const inputValue = $("projectWorkerUrl")?.value.trim();
-  const key = "ak_project_worker_" + project;
-
-  if (!inputValue) {
-    localStorage.removeItem(key);
-    setStatus(
-      "projectStatus",
-      "या project साठी मुख्य Worker URL वापरला जाईल."
-    );
-    showToast("Project settings saved.");
-    return;
-  }
-
-  try {
-    const parsed = new URL(inputValue);
-
-    if (parsed.protocol !== "https:") {
-      showToast("Project Worker URL HTTPS असणे आवश्यक आहे.");
-      return;
-    }
-  } catch {
-    showToast("Project Worker URL योग्य नाही.");
-    return;
-  }
-
-  localStorage.setItem(key, inputValue.replace(/\/+$/, ""));
-  setStatus("projectStatus", project + " settings सेव्ह झाल्या.");
-  showToast("Project settings saved.");
-});
-
-/* BASIC CONNECTION TEST */
-
-async function testWorkerConnection() {
-  setStatus("connectionStatus", "Checking Worker connection...");
-  setStatus("workerStatus", "Testing connection...");
-
-  try {
-    const data = await apiRequest("/health");
-
-    setStatus(
-      "connectionStatus",
-      "API ACTIVE — Worker ने response दिला."
-    );
-    setStatus("workerStatus", JSON.stringify(data, null, 2));
-    setStatus("apiInfo", JSON.stringify(data, null, 2));
-
-    showToast("Worker connection successful.");
-    return true;
-  } catch (error) {
-    setStatus("connectionStatus", "API CONNECTION FAILED");
-    setStatus("workerStatus", error.message);
-    setStatus("apiInfo", error.message);
-
-    showToast("Connection failed: " + error.message);
-    return false;
-  }
-}
-
-$("testWorkerButton")?.addEventListener("click", testWorkerConnection);
-$("checkConnection")?.addEventListener("click", testWorkerConnection);
-$("refreshApiInfoButton")?.addEventListener("click", testWorkerConnection);
-
-$("refreshDashboard")?.addEventListener("click", loadDashboard);
-$("reloadAppButton")?.addEventListener("click", () => location.reload());
-
-/* INITIAL SETTINGS */
-
-(function initCore() {
-  workerUrl = getWorkerUrl();
-
-  if ($("workerUrl")) {
-    $("workerUrl").value =
-      localStorage.getItem("ak_worker_url") || DEFAULT_WORKER_URL;
-  }
-
-  if ($("projectSelect")) {
-    currentProject = $("projectSelect").value || "New Launch";
-  }
-
-  if ($("projectSettingsSelect")) {
-    $("projectSettingsSelect").value = currentProject;
-  }
-
-  const projectUrl = localStorage.getItem(
+  const savedUrl = localStorage.getItem(
     "ak_project_worker_" + currentProject
   );
 
   if ($("projectWorkerUrl")) {
-    $("projectWorkerUrl").value = projectUrl || "";
+    $("projectWorkerUrl").value = savedUrl || "";
   }
-})();
-/* =====================================
-   DASHBOARD DATA
-===================================== */
+});
+
+/* DATA HELPERS */
 
 function extractArray(data, keys = []) {
   if (Array.isArray(data)) return data;
 
   for (const key of keys) {
-    if (Array.isArray(data?.[key])) return data[key];
+    if (Array.isArray(data?.[key])) {
+      return data[key];
+    }
   }
 
   return [];
 }
 
 function formatDate(value) {
-  if (!value) return "-";
+  if (!value) return "";
 
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
 
-  return date.toLocaleString("en-IN");
-}
-
-async function loadPhoneNumbers() {
-  try {
-    const data = await apiRequest("/phone-numbers");
-    phoneNumbers = extractArray(data, ["data", "phoneNumbers"]);
-
-    const select = $("sendNumber");
-
-    if (select) {
-      select.innerHTML = "";
-
-      if (!phoneNumbers.length) {
-        select.add(new Option("No WhatsApp numbers found", ""));
-      } else {
-        phoneNumbers.forEach((number) => {
-          const id = number.phoneNumberId || number.id || "";
-          const label =
-            number.displayPhoneNumber ||
-            number.verifiedName ||
-            id;
-
-          if (id) select.add(new Option(label, id));
-        });
-      }
-    }
-
-    const list = $("numberList");
-
-    if (list) {
-      list.innerHTML = phoneNumbers.length
-        ? phoneNumbers.map((number) => `
-            <div class="number-row">
-              <b>${escapeHTML(number.verifiedName || "WhatsApp Business")}</b>
-              <div>${escapeHTML(number.displayPhoneNumber || "-")}</div>
-              <div class="small">
-                Phone Number ID: ${escapeHTML(number.phoneNumberId || number.id || "-")}
-              </div>
-            </div>
-          `).join("")
-        : "No WhatsApp numbers returned by Worker.";
-    }
-  } catch (error) {
-    setStatus("numberList", "Numbers load failed: " + error.message);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
   }
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
-async function loadTemplates() {
-  setStatus("templateStatus", "Loading WhatsApp templates...");
+function normalizePhone(value) {
+  return String(value || "").replace(/\D/g, "");
+}
 
-  try {
-    const data = await apiRequest("/templates");
-    templates = extractArray(data, ["data", "templates"]);
+function getMessagePhone(message) {
+  return normalizePhone(
+    message.wa_id ||
+    message.phone ||
+    message.to ||
+    message.from ||
+    message.recipient ||
+    ""
+  );
+}
 
-    const campaignSelect = $("campaignTemplate");
+function getMessageTime(message) {
+  return new Date(
+    message.created_at ||
+    message.timestamp ||
+    message.sent_at ||
+    0
+  ).getTime();
+}
 
-    if (campaignSelect) {
-      campaignSelect.innerHTML = "";
-      campaignSelect.add(new Option("Select approved template", ""));
 
-      templates.forEach((template) => {
-        const name = template.name || "";
-        if (!name) return;
+झाले की फक्त 5 पाठवा. पुढच्या भागात  
+      /* =====================================
+   LIVE CHAT - MESSAGE HISTORY
+===================================== */
 
-        const status = String(template.status || "").toUpperCase();
-        const label = name + (status ? " (" + status + ")" : "");
+function getChatGroups() {
+  const groups = new Map();
 
-        campaignSelect.add(new Option(label, name));
+  (Array.isArray(messages) ? messages : []).forEach((message) => {
+    const phone = getMessagePhone(message);
+    if (!phone) return;
+
+    if (!groups.has(phone)) {
+      groups.set(phone, {
+        phone,
+        name: message.name || message.contact_name || phone,
+        messages: [],
+        lastTime: 0
       });
     }
 
-    const table = $("templateTable");
+    const group = groups.get(phone);
+    group.messages.push(message);
 
-    if (table) {
-      table.innerHTML = templates.length
-        ? templates.map((template) => `
-            <tr>
-              <td>${escapeHTML(template.name || "-")}</td>
-              <td>${escapeHTML(template.language || "-")}</td>
-              <td>${escapeHTML(template.category || "-")}</td>
-              <td>${escapeHTML(template.status || "-")}</td>
-            </tr>
-          `).join("")
-        : '<tr><td colspan="4">No templates found.</td></tr>';
+    const time = getMessageTime(message);
+    if (time > group.lastTime) {
+      group.lastTime = time;
     }
 
-    setStatus(
-      "templateStatus",
-      "Templates loaded: " + templates.length
-    );
-
-    renderTemplateVariables();
-  } catch (error) {
-    setStatus("templateStatus", "Template load failed: " + error.message);
-
-    if ($("campaignTemplate")) {
-      $("campaignTemplate").innerHTML =
-        '<option value="">Unable to load templates</option>';
-    }
-  }
-}
-
-function renderTemplateVariables() {
-  const selectedName = $("campaignTemplate")?.value;
-  const container = $("variableFields");
-
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  const template = templates.find((item) => item.name === selectedName);
-
-  if (!template) return;
-
-  let bodyText = "";
-
-  (template.components || []).forEach((component) => {
-    if (String(component.type).toUpperCase() === "BODY") {
-      bodyText = component.text || "";
+    if (
+      message.name ||
+      message.contact_name
+    ) {
+      group.name = message.name || message.contact_name;
     }
   });
 
-  const matches = [...bodyText.matchAll(/\{\{\s*(\d+)\s*\}\}/g)];
-  const variableNumbers = [...new Set(matches.map((match) => Number(match[1])))];
+  return Array.from(groups.values())
+    .map((group) => {
+      group.messages.sort(
+        (a, b) => getMessageTime(a) - getMessageTime(b)
+      );
+      return group;
+    })
+    .sort((a, b) => b.lastTime - a.lastTime);
+}
 
-  variableNumbers.sort((a, b) => a - b);
+function isOutgoingMessage(message) {
+  const direction = String(message.direction || "").toLowerCase();
 
-  if (variableNumbers.length) {
-    const heading = document.createElement("h3");
-    heading.textContent = "Template Variables";
-    container.appendChild(heading);
+  return [
+    "outgoing",
+    "sent",
+    "outbound"
+  ].includes(direction);
+}
 
-    variableNumbers.forEach((number) => {
-      const label = document.createElement("label");
-      label.htmlFor = "templateVar" + number;
-      label.textContent = "Variable {{ " + number + " }}";
+function getMessageText(message) {
+  return (
+    message.message ||
+    message.text ||
+    message.body ||
+    message.caption ||
+    "(No message text)"
+  );
+}
 
-      const input = document.createElement("input");
-      input.id = "templateVar" + number;
-      input.dataset.variable = String(number);
-      input.placeholder = "Enter value for variable " + number;
-      input.required = true;
+function renderChatList() {
+  const list = $("chatList");
+  if (!list) return;
 
-      container.appendChild(label);
-      container.appendChild(input);
-    });
-  } else {
-    container.textContent = "This template has no BODY variables.";
+  const chats = getChatGroups();
+
+  if (!chats.length) {
+    list.innerHTML = `
+      <div class="small">
+        No conversations found. Refresh to check for new messages.
+      </div>
+    `;
+    return;
   }
 
-  const imageHeader = (template.components || []).some(
-    (component) =>
-      String(component.type).toUpperCase() === "HEADER" &&
-      String(component.format).toUpperCase() === "IMAGE"
+  list.innerHTML = chats.map((chat) => {
+    const latest = chat.messages[chat.messages.length - 1];
+    const active = chat.phone === selectedChatNumber;
+    const preview = getMessageText(latest);
+    const time = latest
+      ? formatDate(latest.created_at || latest.timestamp)
+      : "";
+
+    return `
+      <button
+        type="button"
+        class="chat-item ${active ? "active" : ""}"
+        data-chat-phone="${escapeHTML(chat.phone)}"
+        style="display:block;width:100%;text-align:left;margin-bottom:8px;"
+      >
+        <strong>${escapeHTML(chat.name)}</strong>
+        <div class="small">${escapeHTML(chat.phone)}</div>
+        <div class="small">${escapeHTML(preview)}</div>
+        <div class="small">${escapeHTML(time)}</div>
+      </button>
+    `;
+  }).join("");
+
+  list.querySelectorAll("[data-chat-phone]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectChat(button.dataset.chatPhone);
+    });
+  });
+}
+
+function selectChat(phone) {
+  selectedChatNumber = normalizePhone(phone);
+
+  const chat = getChatGroups().find(
+    (item) => item.phone === selectedChatNumber
   );
 
-  if (imageHeader) {
-    const label = document.createElement("label");
-    label.htmlFor = "headerField";
-    label.textContent = "Header Image URL (HTTPS)";
-
-    const input = document.createElement("input");
-    input.id = "headerField";
-    input.type = "url";
-    input.placeholder = "https://example.com/image.jpg";
-
-    container.appendChild(label);
-    container.appendChild(input);
+  if ($("chatTitle")) {
+    $("chatTitle").textContent = chat
+      ? chat.name + " (" + chat.phone + ")"
+      : selectedChatNumber;
   }
+
+  renderChatList();
+  renderSelectedChat();
 }
 
-$("campaignTemplate")?.addEventListener("change", renderTemplateVariables);
-$("refreshTemplatesButton")?.addEventListener("click", loadTemplates);
+function renderSelectedChat() {
+  const history = $("chatHistory");
+  if (!history) return;
 
-/* DASHBOARD METRICS */
+  if (!selectedChatNumber) {
+    history.textContent = "Select a conversation to view messages.";
+    return;
+  }
 
-async function loadDashboard() {
-  setStatus("dashStatus", "Loading dashboard data...");
+  const chat = getChatGroups().find(
+    (item) => item.phone === selectedChatNumber
+  );
+
+  if (!chat || !chat.messages.length) {
+    history.textContent = "No message history found for this contact.";
+    return;
+  }
+
+  history.innerHTML = chat.messages.map((message) => {
+    const outgoing = isOutgoingMessage(message);
+    const text = getMessageText(message);
+    const date = formatDate(
+      message.created_at || message.timestamp
+    );
+    const status = message.status || message.direction || "";
+
+    return `
+      <div class="bubble ${outgoing ? "out" : ""}">
+        <div>${escapeHTML(text)}</div>
+        <div class="small">
+          ${escapeHTML(date)} · ${escapeHTML(status)}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  history.scrollTop = history.scrollHeight;
+}
+
+/* LOAD MESSAGE HISTORY FROM WORKER */
+
+async function loadChats() {
+  setStatus("chatStatus", "Loading conversations...");
 
   try {
-    const results = await Promise.allSettled([
-      apiRequest("/reports"),
-      apiRequest("/messages?limit=1000&offset=0"),
-      apiRequest("/phone-numbers")
+    const data = await apiRequest(
+      "/messages?limit=1000&offset=0"
+    );
+
+    messages = extractArray(data, [
+      "data",
+      "messages"
     ]);
 
-    const reportData =
-      results[0].status === "fulfilled" ? results[0].value : {};
-
-    const messageData =
-      results[1].status === "fulfilled" ? results[1].value : {};
-
-    messages = extractArray(messageData, ["data", "messages"]);
-
-    if (results[2].status === "fulfilled") {
-      phoneNumbers = extractArray(results[2].value, ["data", "phoneNumbers"]);
-    }
-
-    const totals = reportData.totals || {};
-
-    const totalMessages =
-      totals.totalMessages ?? messages.length;
-
-    const incoming =
-      totals.incoming ??
-      messages.filter((message) =>
-        String(message.direction || "").toLowerCase() === "incoming"
-      ).length;
-
-    const outgoing =
-      totals.outgoing ??
-      messages.filter((message) =>
-        String(message.direction || "").toLowerCase() === "outgoing"
-      ).length;
-
-    if ($("total")) $("total").textContent = totalMessages;
-    if ($("incomingCount")) $("incomingCount").textContent = incoming;
-    if ($("outgoingCount")) $("outgoingCount").textContent = outgoing;
-    if ($("contactCount")) $("contactCount").textContent = localContacts.length;
-    if ($("unreadCount")) {
-      $("unreadCount").textContent = Object.values(unreadChats).reduce(
-        (sum, value) => sum + Number(value || 0),
-        0
-      );
-    }
-
-    if ($("dailyReports")) {
-      const daily = Array.isArray(reportData.daily) ? reportData.daily : [];
-
-      $("dailyReports").innerHTML = daily.length
-        ? daily.map((item) => `
-            <div class="number-row">
-              <b>${escapeHTML(item.date || item.day || "-")}</b>
-              <div>Messages: ${escapeHTML(item.count ?? item.total ?? 0)}</div>
-            </div>
-          `).join("")
-        : "No daily report data available.";
-    }
-
-    const errors = results
-      .filter((result) => result.status === "rejected")
-      .map((result) => result.reason?.message || "Unknown error");
-
-    setStatus(
-      "dashStatus",
-      errors.length
-        ? "Some data could not load: " + errors.join(" | ")
-        : "Dashboard data updated successfully."
-    );
-
-    setStatus(
-      "connectionStatus",
-      errors.length ? "API PARTIALLY AVAILABLE" : "API ACTIVE"
-    );
-
-    renderHistory();
     renderChatList();
+    renderSelectedChat();
+
+    setStatus(
+      "chatStatus",
+      "Conversations loaded: " + getChatGroups().length +
+      " | Messages: " + messages.length
+    );
   } catch (error) {
-    setStatus("dashStatus", "Dashboard error: " + error.message);
-    setStatus("connectionStatus", "API CONNECTION FAILED");
+    setStatus(
+      "chatStatus",
+      "Unable to load chats: " + error.message
+    );
   }
 }
 
-async function loadCampaignData() {
-  await Promise.allSettled([
-    loadPhoneNumbers(),
-    loadTemplates()
-  ]);
-}
+/* REFRESH CHAT HISTORY */
 
-async function loadSettings() {
-  if ($("workerUrl")) $("workerUrl").value = getWorkerUrl();
+$("refreshChatsButton")?.addEventListener("click", loadChats);
+$("refreshChatButton")?.addEventListener("click", loadChats);  
+      /* =====================================
+   LIVE CHAT - SEND TEXT REPLY
+===================================== */
 
-  if ($("apiInfo") && !$("apiInfo").textContent.trim()) {
-    $("apiInfo").textContent = "Use Test Connection to check the Worker.";
+async function sendChatReply() {
+  const textInput = $("replyText");
+  const sendButton = $("replyButton");
+  const text = textInput?.value.trim();
+
+  if (!selectedChatNumber) {
+    showToast("कृपया आधी client ची chat निवडा.");
+    return;
+  }
+
+  if (!text) {
+    showToast("कृपया reply message लिहा.");
+    return;
+  }
+
+  if (sendButton) sendButton.disabled = true;
+  setStatus("chatStatus", "Sending reply...");
+
+  try {
+    const response = await apiRequest("/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        to: selectedChatNumber,
+        message: text
+      })
+    });
+
+    if (response.success === false) {
+      throw new Error(response.error || "Message send failed.");
+    }
+
+    if (textInput) textInput.value = "";
+
+    setStatus(
+      "chatStatus",
+      "Reply request accepted. Refreshing message history..."
+    );
+
+    await loadChats();
+
+    // नव्याने load झालेल्या history मध्ये हाच client निवडा.
+    selectChat(selectedChatNumber);
+
+    showToast(
+      "Reply request accepted. Delivery status Worker/API मध्ये तपासा."
+    );
+  } catch (error) {
+    setStatus(
+      "chatStatus",
+      "Reply failed: " + error.message
+    );
+
+    showToast("Reply failed: " + error.message);
+  } finally {
+    if (sendButton) sendButton.disabled = false;
   }
 }
 
-/* INITIAL DATA LOAD */
+$("replyButton")?.addEventListener("click", sendChatReply);
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadDashboard();
-  loadPhoneNumbers();
-  loadTemplates();
+/* Enter ने reply पाठवा; Shift+Enter ने नवीन ओळ */
+$("replyText")?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendChatReply();
+  }
 });
 
 /* =====================================
-   SEND WHATSAPP TEMPLATE CAMPAIGN
+   LIVE CHAT - OPTIONAL FILE ATTACHMENT
+===================================== */
+
+$("replyFile")?.addEventListener("change", () => {
+  const file = $("replyFile")?.files?.[0];
+
+  if (!file) return;
+
+  setStatus(
+    "chatStatus",
+    "Selected file: " + file.name +
+    ". File sending must be supported by the Worker API."
+  );
+});
+
+/* =====================================
+   CHAT REFRESH AND INITIAL LOAD
+===================================== */
+
+let chatRefreshInProgress = false;
+
+async function refreshChatHistory() {
+  if (chatRefreshInProgress) return;
+
+  chatRefreshInProgress = true;
+
+  try {
+    await loadChats();
+  } finally {
+    chatRefreshInProgress = false;
+  }
+}
+
+// Dashboard मधून Live Chat उघडल्यावर loadChats() आधीच चालते.
+// हे interval वापरल्यास chat history नियमित refresh होते.
+let chatRefreshTimer = null;
+
+function startChatRefresh() {
+  if (chatRefreshTimer !== null) return;
+
+  chatRefreshTimer = setInterval(() => {
+    const inbox = $("inbox");
+
+    if (inbox && inbox.classList.contains("active")) {
+      refreshChatHistory();
+    }
+  }, 15000);
+}
+
+startChatRefresh();  
+      /* =====================================
+   TEMPLATE VARIABLES
 ===================================== */
 
 function getTemplateVariables() {
@@ -1315,9 +1262,9 @@ function getTemplateVariables() {
   return variables;
 }
 
-function normalizePhone(value) {
-  return String(value || "").replace(/\D/g, "");
-}
+/* =====================================
+   SEND WHATSAPP TEMPLATE CAMPAIGN
+===================================== */
 
 async function sendCampaign(isTest = false) {
   const templateName = $("campaignTemplate")?.value;
@@ -1345,7 +1292,9 @@ async function sendCampaign(isTest = false) {
       recipientsText
         .split(/[\n,;]+/)
         .map(normalizePhone)
-        .filter((number) => number.length >= 10 && number.length <= 15)
+        .filter((number) =>
+          number.length >= 10 && number.length <= 15
+        )
     )
   ];
 
@@ -1363,9 +1312,11 @@ async function sendCampaign(isTest = false) {
     return;
   }
 
-  const status = String(selectedTemplate.status || "").toUpperCase();
+  const templateStatus = String(
+    selectedTemplate.status || ""
+  ).toUpperCase();
 
-  if (status && status !== "APPROVED") {
+  if (templateStatus && templateStatus !== "APPROVED") {
     showToast("निवडलेला template APPROVED नाही.");
     return;
   }
@@ -1380,10 +1331,11 @@ async function sendCampaign(isTest = false) {
   const language = selectedTemplate.language || "en";
   const imageUrl = $("headerField")?.value.trim() || "";
 
-  const headerIsImage = (selectedTemplate.components || []).some(
-    (component) =>
-      String(component.type).toUpperCase() === "HEADER" &&
-      String(component.format).toUpperCase() === "IMAGE"
+  const headerIsImage = (
+    selectedTemplate.components || []
+  ).some((component) =>
+    String(component.type).toUpperCase() === "HEADER" &&
+    String(component.format).toUpperCase() === "IMAGE"
   );
 
   if (headerIsImage && !imageUrl) {
@@ -1396,14 +1348,12 @@ async function sendCampaign(isTest = false) {
     return;
   }
 
-  const targets = isTest ? recipients.slice(0, 1) : recipients;
+  const targets = isTest
+    ? recipients.slice(0, 1)
+    : recipients;
+
   const resultElement = $("sendResult");
   const statusElement = $("campaignStatus");
-
-  if (statusElement) {
-    statusElement.textContent =
-      "Sending started: " + targets.length + " recipient(s)...";
-  }
 
   const sendButton = isTest
     ? $("sendTestButton")
@@ -1414,6 +1364,8 @@ async function sendCampaign(isTest = false) {
   let sent = 0;
   let failed = 0;
   const details = [];
+
+  if (resultElement) resultElement.textContent = "";
 
   try {
     for (let index = 0; index < targets.length; index++) {
@@ -1441,14 +1393,18 @@ async function sendCampaign(isTest = false) {
         });
 
         if (response.success === false) {
-          throw new Error(response.error || "Message send failed");
+          throw new Error(
+            response.error || "Message send failed."
+          );
         }
 
         sent++;
-        details.push(to + " — accepted by API");
+        details.push(to + " — API accepted");
       } catch (error) {
         failed++;
-        details.push(to + " — FAILED: " + error.message);
+        details.push(
+          to + " — FAILED: " + error.message
+        );
       }
 
       if (statusElement) {
@@ -1457,10 +1413,10 @@ async function sendCampaign(isTest = false) {
           " | API accepted: " + sent +
           " | Failed: " + failed;
       }
-    }
 
-    if (resultElement) {
-      resultElement.textContent = details.join("\n");
+      if (resultElement) {
+        resultElement.textContent = details.join("\n");
+      }
     }
 
     if (statusElement) {
@@ -1470,12 +1426,26 @@ async function sendCampaign(isTest = false) {
         ". Actual delivery status may update later.";
     }
 
-    showToast("Campaign completed. Accepted: " + sent + ", failed: " + failed);
+    showToast(
+      "Campaign completed. Accepted: " +
+      sent + ", failed: " + failed
+    );
+
     await loadDashboard();
   } finally {
     if (sendButton) sendButton.disabled = false;
   }
 }
+
+/* CAMPAIGN BUTTONS */
+
+$("startCampaignButton")?.addEventListener("click", () => {
+  sendCampaign(false);
+});
+
+$("sendTestButton")?.addEventListener("click", () => {
+  sendCampaign(true);
+});
 
 /* =====================================
    REPORTS AND MESSAGE HISTORY
@@ -1485,13 +1455,15 @@ function renderHistory() {
   const table = $("historyTable");
   if (!table) return;
 
-  const search = ($("historySearch")?.value || "").toLowerCase();
+  const search = (
+    $("historySearch")?.value || ""
+  ).toLowerCase();
 
   const filtered = messages.filter((message) => {
     const searchable = [
       message.wa_id,
       message.name,
-      message.message,
+      getMessageText(message),
       message.direction,
       message.status,
       message.created_at,
@@ -1504,9 +1476,11 @@ function renderHistory() {
   table.innerHTML = filtered.length
     ? filtered.map((message) => `
         <tr>
-          <td>${escapeHTML(formatDate(message.created_at || message.timestamp))}</td>
+          <td>${escapeHTML(
+            formatDate(message.created_at || message.timestamp)
+          )}</td>
           <td>${escapeHTML(message.wa_id || "-")}</td>
-          <td>${escapeHTML(message.message || "-")}</td>
+          <td>${escapeHTML(getMessageText(message))}</td>
           <td>${escapeHTML(message.direction || "-")}</td>
           <td>${escapeHTML(message.status || "-")}</td>
         </tr>
@@ -1517,7 +1491,8 @@ function renderHistory() {
 $("historySearch")?.addEventListener("input", renderHistory);
 
 async function loadReportsAndHistory() {
-  setStatus("dailyReportList", "Loading reports...");
+  setStatus("dailyReports", "Loading reports...");
+
   await loadDashboard();
 
   try {
@@ -1525,35 +1500,49 @@ async function loadReportsAndHistory() {
     const totals = data.totals || {};
 
     if ($("reportTotal")) {
-      $("reportTotal").textContent = totals.totalMessages ?? 0;
+      $("reportTotal").textContent =
+        totals.totalMessages ?? messages.length;
     }
 
     if ($("reportDelivered")) {
-      $("reportDelivered").textContent = totals.delivered ?? 0;
+      $("reportDelivered").textContent =
+        totals.delivered ?? 0;
     }
 
     if ($("reportRead")) {
-      $("reportRead").textContent = totals.readCount ?? 0;
+      $("reportRead").textContent =
+        totals.readCount ?? 0;
     }
 
     if ($("reportFailed")) {
-      $("reportFailed").textContent = totals.failed ?? 0;
+      $("reportFailed").textContent =
+        totals.failed ?? 0;
     }
 
-    const daily = Array.isArray(data.daily) ? data.daily : [];
+    const daily = Array.isArray(data.daily)
+      ? data.daily
+      : [];
 
-    if ($("dailyReportList")) {
-      $("dailyReportList").innerHTML = daily.length
+    if ($("dailyReports")) {
+      $("dailyReports").innerHTML = daily.length
         ? daily.map((item) => `
             <div class="number-row">
               <b>${escapeHTML(item.date || item.day || "-")}</b>
-              <div>Messages: ${escapeHTML(item.count ?? item.total ?? 0)}</div>
+              <div>
+                Messages:
+                ${escapeHTML(item.count ?? item.total ?? 0)}
+              </div>
             </div>
           `).join("")
         : "No daily report data available.";
     }
+
+    renderHistory();
   } catch (error) {
-    setStatus("dailyReportList", "Report error: " + error.message);
+    setStatus(
+      "dailyReports",
+      "Report error: " + error.message
+    );
   }
 }
 
@@ -1563,10 +1552,10 @@ $("refreshReportsButton")?.addEventListener(
 );
 
 $("refreshHistoryButton")?.addEventListener("click", async () => {
-  await loadDashboard();
+  await loadChats();
   renderHistory();
-});
-     /* =====================================
+});  
+      /* =====================================
    CONTACTS - SAVE, SEARCH AND EXPORT
 ===================================== */
 
@@ -1575,7 +1564,9 @@ function loadLocalContacts() {
     const saved = localStorage.getItem("ak_local_contacts");
     localContacts = saved ? JSON.parse(saved) : [];
 
-    if (!Array.isArray(localContacts)) localContacts = [];
+    if (!Array.isArray(localContacts)) {
+      localContacts = [];
+    }
   } catch {
     localContacts = [];
   }
@@ -1649,25 +1640,43 @@ function renderLeads() {
         <div class="number-row">
           <b>${escapeHTML(contact.name)}</b>
           <div>${escapeHTML(contact.phone)}</div>
-          <div class="small">${escapeHTML(contact.tag || "No project tag")}</div>
-          <button type="button"
-            onclick="useContactForCampaign('${escapeHTML(contact.phone)}')">
+          <div class="small">
+            ${escapeHTML(contact.tag || "No project tag")}
+          </div>
+          <button type="button" data-use-contact="${escapeHTML(contact.phone)}">
             Use in Campaign
           </button>
           <button type="button" class="danger"
-            onclick="deleteLocalContact(${Number(contact.id)})">
+            data-delete-contact="${Number(contact.id)}">
             Delete
           </button>
         </div>
       `).join("")
     : "No contacts found.";
+
+  list.querySelectorAll("[data-use-contact]").forEach((button) => {
+    button.addEventListener("click", () => {
+      useContactForCampaign(button.dataset.useContact);
+    });
+  });
+
+  list.querySelectorAll("[data-delete-contact]").forEach((button) => {
+    button.addEventListener("click", () => {
+      deleteLocalContact(Number(button.dataset.deleteContact));
+    });
+  });
 }
 
 function useContactForCampaign(phone) {
   const recipientBox = $("recipients");
   if (!recipientBox) return;
 
-  recipientBox.value = phone;
+  const current = recipientBox.value.trim();
+
+  recipientBox.value = current
+    ? current + "\n" + phone
+    : phone;
+
   showPage("campaigns");
   showToast("Number campaign मध्ये भरला.");
 }
@@ -1720,287 +1729,493 @@ function exportContactsCSV() {
   URL.revokeObjectURL(url);
 }
 
-$("exportContactsButton")?.addEventListener(
+$("addContactButton")?.addEventListener("click", addLead);
+$("saveContactButton")?.addEventListener("click", addLead);
+$("leadSearch")?.addEventListener("input", renderLeads);
+$("exportContactsButton")?.addEventListener("click", exportContactsCSV);
+
+/* =====================================
+   WORKER SETTINGS
+===================================== */
+
+$("saveWorkerButton")?.addEventListener("click", () => {
+  const value = $("workerUrl")?.value.trim() || "";
+
+  if (!value) {
+    showToast("कृपया Worker URL भरा.");
+    return;
+  }
+
+  try {
+    const parsed = new URL(value);
+
+    if (parsed.protocol !== "https:") {
+      showToast("Worker URL HTTPS असणे आवश्यक आहे.");
+      return;
+    }
+  } catch {
+    showToast("Worker URL योग्य नाही.");
+    return;
+  }
+
+  workerUrl = value.replace(/\/+$/, "");
+  localStorage.setItem("ak_worker_url", workerUrl);
+
+  setStatus("workerStatus", "Worker URL सेव्ह झाला.");
+  showToast("Worker URL saved.");
+});
+
+$("saveProjectButton")?.addEventListener("click", () => {
+  const project =
+    $("projectSettingsSelect")?.value || currentProject;
+
+  const value = $("projectWorkerUrl")?.value.trim() || "";
+  const key = "ak_project_worker_" + project;
+
+  if (!value) {
+    localStorage.removeItem(key);
+
+    setStatus(
+      "projectStatus",
+      "या project साठी मुख्य Worker URL वापरला जाईल."
+    );
+
+    showToast("Project settings saved.");
+    return;
+  }
+
+  try {
+    const parsed = new URL(value);
+
+    if (parsed.protocol !== "https:") {
+      showToast("Project Worker URL HTTPS असणे आवश्यक आहे.");
+      return;
+    }
+  } catch {
+    showToast("Project Worker URL योग्य नाही.");
+    return;
+  }
+
+  localStorage.setItem(key, value.replace(/\/+$/, ""));
+
+  setStatus("projectStatus", project + " settings सेव्ह झाल्या.");
+  showToast("Project settings saved.");
+});
+
+/* =====================================
+   WORKER CONNECTION TEST
+===================================== */
+
+async function testWorkerConnection() {
+  setStatus("connectionStatus", "Checking Worker connection...");
+
+  try {
+    const data = await apiRequest("/health");
+
+    setStatus(
+      "connectionStatus",
+      "API ACTIVE — Worker ने response दिला."
+    );
+
+    setStatus("workerStatus", JSON.stringify(data, null, 2));
+    setStatus("apiInfo", JSON.stringify(data, null, 2));
+
+    showToast("Worker connection successful.");
+    return true;
+  } catch (error) {
+    setStatus("connectionStatus", "API CONNECTION FAILED");
+    setStatus("workerStatus", error.message);
+    setStatus("apiInfo", error.message);
+
+    showToast("Connection failed: " + error.message);
+    return false;
+  }
+}
+
+$("testWorkerButton")?.addEventListener("click", testWorkerConnection);
+$("checkConnection")?.addEventListener("click", testWorkerConnection);
+$("refreshApiInfoButton")?.addEventListener("click", testWorkerConnection);
+
+$("refreshDashboard")?.addEventListener("click", loadDashboard);
+$("reloadAppButton")?.addEventListener("click", () => location.reload());
+
+$("clearLocalSettingsButton")?.addEventListener("click", () => {
+  if (!confirm(
+    "या browser मधील dashboard settings आणि saved contacts clear करायचे?"
+  )) return;
+
+  [
+    "ak_worker_url",
+    "ak_local_contacts"
+  ].forEach((key) => localStorage.removeItem(key));
+
+  Object.keys(localStorage)
+    .filter((key) => key.startsWith("ak_project_worker_"))
+    .forEach((key) => localStorage.removeItem(key));
+
+  showToast("Local settings clear झाल्या. Dashboard reload होत आहे.");
+  location.reload();
+});
+
+/* =====================================
+   INITIAL SETTINGS AND CONTACTS
+===================================== */
+
+(function initCore() {
+  workerUrl = getWorkerUrl();
+
+  if ($("workerUrl")) {
+    $("workerUrl").value =
+      localStorage.getItem("ak_worker_url") ||
+      DEFAULT_WORKER_URL;
+  }
+
+  if ($("projectSelect")) {
+    currentProject = $("projectSelect").value || "New Launch";
+  }
+
+  if ($("projectSettingsSelect")) {
+    $("projectSettingsSelect").value = currentProject;
+  }
+
+  const projectUrl = localStorage.getItem(
+    "ak_project_worker_" + currentProject
+  );
+
+  if ($("projectWorkerUrl")) {
+    $("projectWorkerUrl").value = projectUrl || "";
+  }
+
+  loadLocalContacts();
+  renderLeads();
+})();  
+      /* =====================================
+   LOAD WHATSAPP BUSINESS NUMBERS
+===================================== */
+
+async function loadPhoneNumbers() {
+  try {
+    const data = await apiRequest("/phone-numbers");
+
+    phoneNumbers = extractArray(data, [
+      "data",
+      "phoneNumbers"
+    ]);
+
+    const select = $("sendNumber");
+
+    if (select) {
+      select.innerHTML = "";
+      select.add(new Option("Select WhatsApp number", ""));
+
+      phoneNumbers.forEach((number) => {
+        const id = number.phoneNumberId || number.id || "";
+        const label =
+          number.displayPhoneNumber ||
+          number.verifiedName ||
+          id;
+
+        if (id) select.add(new Option(label, id));
+      });
+    }
+  } catch (error) {
+    setStatus(
+      "sendResult",
+      "WhatsApp numbers load failed: " + error.message
+    );
+  }
+}
+
+/* =====================================
+   LOAD APPROVED TEMPLATES
+===================================== */
+
+async function loadTemplates() {
+  setStatus("templateStatus", "Loading WhatsApp templates...");
+
+  try {
+    const data = await apiRequest("/templates");
+
+    templates = extractArray(data, [
+      "data",
+      "templates"
+    ]);
+
+    const select = $("campaignTemplate");
+
+    if (select) {
+      select.innerHTML = "";
+      select.add(new Option("Select approved template", ""));
+
+      templates.forEach((template) => {
+        const name = template.name || "";
+        if (!name) return;
+
+        const status = String(
+          template.status || ""
+        ).toUpperCase();
+
+        select.add(
+          new Option(
+            name + (status ? " (" + status + ")" : ""),
+            name
+          )
+        );
+      });
+    }
+
+    const table = $("templateTable");
+
+    if (table) {
+      table.innerHTML = templates.length
+        ? templates.map((template) => `
+            <tr>
+              <td>${escapeHTML(template.name || "-")}</td>
+              <td>${escapeHTML(template.language || "-")}</td>
+              <td>${escapeHTML(template.category || "-")}</td>
+              <td>${escapeHTML(template.status || "-")}</td>
+            </tr>
+          `).join("")
+        : '<tr><td colspan="4">No templates found.</td></tr>';
+    }
+
+    setStatus(
+      "templateStatus",
+      "Templates loaded: " + templates.length
+    );
+
+    renderTemplateVariables();
+  } catch (error) {
+    setStatus(
+      "templateStatus",
+      "Template load failed: " + error.message
+    );
+  }
+}
+
+function renderTemplateVariables() {
+  const selectedName = $("campaignTemplate")?.value;
+  const container = $("variableFields");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const template = templates.find(
+    (item) => item.name === selectedName
+  );
+
+  if (!template) return;
+
+  let bodyText = "";
+
+  (template.components || []).forEach((component) => {
+    if (String(component.type).toUpperCase() === "BODY") {
+      bodyText = component.text || "";
+    }
+  });
+
+  const matches = [
+    ...bodyText.matchAll(/\{\{\s*(\d+)\s*\}\}/g)
+  ];
+
+  const variableNumbers = [
+    ...new Set(matches.map((match) => Number(match[1])))
+  ].sort((a, b) => a - b);
+
+  variableNumbers.forEach((number) => {
+    const label = document.createElement("label");
+    label.htmlFor = "templateVar" + number;
+    label.textContent = "Variable {{ " + number + " }}";
+
+    const input = document.createElement("input");
+    input.id = "templateVar" + number;
+    input.dataset.variable = String(number);
+    input.placeholder = "Enter variable " + number;
+    input.required = true;
+
+    container.appendChild(label);
+    container.appendChild(input);
+  });
+
+  const imageHeader = (template.components || []).some(
+    (component) =>
+      String(component.type).toUpperCase() === "HEADER" &&
+      String(component.format).toUpperCase() === "IMAGE"
+  );
+
+  if (imageHeader) {
+    const label = document.createElement("label");
+    label.htmlFor = "headerField";
+    label.textContent = "Header Image URL (HTTPS)";
+
+    const input = document.createElement("input");
+    input.id = "headerField";
+    input.type = "url";
+    input.placeholder = "https://example.com/image.jpg";
+
+    container.appendChild(label);
+    container.appendChild(input);
+  }
+
+  if (!variableNumbers.length && !imageHeader) {
+    container.textContent = "This template has no variables.";
+  }
+}
+
+$("campaignTemplate")?.addEventListener(
+  "change",
+  renderTemplateVariables
+);
+
+$("refreshTemplatesButton")?.addEventListener(
   "click",
-  exportContactsCSV
+  loadTemplates
 );
 
 /* =====================================
-   LIVE CHAT AND REPLY
+   DASHBOARD METRICS
 ===================================== */
 
-function getMessagePhone(message) {
-  return String(message.wa_id || message.phone || "").trim();
-}
-
-function getChatGroups() {
-  const groups = new Map();
-
-  messages.forEach((message) => {
-    const phone = getMessagePhone(message);
-    if (!phone) return;
-
-    if (!groups.has(phone)) {
-      groups.set(phone, {
-        phone,
-        name: message.name || phone,
-        messages: []
-      });
-    }
-
-    const group = groups.get(phone);
-
-    if (message.name) group.name = message.name;
-    group.messages.push(message);
-  });
-
-  return [...groups.values()].sort((a, b) => {
-    const aTime = new Date(
-      a.messages[a.messages.length - 1]?.created_at || 0
-    ).getTime();
-
-    const bTime = new Date(
-      b.messages[b.messages.length - 1]?.created_at || 0
-    ).getTime();
-
-    return bTime - aTime;
-  });
-}
-
-function renderChatList() {
-  const list = $("chatList");
-  if (!list) return;
-
-  const query = ($("chatSearch")?.value || "").toLowerCase();
-
-  const chats = getChatGroups().filter((chat) =>
-    (chat.name + " " + chat.phone).toLowerCase().includes(query)
-  );
-
-  list.innerHTML = chats.length
-    ? chats.map((chat) => {
-        const latest = chat.messages[chat.messages.length - 1];
-        const selected = chat.phone === selectedChatNumber;
-
-        return `
-          <div class="chat-contact ${selected ? "selected" : ""}"
-            data-chat-phone="${escapeHTML(chat.phone)}">
-            <b>${escapeHTML(chat.name)}</b>
-            <span>${escapeHTML(chat.phone)}</span>
-            <span class="preview-text">
-              ${escapeHTML(latest?.message || "No message text")}
-            </span>
-          </div>
-        `;
-      }).join("")
-    : '<div class="chat-contact">No conversations found.</div>';
-
-  list.querySelectorAll("[data-chat-phone]").forEach((element) => {
-    element.addEventListener("click", () => {
-      selectChat(element.dataset.chatPhone);
-    });
-  });
-}
-
-function selectChat(phone) {
-  selectedChatNumber = phone;
-
-  const chat = getChatGroups().find((item) => item.phone === phone);
-
-  if ($("chatTitle")) {
-    $("chatTitle").textContent = chat
-      ? chat.name + " (" + chat.phone + ")"
-      : phone;
-  }
-
-  renderChatList();
-  renderSelectedChat();
-}
-
-function renderSelectedChat() {
-  const history = $("chatHistory");
-  if (!history) return;
-
-  if (!selectedChatNumber) {
-    history.textContent = "Select a conversation to view messages.";
-    return;
-  }
-
-  const chat = getChatGroups().find(
-    (item) => item.phone === selectedChatNumber
-  );
-
-  if (!chat || !chat.messages.length) {
-    history.textContent = "No message history found for this contact.";
-    return;
-  }
-
-  history.innerHTML = chat.messages.map((message) => {
-    const direction = String(message.direction || "").toLowerCase();
-    const outgoing = direction === "outgoing";
-
-    return `
-      <div class="bubble ${outgoing ? "out" : ""}">
-        ${escapeHTML(message.message || "(No message text)")}
-        <div class="small">
-          ${escapeHTML(formatDate(message.created_at || message.timestamp))}
-          · ${escapeHTML(message.status || direction || "")}
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  history.scrollTop = history.scrollHeight;
-}
-
-async function loadChats() {
-  setStatus("chatStatus", "Loading chats...");
+async function loadDashboard() {
+  setStatus("dashStatus", "Loading dashboard data...");
 
   try {
-    const data = await apiRequest("/messages?limit=1000&offset=0");
-    messages = extractArray(data, ["data", "messages"]);
+    const results = await Promise.allSettled([
+      apiRequest("/reports"),
+      apiRequest("/messages?limit=1000&offset=0"),
+      apiRequest("/phone-numbers")
+    ]);
 
+    const reportData =
+      results[0].status === "fulfilled"
+        ? results[0].value
+        : {};
+
+    const messageData =
+      results[1].status === "fulfilled"
+        ? results[1].value
+        : {};
+
+    if (results[1].status === "fulfilled") {
+      messages = extractArray(messageData, [
+        "data",
+        "messages"
+      ]);
+    }
+
+    if (results[2].status === "fulfilled") {
+      phoneNumbers = extractArray(
+        results[2].value,
+        ["data", "phoneNumbers"]
+      );
+    }
+
+    const totals = reportData.totals || {};
+
+    const incoming = messages.filter((message) =>
+      String(message.direction || "").toLowerCase() === "incoming"
+    ).length;
+
+    const outgoing = messages.filter((message) =>
+      isOutgoingMessage(message)
+    ).length;
+
+    if ($("total")) {
+      $("total").textContent =
+        totals.totalMessages ?? messages.length;
+    }
+
+    if ($("incomingCount")) {
+      $("incomingCount").textContent =
+        totals.incoming ?? incoming;
+    }
+
+    if ($("outgoingCount")) {
+      $("outgoingCount").textContent =
+        totals.outgoing ?? outgoing;
+    }
+
+    if ($("contactCount")) {
+      $("contactCount").textContent = localContacts.length;
+    }
+
+    if ($("dailyReports")) {
+      const daily = Array.isArray(reportData.daily)
+        ? reportData.daily
+        : [];
+
+      $("dailyReports").innerHTML = daily.length
+        ? daily.map((item) => `
+            <div class="number-row">
+              <b>${escapeHTML(item.date || item.day || "-")}</b>
+              <div>
+                Messages:
+                ${escapeHTML(item.count ?? item.total ?? 0)}
+              </div>
+            </div>
+          `).join("")
+        : "No daily report data available.";
+    }
+
+    renderHistory();
     renderChatList();
     renderSelectedChat();
 
-    setStatus("chatStatus", "Conversations loaded: " + getChatGroups().length);
-  } catch (error) {
-    setStatus("chatStatus", "Unable to load chats: " + error.message);
-  }
-}
-
-$("chatSearch")?.addEventListener("input", renderChatList);
-
-async function sendReply() {
-  const to = normalizePhone(selectedChatNumber);
-  const message = $("replyText")?.value.trim() || "";
-  const file = $("replyFile")?.files?.[0];
-  const button = $("replyButton");
-
-  if (!to) {
-    showToast("आधी chat select करा.");
-    return;
-  }
-
-  if (!message && !file) {
-    showToast("Message लिहा किंवा file निवडा.");
-    return;
-  }
-
-  if (button) button.disabled = true;
-
-  try {
-    let result;
-
-    if (file) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "application/pdf"
-      ];
-
-      if (!allowedTypes.includes(file.type)) {
-        throw new Error("फक्त JPG, PNG, WEBP किंवा PDF file पाठवता येईल.");
-      }
-
-      if (file.size > 15 * 1024 * 1024) {
-        throw new Error("File size 15 MB पेक्षा कमी असावी.");
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("to", to);
-
-      if (message) formData.append("caption", message);
-
-      const phoneNumberId = $("sendNumber")?.value;
-      if (phoneNumberId) formData.append("phoneNumberId", phoneNumberId);
-
-      result = await apiRequest("/send-media", {
-        method: "POST",
-        body: formData
-      });
-    } else {
-      const phoneNumberId = $("sendNumber")?.value;
-
-      if (!phoneNumberId) {
-        throw new Error("Settings मध्ये WhatsApp Business Number निवडा.");
-      }
-
-      result = await apiRequest("/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          to,
-          message,
-          phoneNumberId
-        })
-      });
-    }
-
-    if (result.success === false) {
-      throw new Error(result.error || "Message send failed");
-    }
-
-    if ($("replyText")) $("replyText").value = "";
-    if ($("replyFile")) $("replyFile").value = "";
+    const errors = results
+      .filter((result) => result.status === "rejected")
+      .map((result) => result.reason?.message || "Unknown error");
 
     setStatus(
-      "chatStatus",
-      "Request accepted by Worker. Delivery status तपासा."
+      "dashStatus",
+      errors.length
+        ? "Some data could not load: " + errors.join(" | ")
+        : "Dashboard data updated successfully."
     );
 
-    showToast("Request accepted by Worker.");
-    await loadChats();
-    await loadDashboard();
+    setStatus(
+      "connectionStatus",
+      errors.length ? "API PARTIALLY AVAILABLE" : "API ACTIVE"
+    );
   } catch (error) {
-    setStatus("chatStatus", "Send failed: " + error.message);
-    showToast("Send failed: " + error.message);
-  } finally {
-    if (button) button.disabled = false;
+    setStatus("dashStatus", "Dashboard error: " + error.message);
+    setStatus("connectionStatus", "API CONNECTION FAILED");
   }
 }
 
-$("replyButton")?.addEventListener("click", sendReply);
+async function loadCampaignData() {
+  await Promise.allSettled([
+    loadPhoneNumbers(),
+    loadTemplates()
+  ]);
+}
 
-/* =====================================
-   CLEAR LOCAL SETTINGS
-===================================== */
+async function loadSettings() {
+  if ($("workerUrl")) {
+    $("workerUrl").value = getWorkerUrl();
+  }
 
-$("clearLocalSettingsButton")?.addEventListener("click", () => {
-  const confirmed = confirm(
-    "या browser मधील Worker URL आणि project settings clear करायच्या आहेत का? Contacts clear होणार नाहीत."
-  );
-
-  if (!confirmed) return;
-
-  localStorage.removeItem("ak_worker_url");
-
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith("ak_project_worker_")) {
-      localStorage.removeItem(key);
-    }
-  });
-
-  if ($("workerUrl")) $("workerUrl").value = DEFAULT_WORKER_URL;
-  if ($("projectWorkerUrl")) $("projectWorkerUrl").value = "";
-
-  showToast("Local settings cleared.");
-});
+  if ($("apiInfo") && ! $("apiInfo").textContent.trim()) {
+    $("apiInfo").textContent =
+      "Use Test Connection to check the Worker.";
+  }
+}
 
 /* =====================================
    STARTUP
 ===================================== */
 
-loadLocalContacts();
-renderLeads();
-renderChatList();
-renderHistory();
-loadDashboard();
+document.addEventListener("DOMContentLoaded", async () => {
+  loadLocalContacts();
+  renderLeads();
+
+  await Promise.allSettled([
+    loadDashboard(),
+    loadPhoneNumbers(),
+    loadTemplates()
+  ]);
+});
+
 </script>
 </body>
 </html>
-  
