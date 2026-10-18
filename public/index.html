@@ -149,14 +149,35 @@ td, th {
   border-bottom: 1px solid #edf0f2;
   cursor: pointer;
   overflow-wrap: anywhere;
-  background: white;
+  background: #ffffff;
+  color: #111b21;
 }
-.chat-contact:hover { background: #f5f6f6; }
-.chat-contact.selected { background: #e9edef; }
+
+.chat-contact:hover {
+  background: #f0f2f5;
+}
+
+.chat-contact.selected {
+  background: #d9fdd3;
+  border-left: 4px solid #087f5b;
+  padding-left: 10px;
+}
+
 .chat-contact.has-unread {
   background: #e7f3ff;
   border-left: 4px solid #1685e8;
   padding-left: 10px;
+}
+
+.chat-contact b {
+  display: block;
+  font-size: 14px;
+  color: #111b21;
+  margin-bottom: 5px;
+}
+
+.chat-contact .preview-text {
+  color: #54656f;
 }
 .chat-contact b {
   display: block;
