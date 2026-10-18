@@ -4,39 +4,60 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>A K Properties | WhatsApp Marketing Dashboard</title>
+
 <style>
 :root {
   --green: #075e54;
   --accent: #087f5b;
   --bg: #f2f6f5;
   --border: #dce5e0;
+  --blue: #2563eb;
+  --blue-bg: #dbeafe;
 }
-* { box-sizing: border-box; }
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font: 14px Arial, sans-serif;
   background: var(--bg);
   color: #19332e;
 }
+
 header {
   background: var(--green);
   color: white;
-  padding: 16px 20px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
 }
-header h2 { margin: 0 0 5px; }
-header select { width: auto; margin: 0; }
-.layout { display: flex; min-height: calc(100vh - 75px); }
+
+header h2 {
+  margin: 0 0 5px;
+}
+
+header select {
+  width: auto;
+  margin: 0;
+}
+
+.layout {
+  display: flex;
+  min-height: calc(100vh - 75px);
+}
+
 nav {
-  width: 215px;
+  width: 205px;
   flex-shrink: 0;
   background: #123b35;
   padding: 12px;
 }
+
 nav button {
   display: block;
   width: 100%;
@@ -44,7 +65,12 @@ nav button {
   background: transparent;
   color: white;
 }
-nav button.active, nav button:hover { background: var(--accent); }
+
+nav button.active,
+nav button:hover {
+  background: var(--accent);
+}
+
 button {
   border: 0;
   border-radius: 7px;
@@ -54,24 +80,55 @@ button {
   color: white;
   cursor: pointer;
 }
-button:disabled { opacity: .5; cursor: not-allowed; }
-main { flex: 1; min-width: 0; padding: 20px; }
-.view { display: none; }
-.view.active { display: block; }
-.panel, .card {
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+main {
+  flex: 1;
+  min-width: 0;
+  padding: 20px;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+.panel,
+.card {
   background: white;
   border-radius: 11px;
   padding: 15px;
   margin-bottom: 14px;
   box-shadow: 0 2px 7px #0000000b;
 }
+
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px;
 }
-.card h2 { margin: 8px 0 0; font-size: 25px; }
-input, select, textarea {
+
+.card h2 {
+  margin: 8px 0 0;
+  font-size: 25px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+input,
+select,
+textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccd8d4;
@@ -80,9 +137,19 @@ input, select, textarea {
   font: inherit;
   background: white;
 }
-input[type="checkbox"] { width: auto; }
-textarea { min-height: 85px; }
-label { font-weight: bold; }
+
+input[type="checkbox"] {
+  width: auto;
+}
+
+textarea {
+  min-height: 85px;
+}
+
+label {
+  font-weight: bold;
+}
+
 .notice {
   background: #fff4d5;
   border-radius: 8px;
@@ -90,6 +157,7 @@ label { font-weight: bold; }
   margin-bottom: 14px;
   line-height: 1.6;
 }
+
 .status {
   background: #edf6f0;
   padding: 10px;
@@ -98,23 +166,44 @@ label { font-weight: bold; }
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-.small { font-size: 12px; color: #65746e; }
-.table-wrap { overflow: auto; }
-table { width: 100%; border-collapse: collapse; background: white; }
-td, th {
+
+.small {
+  font-size: 12px;
+  color: #65746e;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+td,
+th {
   text-align: left;
   padding: 9px;
   border-bottom: 1px solid var(--border);
   overflow-wrap: anywhere;
 }
-.template-row, .number-row {
+
+.template-row,
+.number-row {
   border: 1px solid var(--border);
   padding: 12px;
   border-radius: 8px;
   margin: 9px 0;
   background: #fbfdfc;
 }
-.danger { background: #b42318; }
+
+.danger {
+  background: #b42318;
+}
+
+/* LIVE CHAT LAYOUT */
 
 .chat-layout {
   display: grid;
@@ -126,52 +215,91 @@ td, th {
   border-radius: 10px;
   overflow: hidden;
 }
+
 .chat-sidebar {
   overflow-y: auto;
   min-width: 0;
   border-right: 1px solid var(--border);
-  background: #fff;
+  padding: 0;
+  background: white;
 }
+
 .chat-sidebar #chatSearch {
   width: calc(100% - 20px);
   margin: 10px;
   background: #f0f2f5;
+  border: 1px solid #dce5e0;
 }
+
+/* CLIENT CHAT BOX */
+
 .chat-contact {
-  display: block;
-  width: 100%;
-  text-align: left;
+  position: relative;
   padding: 13px 14px;
   min-height: 76px;
-  margin: 0;
-  border-radius: 0;
   border-bottom: 1px solid #edf0f2;
-  background: #fff;
-  color: #111b21;
   cursor: pointer;
   overflow-wrap: anywhere;
+  background: white;
+  transition: background .2s ease;
 }
-.chat-contact:hover { background: #f0f2f5; }
+
+.chat-contact:hover {
+  background: #f5f6f6;
+}
+
 .chat-contact.selected {
-  background: #d9fdd3;
-  border-left: 4px solid #087f5b;
-  padding-left: 10px;
+  background: #e9edef;
 }
+
+/* NEW INCOMING MESSAGE BLUE HIGHLIGHT */
+
+.chat-contact.has-unread {
+  background: var(--blue-bg) !important;
+  border-left: 5px solid var(--blue) !important;
+  padding-left: 9px;
+}
+
+.chat-contact.has-unread b {
+  color: #1d4ed8;
+}
+
 .chat-contact b {
   display: block;
   font-size: 14px;
   color: #111b21;
   margin-bottom: 5px;
 }
+
+.chat-contact .small {
+  color: #667781;
+  font-size: 12px;
+}
+
 .preview-text {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #54656f;
+  color: #667781;
   font-size: 13px;
   margin-top: 5px;
 }
+
+.unread-badge {
+  display: inline-block;
+  background: var(--blue);
+  color: white;
+  border-radius: 12px;
+  padding: 3px 7px;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+  margin-top: 6px;
+}
+
+/* CHAT WINDOW */
+
 .chat-main {
   display: flex;
   flex-direction: column;
@@ -179,6 +307,7 @@ td, th {
   min-height: 0;
   background: #efeae2;
 }
+
 .chat-header {
   display: flex;
   align-items: center;
@@ -188,109 +317,241 @@ td, th {
   background: #f0f2f5;
   border-bottom: 1px solid #d8dfdc;
   color: #111b21;
+  font-weight: bold;
 }
+
+.chat-back {
+  display: none;
+  flex-shrink: 0;
+  background: #075e54;
+  color: #fff;
+  white-space: nowrap;
+  margin: 0 4px 0 0;
+  padding: 9px 12px;
+}
+
+.chat-header.has-chat .chat-back {
+  display: inline-block;
+}
+
+.chat-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #dfe5e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* MESSAGE HISTORY */
+
 .chat-history {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 20px 5%;
+  background: #efeae2;
 }
+
 .bubble {
-  align-self: flex-start;
+  width: fit-content;
   max-width: min(78%, 600px);
-  padding: 10px 13px;
+  padding: 9px 11px 7px;
+  border-radius: 8px;
   background: white;
   color: #111b21;
-  border-radius: 10px;
-  box-shadow: 0 1px 2px #00000012;
-  overflow-wrap: anywhere;
+  margin: 6px 0 10px;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  box-shadow: 0 1px 1px #00000010;
+  font-size: 14px;
+  line-height: 1.5;
 }
+
+.bubble.in {
+  background: #ffffff;
+  margin-right: auto;
+}
+
 .bubble.out {
-  align-self: flex-end;
   background: #d9fdd3;
+  margin-left: auto;
 }
+
 .bubble .small {
   text-align: right;
-  margin-top: 7px;
+  margin-top: 5px;
+  color: #667781;
+  font-size: 10px;
 }
+
 .chat-reply {
   padding: 12px;
   background: #f0f2f5;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #d8dfdc;
 }
-.chat-reply textarea { min-height: 65px; margin-bottom: 5px; }
+
+.chat-reply textarea {
+  min-height: 46px;
+  max-height: 120px;
+  resize: vertical;
+  border: 1px solid #d4dcda;
+  border-radius: 9px;
+  background: white;
+  margin: 0 0 8px;
+}
+
+.chat-attachment-row {
+  padding: 5px 0;
+}
+
+.chat-attachment-row input {
+  background: white;
+  border: 1px solid #d4dcda;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+#replyButton {
+  border-radius: 22px;
+  padding: 11px 20px;
+}
+
 #toast {
   display: none;
   position: fixed;
-  right: 20px;
   bottom: 20px;
-  max-width: 90%;
-  padding: 12px 18px;
-  border-radius: 8px;
+  right: 20px;
   background: #123b35;
   color: white;
-  z-index: 9999;
+  padding: 12px 16px;
+  border-radius: 8px;
+  z-index: 99;
+  max-width: 90vw;
 }
-#toast.show { display: block; }
 
-@media (max-width: 800px) {
-  .layout { flex-direction: column; }
+#toast.show {
+  display: block;
+}
+
+/* MOBILE CHAT BACK BUTTON BEHAVIOUR */
+
+@media (max-width: 700px) {
+  .layout {
+    display: block;
+  }
+
   nav {
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
+    overflow-x: auto;
     gap: 4px;
   }
-  nav button { width: auto; flex: 1 1 130px; }
-  main { padding: 12px; }
-  .chat-layout {
+
+  nav button {
+    min-width: max-content;
+    width: auto;
+  }
+
+  main {
+    padding: 10px;
+  }
+
+  .grid {
     grid-template-columns: 1fr;
-    height: auto;
+  }
+
+  .chat-layout {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    height: 72vh;
+    min-height: 480px;
+  }
+
+  .chat-sidebar {
+    max-height: none;
+    height: 100%;
+    border-right: 0;
+    border-bottom: 0;
+  }
+
+  .chat-main {
+    display: none;
+    height: 100%;
     min-height: 0;
   }
-  .chat-sidebar {
-    max-height: 260px;
-    border-right: 0;
-    border-bottom: 1px solid var(--border);
+
+  .chat-layout.chat-open .chat-sidebar {
+    display: none;
   }
-  .chat-main { min-height: 480px; }
+
+  .chat-layout.chat-open .chat-main {
+    display: flex;
+  }
+
+  .chat-history {
+    padding: 12px;
+  }
+
+  .bubble {
+    max-width: 90%;
+  }
+
+  .chat-header {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .chat-back {
+    display: inline-block;
+  }
 }
-</style>
-</head>  
-  <body>
+</style>  
+  </head>
+<body>
+
 <header>
   <div>
-    <h2>A K Properties</h2>
-    <div>WhatsApp Marketing Dashboard</div>
+    <h2>A K PROPERTIES</h2>
+    WhatsApp Marketing Dashboard
   </div>
-  <div>
-    <label for="projectSelect">Project:</label>
-    <select id="projectSelect">
-      <option>New Launch</option>
-      <option>Godrej Properties</option>
-      <option>Delta Group</option>
-      <option>Raheja Group</option>
-      <option>Dosti Group</option>
-      <option>Piramal</option>
-      <option>Paradise Group</option>
-      <option>Domus</option>
-      <option>Platinum</option>
-      <option>Today Group</option>
-    </select>
+
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div>
+      <label for="project" style="color:white">Project:</label>
+      <select id="project" onchange="switchProject(this.value)">
+        <option value="newlaunch">New Launch</option>
+        <option value="dosti">Dosti Group</option>
+        <option value="godrej">Godrej Properties</option>
+        <option value="delta">Delta Group</option>
+        <option value="raheja">Raheja Group</option>
+        <option value="paradise">Paradise Group</option>
+        <option value="domus">Domus</option>
+        <option value="platinum">Platinum</option>
+        <option value="piramal">Piramal</option>
+        <option value="today">Today Group</option>
+      </select>
+      <div id="connection" style="font-size:12px">Checking API...</div>
+    </div>
   </div>
 </header>
 
 <div class="layout">
+
 <nav>
   <button class="active" data-page="dashboard">Dashboard</button>
-  <button data-page="campaigns">Send Message / Campaign</button>
+  <button data-page="campaigns">Campaigns / Blast</button>
   <button data-page="inbox">Live Chat</button>
-  <button data-page="leads">Contacts</button>
-  <button data-page="reports">Reports / History</button>
+  <button data-page="leads">CRM / Contacts</button>
+  <button data-page="reports">Reports</button>
   <button data-page="templates">Templates</button>
   <button data-page="settings">API Settings</button>
 </nav>
@@ -299,206 +560,280 @@ td, th {
 
 <section class="view active" id="dashboard">
   <h2>Dashboard</h2>
-  <div class="status" id="connectionStatus">Checking API...</div>
-  <div class="status" id="dashStatus">Loading dashboard...</div>
+
+  <div class="notice">
+    फक्त WhatsApp संदेश मिळवण्यास संमती दिलेल्या ग्राहकांनाच संदेश पाठवा.
+    Meta approval आणि messaging limits लागू आहेत.
+  </div>
 
   <div class="cards">
-    <div class="card">
-      Total Messages
-      <h2 id="total">0</h2>
-    </div>
-    <div class="card">
-      Incoming Messages
-      <h2 id="incomingCount">0</h2>
-    </div>
-    <div class="card">
-      Outgoing Messages
-      <h2 id="outgoingCount">0</h2>
-    </div>
-    <div class="card">
-      Contacts
-      <h2 id="contactCount">0</h2>
-    </div>
-    <div class="card">
-      Unread Chats
-      <h2 id="unreadCount">0</h2>
-    </div>
+    <div class="card">Total Messages<h2 id="total">0</h2></div>
+    <div class="card">Contacts<h2 id="contactCount">0</h2></div>
+    <div class="card">Incoming<h2 id="incomingCount">0</h2></div>
+    <div class="card">Outgoing<h2 id="outgoingCount">0</h2></div>
+    <div class="card">Saved Leads<h2 id="leadCount">0</h2></div>
+    <div class="card">Approved Templates<h2 id="approvedCount">0</h2></div>
   </div>
 
   <div class="panel">
-    <h3>WhatsApp Numbers</h3>
-    <div id="phoneNumbersList">Numbers will appear here.</div>
+    <h3>Live Message Chart</h3>
+    <p class="small">Incoming आणि outgoing messages चा daily report.</p>
+    <canvas id="liveChart" height="220" style="width:100%;display:block"></canvas>
+    <div id="chartStatus" class="small">Chart loading...</div>
   </div>
 
   <div class="panel">
-    <h3>Daily Message Report</h3>
-    <div id="dailyReports">Report will appear here.</div>
+    <h3>Connected WhatsApp Numbers</h3>
+    <button onclick="syncAll()">Sync Now</button>
+    <button onclick="enableNotifications()">Enable Notifications</button>
+    <div id="numberList">Numbers not synced yet.</div>
+    <div id="dashStatus" class="status">Ready.</div>
   </div>
-
-  <button id="refreshDashboard">Refresh Dashboard</button>
-  <button id="testWorkerButton">Test API Connection</button>
 </section>
 
 <section class="view" id="campaigns">
-  <h2>Send Message / Campaign</h2>
-
-  <div class="notice">
-    Send messages only to recipients who have provided the required
-    WhatsApp opt-in. Use approved templates when required by WhatsApp.
-  </div>
+  <h2>WhatsApp Campaign</h2>
 
   <div class="panel">
-    <label for="sendNumber">WhatsApp Business Number</label>
-    <select id="sendNumber">
-      <option value="">Loading numbers...</option>
-    </select>
+    <label for="campaignName">Campaign Name</label>
+    <input id="campaignName" value="Property Campaign">
+
+    <label for="sendNumber">Sending WhatsApp Number</label>
+    <select id="sendNumber"></select>
 
     <label for="campaignTemplate">Approved Template</label>
-    <select id="campaignTemplate">
-      <option value="">Loading templates...</option>
-    </select>
+    <select id="campaignTemplate" onchange="renderVariables()"></select>
+
+    <label for="recipients">Recipient Numbers (one per line, country code required)</label>
+    <textarea id="recipients" placeholder="919876543210"></textarea>
 
     <div id="variableFields"></div>
-
-    <label for="recipients">Recipient Numbers</label>
-    <textarea id="recipients"
-      placeholder="919876543210&#10;919812345678"></textarea>
+    <div id="headerField"></div>
 
     <label>
       <input type="checkbox" id="consent">
-      I confirm these recipients have provided the required opt-in.
+      I confirm these contacts opted in to receive messages.
     </label>
 
-    <div>
-      <button id="sendTestButton">Send Test Message</button>
-      <button id="startCampaignButton">Start Campaign</button>
-    </div>
+    <p>
+      <button onclick="sendCampaign(true)">Send Test</button>
+      <button onclick="sendCampaign(false)">Start Campaign</button>
+    </p>
 
-    <div class="status" id="campaignStatus">Campaign ready.</div>
-    <pre class="status" id="sendResult"></pre>
+    <div id="campaignStatus" class="status">Choose a project and sync templates.</div>
+    <pre id="sendResult"></pre>
   </div>
 </section>
 
 <section class="view" id="inbox">
-  <h2>Live Chat / Inbox</h2>
-  <div class="status" id="chatStatus">Loading conversations...</div>
+  <h2>Live Chat / WhatsApp Inbox</h2>
 
-  <div class="chat-layout">
-    <aside class="chat-sidebar" id="chatList">
-      <input id="chatSearch" placeholder="Search name or number...">
-      <div id="chatContacts"></div>
-    </aside>
+  <div class="chat-layout" id="chatLayout">
 
-    <section class="chat-main">
-      <div class="chat-header">
-        <div style="font-size:25px">👤</div>
-        <strong id="chatTitle">Select a conversation</strong>
-        <button id="refreshChatsButton">Refresh</button>
+    <div class="chat-sidebar">
+      <input
+        id="chatSearch"
+        placeholder="Search name or WhatsApp number..."
+        oninput="renderChats()"
+      >
+
+      <div id="chatList">
+        <p style="padding:12px">Loading conversations...</p>
+      </div>
+    </div>
+
+    <div class="chat-main">
+
+      <div class="chat-header" id="chatHeader">
+        <button
+          class="chat-back"
+          id="backToChats"
+          type="button"
+          onclick="showChatList()"
+        >← Back to Chats</button>
+
+        <div class="avatar">👤</div>
+
+        <div class="chat-title" id="chatTitle">
+          Select a conversation
+        </div>
       </div>
 
       <div class="chat-history" id="chatHistory">
-        Select a conversation to view messages.
+        <p>Select a client to view messages.</p>
       </div>
 
       <div class="chat-reply">
-        <label for="replyFile">Attach Image / PDF</label>
-        <input id="replyFile" type="file"
-          accept="image/*,.pdf,application/pdf">
-
         <label for="replyText">Reply Message</label>
-        <textarea id="replyText"
-          placeholder="Type your reply..."></textarea>
+        <textarea
+          id="replyText"
+          placeholder="Type your reply..."
+        ></textarea>
 
-        <button id="replyButton">Send Reply</button>
-
-        <div class="small">
-          Replies require a valid WhatsApp number and API permission.
-          Outside the customer-service window, an approved template
-          may be required.
+        <div class="chat-attachment-row">
+          <label for="replyFile">Attach Photo / PDF / Document</label>
+          <input
+            type="file"
+            id="replyFile"
+            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+          >
         </div>
+
+        <button id="replyButton" onclick="sendReply()">Send Reply</button>
+        <button id="mediaButton" onclick="sendMedia()">Send Photo / PDF</button>
+
+        <div id="replyStatus" class="status">Select a client first.</div>
       </div>
-    </section>
-  </div>
-</section>  
-  <section class="view" id="leads">
-  <h2>Contacts / Leads</h2>
 
-  <div class="panel">
-    <label for="leadName">Contact Name</label>
-    <input id="leadName" placeholder="Customer name">
-
-    <label for="leadPhone">WhatsApp Number</label>
-    <input id="leadPhone" placeholder="919876543210">
-
-    <label for="leadTag">Project / Tag</label>
-    <input id="leadTag" placeholder="Godrej Properties">
-
-    <button id="saveContactButton">Save Contact</button>
-    <button id="exportContactsButton">Export CSV</button>
-
-    <div class="status" id="contactStatus">Contacts are stored in this browser.</div>
-  </div>
-
-  <div class="panel">
-    <label for="leadSearch">Search Contacts</label>
-    <input id="leadSearch" placeholder="Search name or number">
-    <div id="leadList">No contacts loaded.</div>
+    </div>
   </div>
 </section>
 
-<section class="view" id="reports">
-  <h2>Reports / Message History</h2>
+<section class="view" id="leads">
+  <h2>CRM / Contacts</h2>
 
-  <div class="cards">
-    <div class="card">Total Messages<h2 id="reportTotal">0</h2></div>
-    <div class="card">Delivered<h2 id="reportDelivered">0</h2></div>
-    <div class="card">Read<h2 id="reportRead">0</h2></div>
-    <div class="card">Failed<h2 id="reportFailed">0</h2></div>
+  <div class="panel">
+    <h3>Add New Contact</h3>
+
+    <label for="contactName">Client Name</label>
+    <input id="contactName" placeholder="Enter client name">
+
+    <label for="contactPhone">WhatsApp Number</label>
+    <input id="contactPhone" placeholder="919876543210" inputmode="numeric">
+
+    <label for="contactProject">Project</label>
+    <select id="contactProject">
+      <option value="newlaunch">New Launch</option>
+      <option value="dosti">Dosti Group</option>
+      <option value="godrej">Godrej Properties</option>
+      <option value="delta">Delta Group</option>
+      <option value="raheja">Raheja Group</option>
+      <option value="paradise">Paradise Group</option>
+      <option value="domus">Domus</option>
+      <option value="platinum">Platinum</option>
+      <option value="piramal">Piramal</option>
+      <option value="today">Today Group</option>
+    </select>
+
+    <label>
+      <input type="checkbox" id="contactConsent">
+      Client has consented to receive WhatsApp messages.
+    </label>
+
+    <button id="addContactButton" onclick="addContact()">Save Contact</button>
+    <div id="contactStatus" class="status"></div>
   </div>
 
   <div class="panel">
-    <h3>Daily Reports</h3>
-    <div id="dailyReportList">Reports will appear here.</div>
-    <button id="refreshReportsButton">Refresh Reports</button>
-  </div>
-
-  <div class="panel">
-    <h3>Message History</h3>
-    <input id="historySearch" placeholder="Search messages">
-    <button id="refreshHistoryButton">Refresh History</button>
+    <h3>Saved Contacts</h3>
+    <input id="contactSearch" placeholder="Search name or phone..." oninput="renderContactsTable()">
 
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Date / Time</th>
-            <th>Number</th>
-            <th>Message</th>
-            <th>Direction</th>
-            <th>Status</th>
+            <th>Sr.</th>
+            <th>Client Name</th>
+            <th>WhatsApp Number</th>
+            <th>Project</th>
+            <th>Consent</th>
+            <th>Action</th>
           </tr>
         </thead>
-        <tbody id="historyTable">
-          <tr><td colspan="5">Loading history...</td></tr>
+        <tbody id="contactTable">
+          <tr><td colspan="6">Loading contacts...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<section class="view" id="templates">
-  <h2>WhatsApp Templates</h2>
+<section class="view" id="reports">
+  <h2>Reports & Message History</h2>
+
+  <div class="cards">
+    <div class="card">Total Messages<h2 id="reportTotal">0</h2></div>
+    <div class="card">Incoming<h2 id="reportIncoming">0</h2></div>
+    <div class="card">Outgoing<h2 id="reportOutgoing">0</h2></div>
+  </div>
+
   <div class="panel">
-    <button id="refreshTemplatesButton">Refresh Templates</button>
-    <div class="status" id="templateStatus">Loading templates...</div>
+    <h3>Historical Message Chart</h3>
+    <canvas id="reportChart" height="220" style="width:100%;display:block"></canvas>
+    <div id="reportStatus" class="status">Reports loading...</div>
+  </div>
+
+  <div class="panel">
+    <h3>Client-wise Message Report</h3>
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>Name</th><th>Language</th><th>Category</th><th>Status</th></tr>
+          <tr>
+            <th>Client Name</th>
+            <th>WhatsApp Number</th>
+            <th>Sent</th>
+            <th>Received</th>
+            <th>YES Replies</th>
+            <th>NO Replies</th>
+          </tr>
         </thead>
-        <tbody id="templateTable"></tbody>
+        <tbody id="clientMessageReport">
+          <tr><td colspan="6">Loading report...</td></tr>
+        </tbody>
       </table>
     </div>
+  </div>
+
+  <div class="panel">
+    <h3>Message History</h3>
+
+    <div class="grid">
+      <div>
+        <label for="historySearch">Search Client / Number</label>
+        <input id="historySearch" placeholder="Name or WhatsApp number..." oninput="renderHistoryTable()">
+      </div>
+
+      <div>
+        <label for="historyLimit">Display Limit</label>
+        <select id="historyLimit" onchange="renderHistoryTable()">
+          <option value="100">100 messages</option>
+          <option value="500">500 messages</option>
+          <option value="1000" selected>1000 messages</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date / Time</th>
+            <th>Client</th>
+            <th>Number</th>
+            <th>Direction</th>
+            <th>Message</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="reportTable">
+          <tr><td colspan="6">No messages loaded yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button onclick="loadMessages()">Refresh History</button>
+    <button onclick="exportMessagesCSV()">Export CSV</button>
+    <div id="historyStatus" class="status"></div>
+  </div>
+</section>
+
+<section class="view" id="templates">
+  <h2>WhatsApp Templates</h2>
+
+  <div class="panel">
+    <h3>Available Templates</h3>
+    <button onclick="loadTemplates()">Refresh Templates</button>
+    <div id="templateList">Templates loading...</div>
   </div>
 </section>
 
@@ -506,902 +841,1166 @@ td, th {
   <h2>API Settings</h2>
 
   <div class="notice">
-    Keep Meta access tokens and app secrets in Cloudflare Worker Secrets.
-    Do not put secrets in this public HTML file.
+    Cloudflare Worker चा पूर्ण HTTPS URL वापरा.
+    API tokens किंवा App Secret सार्वजनिक HTML मध्ये ठेवू नका.
   </div>
 
   <div class="panel">
-    <label for="workerUrl">Cloudflare Worker URL</label>
-    <input id="workerUrl" type="url">
-    <button id="saveWorkerButton">Save Worker URL</button>
-    <button id="checkConnection">Test Connection</button>
-    <div class="status" id="workerStatus">Not checked.</div>
+    <label for="apiUrl">Cloudflare Worker URL</label>
+    <input id="apiUrl" placeholder="https://your-worker.your-subdomain.workers.dev">
+
+    <button id="saveApi" onclick="saveAPISettings()">Save Settings</button>
+    <button id="testApi" onclick="testAPI()">Test API Connection</button>
+
+    <div id="apiStatus" class="status">API connection not tested yet.</div>
   </div>
 
   <div class="panel">
-    <label for="projectSettingsSelect">Project</label>
-    <select id="projectSettingsSelect">
-      <option>New Launch</option>
-      <option>Godrej Properties</option>
-      <option>Delta Group</option>
-      <option>Raheja Group</option>
-      <option>Dosti Group</option>
-      <option>Piramal</option>
-      <option>Paradise Group</option>
-      <option>Domus</option>
-      <option>Platinum</option>
-      <option>Today Group</option>
-    </select>
-
-    <label for="projectWorkerUrl">Project Worker URL (Optional)</label>
-    <input id="projectWorkerUrl" type="url">
-    <button id="saveProjectButton">Save Project Settings</button>
-    <div class="status" id="projectStatus"></div>
+    <h3>Project API Configuration</h3>
+    <p class="small">प्रत्येक project साठी योग्य Worker URL वापरा.</p>
+    <div id="projectSettings"></div>
   </div>
 
   <div class="panel">
-    <h3>API Information</h3>
-    <div class="status" id="apiInfo">API information will appear here.</div>
-    <button id="refreshApiInfoButton">Refresh API Information</button>
-    <button id="reloadAppButton">Reload Dashboard</button>
+    <h3>Data & Sync</h3>
+    <button onclick="syncAll()">Sync Dashboard</button>
+    <button onclick="loadMessages()">Refresh Messages</button>
+    <button onclick="loadReports()">Refresh Reports</button>
+    <div id="settingsStatus" class="status">Ready.</div>
   </div>
 </section>
 
 </main>
 </div>
 
-<div id="toast" role="status" aria-live="polite"></div>
+<div id="toast" role="status"></div>
 
-<script>
-"use strict";
+<script>  
+  const $ = (id) => document.getElementById(id);
 
-const DEFAULT_WORKER_URL =
-  "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
+const PROJECTS = {
+  godrej: {
+    name: "Godrej Properties",
+    url: "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev"
+  },
+  dosti: {
+    name: "Dosti Group",
+    url: "https://dosti-whatsapp-api.amolkolekar100000.workers.dev"
+  }
+};
 
-const $ = (id) => document.getElementById(id);
+let activeProject = localStorage.getItem("ak_active_project") || "godrej";
+let selectedChat = "";
+let allMessages = [];
+let contacts = JSON.parse(localStorage.getItem("ak_contacts") || "[]");
+let unreadPhones = JSON.parse(localStorage.getItem("ak_unread_phones") || "{}");
+let initialMessagesLoaded = false;
+let lastMessageKeys = new Set();
+let currentTemplates = [];
+let currentTemplate = null;
+let currentChatMessages = [];
+let currentSection = "dashboard";
+let refreshTimer = null;
 
-let currentProject = "New Launch";
-let messages = [];
-let templates = [];
-let phoneNumbers = [];
-let localContacts = [];
-let selectedChatNumber = "";
-
-function showToast(message) {
-  const toast = $("toast");
-  if (!toast) return;
-
-  toast.textContent = message;
-  toast.classList.add("show");
-
-  setTimeout(() => toast.classList.remove("show"), 3000);
-}
-
-function setStatus(id, message) {
-  const element = $(id);
-  if (element) element.textContent = message;
+function apiBase() {
+  return (PROJECTS[activeProject]?.url || PROJECTS.godrej.url).replace(/\/+$/, "");
 }
 
 function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#39;"
-  })[char]);
+  }[ch]));
 }
 
 function normalizePhone(value) {
-  return String(value || "").replace(/\D/g, "");
+  let phone = String(value || "").replace(/\D/g, "");
+  if (phone.length === 10) phone = "91" + phone;
+  return phone;
 }
 
-function formatDate(value) {
+function phoneFromMessage(message) {
+  return normalizePhone(
+    message.from || message.phone || message.sender ||
+    message.contact || message.wa_id || message.to || ""
+  );
+}
+
+function messageText(message) {
+  return message.text || message.message || message.body ||
+    message.caption || message.content || message.message_text || "";
+}
+
+function messageTime(message) {
+  const value = message.timestamp || message.created_at ||
+    message.createdAt || message.time || message.date;
   if (!value) return "";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  const date = typeof value === "number"
+    ? new Date(value < 1000000000000 ? value * 1000 : value)
+    : new Date(value);
+  return isNaN(date.getTime()) ? String(value) : date.toLocaleString("en-IN");
 }
 
-function extractArray(data, keys = []) {
-  if (Array.isArray(data)) return data;
+function messageKey(message) {
+  return String(
+    message.id || message.message_id || message.wamid ||
+    [
+      phoneFromMessage(message),
+      message.timestamp || message.created_at || message.time || "",
+      messageText(message),
+      message.direction || message.type || ""
+    ].join("|")
+  );
+}
 
-  for (const key of keys) {
-    if (Array.isArray(data?.[key])) return data[key];
+function isIncoming(message) {
+  const direction = String(
+    message.direction || message.message_type ||
+    message.flow || message.status || ""
+  ).toLowerCase();
+
+  if (message.from_me === true || message.fromMe === true ||
+      message.is_outgoing === true) return false;
+
+  if (["outgoing", "sent", "out", "business_to_user"].includes(direction)) {
+    return false;
   }
 
-  return [];
+  if (["incoming", "received", "in", "user_to_business"].includes(direction)) {
+    return true;
+  }
+
+  return Boolean(message.from || message.sender || message.wa_id) &&
+    !Boolean(message.to && !message.from);
 }
 
-function getWorkerUrl() {
-  return (
-    localStorage.getItem("ak_worker_url") ||
-    DEFAULT_WORKER_URL
-  ).replace(/\/+$/, "");
+function persistUnread() {
+  localStorage.setItem("ak_unread_phones", JSON.stringify(unreadPhones));
 }
 
-function getProjectWorkerUrl(project = currentProject) {
-  return (
-    localStorage.getItem("ak_project_worker_" + project) ||
-    getWorkerUrl()
-  ).replace(/\/+$/, "");
+function setStatus(message, isError = false) {
+  const el = $("apiStatus");
+  if (el) {
+    el.textContent = message;
+    el.style.color = isError ? "#dc2626" : "#15803d";
+  }
 }
 
 async function apiRequest(path, options = {}) {
-  const response = await fetch(getProjectWorkerUrl() + path, {
+  const response = await fetch(apiBase() + path, {
     ...options,
-    headers: { ...(options.headers || {}) }
+    headers: {
+      ...(options.body instanceof FormData ? {} : {
+        "Content-Type": "application/json"
+      }),
+      ...(options.headers || {})
+    }
   });
 
   const raw = await response.text();
-  let data = {};
-
+  let data;
   try {
     data = raw ? JSON.parse(raw) : {};
   } catch {
-    throw new Error("Worker response is not valid JSON.");
+    data = { message: raw };
   }
 
-  if (!response.ok) {
-    throw new Error(data.error || data.message || "HTTP " + response.status);
+  if (!response.ok || data.success === false || data.error) {
+    throw new Error(
+      data.error?.message || data.error ||
+      data.message || `HTTP ${response.status}`
+    );
   }
-
   return data;
 }
 
-/* NAVIGATION */
+function switchSection(section) {
+  currentSection = section;
 
-function showPage(pageId) {
-  document.querySelectorAll(".view").forEach((view) => {
-    view.classList.toggle("active", view.id === pageId);
+  document.querySelectorAll(".page-section, .section").forEach(el => {
+    el.style.display = "none";
   });
 
-  document.querySelectorAll("nav button[data-page]").forEach((button) => {
-    button.classList.toggle("active", button.dataset.page === pageId);
+  const target = $("section-" + section) ||
+    $("page-" + section) || $(section + "Section");
+
+  if (target) target.style.display = "block";
+
+  document.querySelectorAll("[data-section]").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.section === section
+    );
   });
 
-  if (pageId === "dashboard") loadDashboard();
-  if (pageId === "campaigns") loadCampaignData();
-  if (pageId === "inbox") loadChats();
-  if (pageId === "leads") renderLeads();
-  if (pageId === "reports") loadReportsAndHistory();
-  if (pageId === "templates") loadTemplates();
-  if (pageId === "settings") loadSettings();
+  if (section === "live-chat" || section === "liveChat") {
+    loadMessages();
+    renderChats();
+  }
+  if (section === "dashboard") loadDashboard();
+  if (section === "reports") loadReports();
+  if (section === "contacts" || section === "leads") {
+    renderContactsTable();
+  }
+  if (section === "templates") loadTemplates();
 }
 
-document.querySelectorAll("nav button[data-page]").forEach((button) => {
-  button.addEventListener("click", () => showPage(button.dataset.page));
-});
+function switchProject(value) {
+  if (!PROJECTS[value]) return;
+  activeProject = value;
+  localStorage.setItem("ak_active_project", value);
+  selectedChat = "";
+  allMessages = [];
+  currentChatMessages = [];
+  initialMessagesLoaded = false;
+  lastMessageKeys.clear();
 
-$("projectSelect")?.addEventListener("change", (event) => {
-  currentProject = event.target.value || "New Launch";
+  if ($("projectName")) $("projectName").textContent = PROJECTS[value].name;
+  if ($("activeProject")) $("activeProject").value = value;
+
+  renderChats();
   loadDashboard();
-});
-
-$("projectSettingsSelect")?.addEventListener("change", (event) => {
-  currentProject = event.target.value || "New Launch";
-  $("projectSelect").value = currentProject;
-  $("projectWorkerUrl").value =
-    localStorage.getItem("ak_project_worker_" + currentProject) || "";
-});
-
-function getMessagePhone(message) {
-  return normalizePhone(
-    message.wa_id ||
-    message.phone ||
-    message.to ||
-    message.from ||
-    message.recipient ||
-    ""
-  );
+  loadTemplates();
+  loadMessages();
 }
 
-function getMessageTime(message) {
-  return new Date(
-    message.created_at || message.timestamp || message.sent_at || 0
-  ).getTime();
+async function syncAll() {
+  setStatus("Refreshing...");
+  try {
+    await Promise.allSettled([
+      loadDashboard(),
+      loadMessages(),
+      loadTemplates(),
+      loadReports()
+    ]);
+    setStatus("Connected");
+  } catch (error) {
+    setStatus(error.message, true);
+  }
 }
 
-function getMessageText(message) {
-  return message.message || message.text || message.body ||
-    message.caption || "(No message text)";
-}
-
-function isOutgoingMessage(message) {
-  return ["outgoing", "sent", "outbound"].includes(
-    String(message.direction || "").toLowerCase()
-  );
-}
-
-/* LIVE CHAT */
-
-function getChatGroups() {
-  const groups = new Map();
-
-  messages.forEach((message) => {
-    const phone = getMessagePhone(message);
-    if (!phone) return;
-
-    if (!groups.has(phone)) {
-      groups.set(phone, {
-        phone,
-        name: message.name || message.contact_name || phone,
-        messages: [],
-        lastTime: 0
-      });
-    }
-
-    const group = groups.get(phone);
-    group.messages.push(message);
-    group.lastTime = Math.max(group.lastTime, getMessageTime(message));
-    group.name = message.name || message.contact_name || group.name;
-  });
-
-  return Array.from(groups.values())
-    .map((group) => {
-      group.messages.sort((a, b) => getMessageTime(a) - getMessageTime(b));
-      return group;
-    })
-    .sort((a, b) => b.lastTime - a.lastTime);
-}
-
-function renderChatList() {
-  const list = $("chatContacts");
-  if (!list) return;
-
-  const query = ($("chatSearch")?.value || "").toLowerCase();
-  const chats = getChatGroups().filter((chat) =>
-    (chat.name + " " + chat.phone + " " +
-      getMessageText(chat.messages[chat.messages.length - 1]))
-      .toLowerCase().includes(query)
-  );
-
-  if (!chats.length) {
-    list.innerHTML = '<div class="chat-contact">No conversations found.</div>';
+async function enableNotifications() {
+  if (!("Notification" in window)) {
+    alert("या browser मध्ये notifications उपलब्ध नाहीत.");
     return;
   }
 
-  list.innerHTML = chats.map((chat) => {
-    const latest = chat.messages[chat.messages.length - 1];
+  const permission = await Notification.requestPermission();
+  alert(
+    permission === "granted"
+      ? "Notifications enabled."
+      : "Notifications allow केलेले नाहीत."
+  );
+}
+
+function notifyIncoming(phone, message) {
+  if (!("Notification" in window) ||
+      Notification.permission !== "granted") return;
+
+  try {
+    new Notification("New WhatsApp message", {
+      body: `${phone}: ${messageText(message) || "New message received"}`
+    });
+  } catch (error) {
+    console.warn("Notification error:", error);
+  }
+}
+
+/* ---------------- LIVE CHAT ---------------- */
+
+function renderChats() {
+  const list = $("chatList");
+  if (!list) return;
+
+  const latestByPhone = new Map();
+
+  allMessages.forEach(message => {
+    const phone = phoneFromMessage(message);
+    if (!phone) return;
+
+    const previous = latestByPhone.get(phone);
+    const currentTime = new Date(
+      message.timestamp || message.created_at || message.time || 0
+    ).getTime() || 0;
+    const previousTime = previous
+      ? new Date(
+          previous.timestamp || previous.created_at || previous.time || 0
+        ).getTime() || 0
+      : -1;
+
+    if (!previous || currentTime >= previousTime) {
+      latestByPhone.set(phone, message);
+    }
+  });
+
+  contacts.forEach(contact => {
+    const phone = normalizePhone(contact.phone || contact.mobile);
+    if (phone && !latestByPhone.has(phone)) {
+      latestByPhone.set(phone, {
+        from: phone,
+        text: contact.name || "Contact",
+        timestamp: contact.createdAt || ""
+      });
+    }
+  });
+
+  const search = ($("chatSearch")?.value || "").toLowerCase().trim();
+
+  const chats = [...latestByPhone.entries()].filter(([phone, message]) => {
+    const contact = contacts.find(
+      c => normalizePhone(c.phone || c.mobile) === phone
+    );
+    const name = contact?.name || message.name || phone;
+    return `${name} ${phone} ${messageText(message)}`
+      .toLowerCase().includes(search);
+  }).sort((a, b) => {
+    const ta = new Date(
+      a[1].timestamp || a[1].created_at || a[1].time || 0
+    ).getTime() || 0;
+    const tb = new Date(
+      b[1].timestamp || b[1].created_at || b[1].time || 0
+    ).getTime() || 0;
+    return tb - ta;
+  });
+
+  if (!chats.length) {
+    list.innerHTML = '<div class="empty-state">No chats found.</div>';
+    return;
+  }
+
+  list.innerHTML = chats.map(([phone, message]) => {
+    const contact = contacts.find(
+      c => normalizePhone(c.phone || c.mobile) === phone
+    );
+    const name = contact?.name || message.name || phone;
+    const unread = Number(unreadPhones[phone] || 0);
+    const preview = messageText(message) || "Message";
+    const selected = phone === selectedChat;
 
     return `
       <button type="button"
-        class="chat-contact ${chat.phone === selectedChatNumber ? "selected" : ""}"
-        data-chat-phone="${escapeHTML(chat.phone)}">
-        <b>${escapeHTML(chat.name)}</b>
-        <span class="preview-text">${escapeHTML(chat.phone)}</span>
-        <span class="preview-text">${escapeHTML(getMessageText(latest))}</span>
-        <span class="preview-text">${escapeHTML(formatDate(latest.created_at || latest.timestamp))}</span>
+        class="chat-contact ${unread ? "has-unread" : ""} ${selected ? "selected" : ""}"
+        data-phone="${escapeHTML(phone)}"
+        style="width:100%;text-align:left;border:0;cursor:pointer;padding:12px;margin:0 0 6px;border-radius:10px;"
+        onclick="openChat('${escapeHTML(phone)}')">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+          <strong>${escapeHTML(name)}</strong>
+          ${unread ? `<span class="unread-badge">${unread} NEW</span>` : ""}
+        </div>
+        <div style="font-size:12px;opacity:.8;margin-top:4px">
+          ${escapeHTML(phone)}
+        </div>
+        <div style="font-size:13px;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          ${escapeHTML(preview)}
+        </div>
+        <div style="font-size:11px;opacity:.65;margin-top:4px">
+          ${escapeHTML(messageTime(message))}
+        </div>
       </button>`;
   }).join("");
-
-  list.querySelectorAll("[data-chat-phone]").forEach((button) => {
-    button.addEventListener("click", () => selectChat(button.dataset.chatPhone));
-  });
 }
 
-function selectChat(phone) {
-  selectedChatNumber = normalizePhone(phone);
+function openChat(phone) {
+  selectedChat = normalizePhone(phone);
+  unreadPhones[selectedChat] = 0;
+  delete unreadPhones[selectedChat];
+  persistUnread();
 
-  const chat = getChatGroups().find((item) => item.phone === selectedChatNumber);
-  $("chatTitle").textContent = chat
-    ? chat.name + " (" + chat.phone + ")"
-    : selectedChatNumber;
+  const layout = $("chatLayout");
+  if (layout) layout.classList.add("chat-open");
 
-  renderChatList();
-  renderSelectedChat();
+  const main = $("chatMain");
+  if (main) main.style.display = "flex";
+
+  const sidebar = $("chatSidebar");
+  if (sidebar && window.innerWidth <= 700) sidebar.style.display = "none";
+
+  const back = $("backToChats");
+  if (back) back.style.display = "inline-flex";
+
+  const header = $("chatHeader");
+  if (header) header.classList.add("has-chat");
+
+  const title = $("chatContactName");
+  if (title) {
+    const contact = contacts.find(
+      c => normalizePhone(c.phone || c.mobile) === selectedChat
+    );
+    title.textContent = contact?.name || selectedChat;
+  }
+
+  const phoneLabel = $("chatContactPhone");
+  if (phoneLabel) phoneLabel.textContent = selectedChat;
+
+  renderChats();
+  renderChatHistory();
 }
 
-function renderSelectedChat() {
+function showChatList() {
+  selectedChat = "";
+
+  const layout = $("chatLayout");
+  if (layout) layout.classList.remove("chat-open");
+
+  const sidebar = $("chatSidebar");
+  if (sidebar) sidebar.style.display = "";
+
+  const main = $("chatMain");
+  if (main) main.style.display = window.innerWidth <= 700 ? "none" : "flex";
+
+  const back = $("backToChats");
+  if (back) back.style.display = "none";
+
+  const header = $("chatHeader");
+  if (header) header.classList.remove("has-chat");
+
+  const title = $("chatContactName");
+  if (title) title.textContent = "Select a chat";
+
+  const phoneLabel = $("chatContactPhone");
+  if (phoneLabel) phoneLabel.textContent = "";
+
+  renderChats();
+}
+
+/* Mobile browser back: return to chat list, not Dashboard */
+window.addEventListener("popstate", () => {
+  if (selectedChat) showChatList();
+});
+
+function renderChatHistory() {
   const history = $("chatHistory");
   if (!history) return;
 
-  if (!selectedChatNumber) {
-    history.textContent = "Select a conversation to view messages.";
+  if (!selectedChat) {
+    history.innerHTML = '<div class="empty-state">Select a client to view messages.</div>';
     return;
   }
 
-  const chat = getChatGroups().find((item) => item.phone === selectedChatNumber);
+  currentChatMessages = allMessages.filter(
+    message => phoneFromMessage(message) === selectedChat
+  );
 
-  if (!chat) {
-    history.textContent = "No message history found.";
+  if (!currentChatMessages.length) {
+    history.innerHTML = '<div class="empty-state">No message history found.</div>';
     return;
   }
 
-  history.innerHTML = chat.messages.map((message) => `
-    <div class="bubble ${isOutgoingMessage(message) ? "out" : ""}">
-      <div>${escapeHTML(getMessageText(message))}</div>
-      <div class="small">
-        ${escapeHTML(formatDate(message.created_at || message.timestamp))}
-        · ${escapeHTML(message.status || message.direction || "")}
-      </div>
-    </div>
-  `).join("");
+  history.innerHTML = currentChatMessages.map(message => {
+    const incoming = isIncoming(message);
+    const text = messageText(message);
+    const media = message.media_url || message.image_url ||
+      message.file_url || message.url || "";
+
+    return `
+      <div style="display:flex;justify-content:${incoming ? "flex-start" : "flex-end"};margin:8px 0">
+        <div style="max-width:82%;padding:10px 13px;border-radius:12px;background:${incoming ? "#eef2ff" : "#dcfce7"};color:#111827;overflow-wrap:anywhere">
+          ${text ? `<div>${escapeHTML(text)}</div>` : ""}
+          ${media && /^https:\/\//i.test(media)
+            ? `<div style="margin-top:6px"><a href="${escapeHTML(media)}" target="_blank" rel="noopener">Open attachment</a></div>`
+            : ""}
+          <div style="font-size:10px;opacity:.65;margin-top:5px">
+            ${incoming ? "Received" : "Sent"} · ${escapeHTML(messageTime(message))}
+          </div>
+        </div>
+      </div>`;
+  }).join("");
 
   history.scrollTop = history.scrollHeight;
 }
 
-async function loadChats() {
-  setStatus("chatStatus", "Loading conversations...");
-
+async function loadMessages() {
   try {
     const data = await apiRequest("/messages?limit=1000&offset=0");
-    messages = extractArray(data, ["data", "messages"]);
+    const rows = Array.isArray(data)
+      ? data
+      : data.messages || data.data || data.results || [];
 
-    renderChatList();
-    renderSelectedChat();
+    allMessages = rows;
 
-    setStatus("chatStatus",
-      "Conversations: " + getChatGroups().length +
-      " | Messages: " + messages.length
-    );
+    const newKeys = new Set(allMessages.map(messageKey));
+
+    if (initialMessagesLoaded) {
+      allMessages.forEach(message => {
+        const key = messageKey(message);
+        const phone = phoneFromMessage(message);
+
+        if (!lastMessageKeys.has(key) && phone && isIncoming(message)) {
+          if (phone !== selectedChat) {
+            unreadPhones[phone] = Number(unreadPhones[phone] || 0) + 1;
+            notifyIncoming(phone, message);
+          }
+        }
+      });
+      persistUnread();
+    }
+
+    lastMessageKeys = newKeys;
+    initialMessagesLoaded = true;
+
+    renderChats();
+    if (selectedChat) renderChatHistory();
+
+    const count = $("messageCount");
+    if (count) count.textContent = String(allMessages.length);
+
+    const inbox = $("inboxCount");
+    if (inbox) {
+      inbox.textContent = String(allMessages.filter(isIncoming).length);
+    }
+
+    setStatus("Connected");
   } catch (error) {
-    setStatus("chatStatus", "Unable to load chats: " + error.message);
+    console.error("Load messages failed:", error);
+    setStatus("Message load failed: " + error.message, true);
   }
 }
 
-$("chatSearch")?.addEventListener("input", renderChatList);
-$("refreshChatsButton")?.addEventListener("click", loadChats);
+/* ---------------- SEND REPLY / MEDIA ---------------- */
 
-async function sendChatReply() {
-  const text = $("replyText")?.value.trim();
+async function sendReply() {
+  const input = $("replyInput") || $("chatReply");
+  const message = input?.value.trim();
 
-  if (!selectedChatNumber) {
-    showToast("Select a client first.");
+  if (!selectedChat) {
+    alert("आधी Live Chat मधून client निवडा.");
     return;
   }
-
-  if (!text) {
-    showToast("Enter a reply message.");
+  if (!message) {
+    alert("Message लिहा.");
     return;
   }
-
-  const button = $("replyButton");
-  button.disabled = true;
-  setStatus("chatStatus", "Sending reply...");
 
   try {
-    const response = await apiRequest("/send", {
+    await apiRequest("/send", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        to: selectedChatNumber,
-        message: text
+        to: selectedChat,
+        phone: selectedChat,
+        message,
+        text: message
       })
     });
 
-    if (response.success === false) {
-      throw new Error(response.error || "Send failed.");
-    }
-
-    $("replyText").value = "";
-    await loadChats();
-    selectChat(selectedChatNumber);
-    showToast("Request accepted. Check delivery status.");
+    input.value = "";
+    alert("Message request accepted.");
+    await loadMessages();
   } catch (error) {
-    setStatus("chatStatus", "Reply failed: " + error.message);
-    showToast("Reply failed: " + error.message);
-  } finally {
-    button.disabled = false;
+    alert("Send failed: " + error.message);
   }
 }
 
-$("replyButton")?.addEventListener("click", sendChatReply);
+async function sendMedia() {
+  if (!selectedChat) {
+    alert("आधी client निवडा.");
+    return;
+  }
 
-/* CONTACTS */
+  const fileInput = $("mediaFile") || $("replyFile");
+  const captionInput = $("mediaCaption");
+  const file = fileInput?.files?.[0];
 
-function loadLocalContacts() {
+  if (!file) {
+    alert("Photo/PDF file निवडा.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("to", selectedChat);
+  formData.append("phone", selectedChat);
+  formData.append("file", file);
+  if (captionInput?.value) formData.append("caption", captionInput.value);
+
   try {
-    const data = JSON.parse(localStorage.getItem("ak_local_contacts") || "[]");
-    localContacts = Array.isArray(data) ? data : [];
-  } catch {
-    localContacts = [];
-  }
-}
-
-function renderLeads() {
-  const list = $("leadList");
-  if (!list) return;
-
-  const query = ($("leadSearch")?.value || "").toLowerCase();
-  const filtered = localContacts.filter((contact) =>
-    [contact.name, contact.phone, contact.tag].join(" ").toLowerCase().includes(query)
-  );
-
-  list.innerHTML = filtered.length ? filtered.map((contact) => `
-    <div class="number-row">
-      <b>${escapeHTML(contact.name)}</b>
-      <div>${escapeHTML(contact.phone)}</div>
-      <div>${escapeHTML(contact.tag || "")}</div>
-      <button data-delete-contact="${Number(contact.id)}" class="danger">Delete</button>
-    </div>
-  `).join("") : "No contacts found.";
-
-  list.querySelectorAll("[data-delete-contact]").forEach((button) => {
-    button.addEventListener("click", () => {
-      localContacts = localContacts.filter(
-        (item) => Number(item.id) !== Number(button.dataset.deleteContact)
-      );
-      localStorage.setItem("ak_local_contacts", JSON.stringify(localContacts));
-      renderLeads();
+    await apiRequest("/send-media", {
+      method: "POST",
+      body: formData
     });
-  });
-}
 
-$("saveContactButton")?.addEventListener("click", () => {
-  const name = $("leadName").value.trim();
-  const phone = normalizePhone($("leadPhone").value);
-  const tag = $("leadTag").value.trim();
-
-  if (!name || phone.length < 10 || phone.length > 15) {
-    showToast("Enter a name and valid phone number.");
-    return;
-  }
-
-  if (localContacts.some((item) => item.phone === phone)) {
-    showToast("This number is already saved.");
-    return;
-  }
-
-  localContacts.push({ id: Date.now(), name, phone, tag });
-  localStorage.setItem("ak_local_contacts", JSON.stringify(localContacts));
-
-  $("leadName").value = "";
-  $("leadPhone").value = "";
-  $("leadTag").value = "";
-  $("contactCount").textContent = localContacts.length;
-  renderLeads();
-  showToast("Contact saved.");
-});
-
-$("leadSearch")?.addEventListener("input", renderLeads);
-
-$("exportContactsButton")?.addEventListener("click", () => {
-  if (!localContacts.length) {
-    showToast("No contacts to export.");
-    return;
-  }
-
-  const csv = [
-    ["Name", "Phone", "Project"],
-    ...localContacts.map((c) => [c.name, c.phone, c.tag])
-  ].map((row) => row.map((value) =>
-    '"' + String(value ?? "").replace(/"/g, '""') + '"'
-  ).join(",")).join("\r\n");
-
-  const url = URL.createObjectURL(
-    new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" })
-  );
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "ak-properties-contacts.csv";
-  link.click();
-  URL.revokeObjectURL(url);
-});
-
-/* HISTORY AND REPORTS */
-
-function renderHistory() {
-  const table = $("historyTable");
-  if (!table) return;
-
-  const query = ($("historySearch")?.value || "").toLowerCase();
-
-  const filtered = messages.filter((message) =>
-    [
-      getMessagePhone(message),
-      getMessageText(message),
-      message.direction,
-      message.status,
-      message.created_at
-    ].join(" ").toLowerCase().includes(query)
-  );
-
-  table.innerHTML = filtered.length ? filtered.map((message) => `
-    <tr>
-      <td>${escapeHTML(formatDate(message.created_at || message.timestamp))}</td>
-      <td>${escapeHTML(getMessagePhone(message))}</td>
-      <td>${escapeHTML(getMessageText(message))}</td>
-      <td>${escapeHTML(message.direction || "-")}</td>
-      <td>${escapeHTML(message.status || "-")}</td>
-    </tr>
-  `).join("") : '<tr><td colspan="5">No messages found.</td></tr>';
-}
-
-$("historySearch")?.addEventListener("input", renderHistory);
-
-async function loadReportsAndHistory() {
-  await loadDashboard();
-  renderHistory();
-
-  try {
-    const data = await apiRequest("/reports");
-    const totals = data.totals || {};
-
-    $("reportTotal").textContent = totals.totalMessages ?? messages.length;
-    $("reportDelivered").textContent = totals.delivered ?? 0;
-    $("reportRead").textContent = totals.readCount ?? totals.read ?? 0;
-    $("reportFailed").textContent = totals.failed ?? 0;
-
-    const daily = Array.isArray(data.daily) ? data.daily : [];
-    $("dailyReportList").innerHTML = daily.length
-      ? daily.map((item) => `
-          <div class="number-row">
-            <b>${escapeHTML(item.date || item.day || "-")}</b>
-            <div>Messages: ${escapeHTML(item.count ?? item.total ?? 0)}</div>
-          </div>
-        `).join("")
-      : "No daily report data available.";
+    if (fileInput) fileInput.value = "";
+    if (captionInput) captionInput.value = "";
+    alert("Media request accepted by Worker.");
+    await loadMessages();
   } catch (error) {
-    setStatus("dailyReportList", "Report error: " + error.message);
+    alert("Media send failed: " + error.message);
   }
 }
 
-$("refreshReportsButton")?.addEventListener("click", loadReportsAndHistory);
-$("refreshHistoryButton")?.addEventListener("click", async () => {
-  await loadChats();
-  renderHistory();
-});
+/* ---------------- CAMPAIGNS / TEMPLATES ---------------- */
 
-/* TEMPLATES */
+function templateComponents(template) {
+  return template?.components ||
+    template?.template?.components || [];
+}
+
+function findImageHeader(template) {
+  return templateComponents(template).find(component =>
+    String(component.type || "").toUpperCase() === "HEADER" &&
+    String(component.format || "").toUpperCase() === "IMAGE"
+  );
+}
+
+function getRequiredVariableCount(template) {
+  const components = templateComponents(template);
+  const body = components.find(component =>
+    String(component.type || "").toUpperCase() === "BODY"
+  );
+
+  const text = body?.text || "";
+  const matches = [...text.matchAll(/\{\{\s*(\d+)\s*\}\}/g)];
+  const detected = matches.reduce(
+    (max, match) => Math.max(max, Number(match[1])),
+    0
+  );
+
+  if (detected) return detected;
+  if (Number(template?.variableCount) > 0) {
+    return Number(template.variableCount);
+  }
+  if (String(template?.name || "").toLowerCase() === "new_launch_project") {
+    return 11;
+  }
+  return 0;
+}
 
 async function loadTemplates() {
-  setStatus("templateStatus", "Loading templates...");
-
   try {
     const data = await apiRequest("/templates");
-    templates = extractArray(data, ["data", "templates"]);
+    currentTemplates = Array.isArray(data)
+      ? data
+      : data.templates || data.data || [];
 
-    const select = $("campaignTemplate");
-    select.innerHTML = '<option value="">Select approved template</option>';
+    const select = $("campaignTemplate") || $("templateSelect");
+    if (select) {
+      const oldValue = select.value;
+      select.innerHTML = '<option value="">Select Template</option>' +
+        currentTemplates.map((template, index) => `
+          <option value="${index}">
+            ${escapeHTML(template.name || template.id || `Template ${index + 1}`)}
+            ${template.language ? ` (${escapeHTML(template.language)})` : ""}
+          </option>
+        `).join("");
 
-    templates.forEach((template) => {
-      if (template.name) {
-        select.add(new Option(
-          template.name + (template.status ? " (" + template.status + ")" : ""),
-          template.name
-        ));
-      }
-    });
-
-    $("templateTable").innerHTML = templates.length
-      ? templates.map((template) => `
-          <tr>
-            <td>${escapeHTML(template.name || "-")}</td>
-            <td>${escapeHTML(template.language || "-")}</td>
-            <td>${escapeHTML(template.category || "-")}</td>
-            <td>${escapeHTML(template.status || "-")}</td>
-          </tr>
-        `).join("")
-      : '<tr><td colspan="4">No templates found.</td></tr>';
-
-    setStatus("templateStatus", "Templates loaded: " + templates.length);
-  } catch (error) {
-    setStatus("templateStatus", "Template error: " + error.message);
-  }
-}
-
-$("refreshTemplatesButton")?.addEventListener("click", loadTemplates);
-
-function getTemplateVariables() {
-  return Array.from(
-    document.querySelectorAll("#variableFields input[data-variable]")
-  ).sort((a, b) => Number(a.dataset.variable) - Number(b.dataset.variable))
-   .map((input) => input.value.trim());
-}
-
-function renderTemplateVariables() {
-  const container = $("variableFields");
-  container.innerHTML = "";
-
-  const template = templates.find(
-    (item) => item.name === $("campaignTemplate").value
-  );
-
-  if (!template) return;
-
-  let body = "";
-  (template.components || []).forEach((component) => {
-    if (String(component.type).toUpperCase() === "BODY") {
-      body = component.text || "";
+      if (oldValue !== "") select.value = oldValue;
     }
-  });
 
-  const numbers = [...new Set(
-    [...body.matchAll(/\{\{\s*(\d+)\s*\}\}/g)]
-      .map((match) => Number(match[1]))
-  )].sort((a, b) => a - b);
-
-  numbers.forEach((number) => {
-    const label = document.createElement("label");
-    label.textContent = "Variable {{ " + number + " }}";
-
-    const input = document.createElement("input");
-    input.dataset.variable = String(number);
-    input.placeholder = "Enter variable " + number;
-
-    container.append(label, input);
-  });
-
-  if (!numbers.length) {
-    container.textContent = "This template has no body variables.";
-  }
-}
-
-$("campaignTemplate")?.addEventListener("change", renderTemplateVariables);
-
-/* CAMPAIGNS */
-
-async function loadPhoneNumbers() {
-  try {
-    const data = await apiRequest("/phone-numbers");
-    phoneNumbers = extractArray(data, ["data", "phoneNumbers"]);
-
-    $("sendNumber").innerHTML = '<option value="">Select WhatsApp number</option>';
-
-    phoneNumbers.forEach((number) => {
-      const id = number.phoneNumberId || number.id || "";
-      const label = number.displayPhoneNumber || number.verifiedName || id;
-      if (id) $("sendNumber").add(new Option(label, id));
-    });
-
-    $("phoneNumbersList").innerHTML = phoneNumbers.length
-      ? phoneNumbers.map((number) => `
-          <div class="number-row">
-            ${escapeHTML(number.displayPhoneNumber || number.verifiedName || number.id || "-")}
-          </div>
-        `).join("")
-      : "No WhatsApp numbers returned by API.";
+    renderVariables();
+    const status = $("templateStatus");
+    if (status) status.textContent = `${currentTemplates.length} templates loaded`;
   } catch (error) {
-    setStatus("phoneNumbersList", "Could not load numbers: " + error.message);
+    console.error("Templates load failed:", error);
+    const status = $("templateStatus");
+    if (status) status.textContent = "Template load failed: " + error.message;
   }
 }
 
-async function loadCampaignData() {
-  await Promise.allSettled([loadPhoneNumbers(), loadTemplates()]);
+function renderVariables() {
+  const select = $("campaignTemplate") || $("templateSelect");
+  const container = $("templateVariables") || $("variablesContainer");
+  if (!container) return;
+
+  const index = select ? select.value : "";
+  currentTemplate = index !== "" ? currentTemplates[Number(index)] : null;
+
+  if (!currentTemplate) {
+    container.innerHTML = `
+      <label for="headerImageUrl">IMAGE Header URL (HTTPS)</label>
+      <input id="headerImageUrl" type="url" placeholder="https://example.com/image.jpg">
+      <div class="muted">Image-header template असल्यास public HTTPS image URL द्या.</div>
+    `;
+    return;
+  }
+
+  const count = getRequiredVariableCount(currentTemplate);
+  const imageHeader = findImageHeader(currentTemplate);
+
+  let html = "";
+
+  if (imageHeader || true) {
+    html += `
+      <label for="headerImageUrl">
+        IMAGE Header URL ${imageHeader ? "(Required)" : "(If template needs image)"}
+      </label>
+      <input id="headerImageUrl" type="url"
+        placeholder="https://your-public-image-url.jpg">
+      <small>फक्त public HTTPS image URL वापरा. Google Drive share page link चालेलच असे नाही.</small>
+    `;
+  }
+
+  for (let i = 1; i <= count; i++) {
+    html += `
+      <label for="templateVar${i}">Body Variable {{${i}}}</label>
+      <input id="templateVar${i}" type="text"
+        data-template-variable="${i}" placeholder="Variable ${i}" required>
+    `;
+  }
+
+  container.innerHTML = html;
 }
 
-async function sendCampaign(isTest = false) {
-  const templateName = $("campaignTemplate").value;
-  const phoneNumberId = $("sendNumber").value;
-  const consent = $("consent").checked;
-
-  const recipients = [...new Set(
-    $("recipients").value.split(/[\n,;]+/)
-      .map(normalizePhone)
-      .filter((number) => number.length >= 10 && number.length <= 15)
+function getCampaignRecipients() {
+  const input = $("campaignRecipients") || $("campaignPhones") ||
+    $("recipientNumbers");
+  const raw = input?.value || "";
+  return [...new Set(
+    raw.split(/[\n,; \t]+/).map(normalizePhone).filter(Boolean)
   )];
+}
 
-  if (!templateName || !phoneNumberId || !consent || !recipients.length) {
-    showToast("Select template, number, valid recipients and confirm opt-in.");
+async function sendCampaign() {
+  const templateSelect = $("campaignTemplate") || $("templateSelect");
+  const index = templateSelect?.value;
+
+  if (index === undefined || index === "" || !currentTemplates[Number(index)]) {
+    alert("Template निवडा.");
     return;
   }
 
-  const template = templates.find((item) => item.name === templateName);
-  if (!template) {
-    showToast("Template not found. Refresh templates.");
+  const template = currentTemplates[Number(index)];
+  const recipients = getCampaignRecipients();
+
+  if (!recipients.length) {
+    alert("Client phone numbers भरा.");
     return;
   }
 
-  const status = String(template.status || "").toUpperCase();
-  if (status && status !== "APPROVED") {
-    showToast("Only approved templates can be sent.");
+  const imageInput = $("headerImageUrl");
+  const headerImageUrl = imageInput?.value.trim() || "";
+  const imageHeader = findImageHeader(template);
+
+  if (imageHeader && !headerImageUrl) {
+    alert("या template ला IMAGE header आवश्यक आहे. Public HTTPS image URL भरा.");
+    imageInput?.focus();
     return;
   }
 
-  const variables = getTemplateVariables();
-  if (variables.some((value) => !value)) {
-    showToast("Fill all template variables.");
+  if (headerImageUrl && !/^https:\/\/\S+/i.test(headerImageUrl)) {
+    alert("Image URL https:// ने सुरू होणारा असावा.");
+    imageInput?.focus();
     return;
   }
 
-  const targets = isTest ? recipients.slice(0, 1) : recipients;
-  const button = $(isTest ? "sendTestButton" : "startCampaignButton");
-  button.disabled = true;
+  const variableCount = getRequiredVariableCount(template);
+  const variables = [];
+
+  for (let i = 1; i <= variableCount; i++) {
+    const input = $(`templateVar${i}`);
+    const value = input?.value.trim() || "";
+
+    if (!value) {
+      alert(`Template Variable {{${i}}} भरा.`);
+      input?.focus();
+      return;
+    }
+    variables.push(value);
+  }
+
+  const button = $("sendCampaignButton") || $("sendCampaignBtn");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Sending...";
+  }
 
   let sent = 0;
-  let failed = 0;
-  const results = [];
+  const errors = [];
 
   try {
-    for (let i = 0; i < targets.length; i++) {
-      const to = targets[i];
+    for (const phone of recipients) {
+      const payload = {
+        to: phone,
+        phone,
+        templateName: template.name,
+        template_name: template.name,
+        name: template.name,
+        language: template.language || "en",
+        variables,
+        bodyVariables: variables,
+        components: variables.length
+          ? [{
+              type: "body",
+              parameters: variables.map(text => ({
+                type: "text",
+                text
+              }))
+            }]
+          : []
+      };
 
-      try {
-        const response = await apiRequest("/send-template", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            to,
-            templateName,
-            language: template.language || "en",
-            variables,
-            phoneNumberId
-          })
-        });
-
-        if (response.success === false) {
-          throw new Error(response.error || "Send failed.");
-        }
-
-        sent++;
-        results.push(to + " — API accepted");
-      } catch (error) {
-        failed++;
-        results.push(to + " — FAILED: " + error.message);
+      if (headerImageUrl) {
+        payload.headerImageUrl = headerImageUrl;
+        payload.header_image_url = headerImageUrl;
+        payload.imageUrl = headerImageUrl;
       }
 
-      setStatus("campaignStatus",
-        "Progress: " + (i + 1) + "/" + targets.length +
-        " | Accepted: " + sent + " | Failed: " + failed
-      );
-
-      $("sendResult").textContent = results.join("\n");
+      try {
+        await apiRequest("/send-template", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+        sent++;
+      } catch (error) {
+        errors.push(`${phone} — ${error.message}`);
+      }
     }
 
-    showToast("Campaign finished. Accepted: " + sent + ", failed: " + failed);
-    await loadDashboard();
+    const result = $("campaignResult") || $("campaignStatus");
+    if (result) {
+      result.textContent = `Sent requests: ${sent}/${recipients.length}` +
+        (errors.length ? ` | Failed: ${errors.length}` : "");
+    }
+
+    alert(
+      `Campaign result\nAccepted: ${sent}\nFailed: ${errors.length}` +
+      (errors.length ? `\n\n${errors.slice(0, 5).join("\n")}` : "")
+    );
+    await loadMessages();
+    await loadReports();
   } finally {
-    button.disabled = false;
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Send Campaign";
+    }
   }
 }
 
-$("sendTestButton")?.addEventListener("click", () => sendCampaign(true));
-$("startCampaignButton")?.addEventListener("click", () => sendCampaign(false));
+/* ---------------- CONTACTS ---------------- */
 
-/* SETTINGS */
+function addContact() {
+  const name = $("contactName")?.value.trim() || "";
+  const phone = normalizePhone(
+    $("contactPhone")?.value || $("contactMobile")?.value || ""
+  );
 
-$("saveWorkerButton")?.addEventListener("click", () => {
-  const value = $("workerUrl").value.trim();
-
-  try {
-    const url = new URL(value);
-    if (url.protocol !== "https:") throw new Error();
-  } catch {
-    showToast("Enter a valid HTTPS Worker URL.");
+  if (!phone) {
+    alert("Valid phone number भरा.");
     return;
   }
 
-  localStorage.setItem("ak_worker_url", value.replace(/\/+$/, ""));
-  showToast("Worker URL saved.");
-});
-
-$("saveProjectButton")?.addEventListener("click", () => {
-  const project = $("projectSettingsSelect").value;
-  const value = $("projectWorkerUrl").value.trim();
-  const key = "ak_project_worker_" + project;
-
-  if (!value) {
-    localStorage.removeItem(key);
-    showToast("Project will use the main Worker URL.");
+  if (contacts.some(contact =>
+    normalizePhone(contact.phone || contact.mobile) === phone
+  )) {
+    alert("हा contact आधीपासून आहे.");
     return;
   }
 
-  try {
-    const url = new URL(value);
-    if (url.protocol !== "https:") throw new Error();
-  } catch {
-    showToast("Enter a valid HTTPS URL.");
-    return;
-  }
+  contacts.push({
+    id: Date.now(),
+    name: name || phone,
+    phone,
+    createdAt: new Date().toISOString()
+  });
 
-  localStorage.setItem(key, value.replace(/\/+$/, ""));
-  showToast("Project Worker URL saved.");
-});
+  localStorage.setItem("ak_contacts", JSON.stringify(contacts));
 
-async function testWorkerConnection() {
-  setStatus("connectionStatus", "Checking Worker...");
-  try {
-    const data = await apiRequest("/health");
-    setStatus("connectionStatus", "API ACTIVE");
-    setStatus("workerStatus", JSON.stringify(data, null, 2));
-    setStatus("apiInfo", JSON.stringify(data, null, 2));
-  } catch (error) {
-    setStatus("connectionStatus", "API CONNECTION FAILED");
-    setStatus("workerStatus", error.message);
-    setStatus("apiInfo", error.message);
-  }
+  if ($("contactName")) $("contactName").value = "";
+  if ($("contactPhone")) $("contactPhone").value = "";
+  if ($("contactMobile")) $("contactMobile").value = "";
+
+  renderContactsTable();
+  renderChats();
 }
 
-$("testWorkerButton")?.addEventListener("click", testWorkerConnection);
-$("checkConnection")?.addEventListener("click", testWorkerConnection);
-$("refreshApiInfoButton")?.addEventListener("click", testWorkerConnection);
-$("refreshDashboard")?.addEventListener("click", loadDashboard);
-$("reloadAppButton")?.addEventListener("click", () => location.reload());
+function renderContactsTable() {
+  const tbody = $("contactTable") || $("contactsTable") ||
+    $("leadTable") || $("leadsTable");
+  if (!tbody) return;
 
-/* DASHBOARD */
+  if (!contacts.length) {
+    tbody.innerHTML = '<tr><td colspan="4">No contacts added.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = contacts.map(contact => `
+    <tr>
+      <td>${escapeHTML(contact.name || "")}</td>
+      <td>${escapeHTML(contact.phone || contact.mobile || "")}</td>
+      <td>${escapeHTML(contact.createdAt || "")}</td>
+      <td>
+        <button type="button" onclick="deleteContact('${escapeHTML(contact.id)}')">
+          Delete
+        </button>
+      </td>
+    </tr>
+  `).join("");
+
+  const count = $("leadCount") || $("totalLeads");
+  if (count) count.textContent = String(contacts.length);
+}
+
+function deleteContact(id) {
+  contacts = contacts.filter(contact => String(contact.id) !== String(id));
+  localStorage.setItem("ak_contacts", JSON.stringify(contacts));
+  renderContactsTable();
+  renderChats();
+}
+
+/* ---------------- DASHBOARD / REPORTS ---------------- */
 
 async function loadDashboard() {
-  setStatus("dashStatus", "Loading dashboard data...");
-
   try {
-    const results = await Promise.allSettled([
-      apiRequest("/reports"),
-      apiRequest("/messages?limit=1000&offset=0")
-    ]);
+    const data = await apiRequest("/health");
+    const status = $("apiStatus");
+    if (status) status.textContent = "API ACTIVE";
 
-    const report = results[0].status === "fulfilled" ? results[0].value : {};
-    const messageData = results[1].status === "fulfilled" ? results[1].value : {};
+    const apiState = $("apiState");
+    if (apiState) apiState.textContent = "ACTIVE";
 
-    if (results[1].status === "fulfilled") {
-      messages = extractArray(messageData, ["data", "messages"]);
+    const totalLeads = $("totalLeads") || $("leadCount");
+    if (totalLeads) totalLeads.textContent = String(contacts.length);
+
+    const sentCount = $("messagesSent") || $("sentCount");
+    if (sentCount) {
+      sentCount.textContent = String(
+        allMessages.filter(message => !isIncoming(message)).length
+      );
     }
 
-    const incoming = messages.filter((m) =>
-      String(m.direction || "").toLowerCase() === "incoming"
-    ).length;
+    const inboxCount = $("inboxCount");
+    if (inboxCount) {
+      inboxCount.textContent = String(
+        allMessages.filter(isIncoming).length
+      );
+    }
 
-    const outgoing = messages.filter(isOutgoingMessage).length;
-    const totals = report.totals || {};
+    const campaignCount = $("campaignCount");
+    if (campaignCount) {
+      campaignCount.textContent = localStorage.getItem("ak_campaign_count") || "0";
+    }
 
-    $("total").textContent = totals.totalMessages ?? messages.length;
-    $("incomingCount").textContent = totals.incoming ?? incoming;
-    $("outgoingCount").textContent = totals.outgoing ?? outgoing;
-    $("contactCount").textContent = localContacts.length;
-
-    const daily = Array.isArray(report.daily) ? report.daily : [];
-    $("dailyReports").innerHTML = daily.length
-      ? daily.map((item) => `
-          <div class="number-row">
-            <b>${escapeHTML(item.date || item.day || "-")}</b>
-            <div>Messages: ${escapeHTML(item.count ?? item.total ?? 0)}</div>
-          </div>
-        `).join("")
-      : "No daily report data available.";
-
-    renderHistory();
-    renderChatList();
-    renderSelectedChat();
-
-    const errors = results.filter((r) => r.status === "rejected");
-    setStatus("connectionStatus", errors.length ? "API PARTIALLY AVAILABLE" : "API ACTIVE");
-    setStatus("dashStatus", errors.length
-      ? "Some API requests failed. Check API settings."
-      : "Dashboard updated successfully.");
+    renderChart();
   } catch (error) {
-    setStatus("dashStatus", "Dashboard error: " + error.message);
-    setStatus("connectionStatus", "API CONNECTION FAILED");
+    setStatus("API error: " + error.message, true);
   }
 }
 
-async function loadSettings() {
-  $("workerUrl").value = getWorkerUrl();
-  $("projectWorkerUrl").value =
-    localStorage.getItem("ak_project_worker_" + currentProject) || "";
+async function loadReports() {
+  try {
+    const data = await apiRequest("/reports");
+    const rows = Array.isArray(data)
+      ? data
+      : data.reports || data.messages || data.data || [];
+
+    renderHistoryTable(rows);
+    renderChart(rows);
+  } catch (error) {
+    console.warn("Reports endpoint unavailable:", error.message);
+    renderHistoryTable(allMessages);
+    renderChart(allMessages);
+  }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  loadLocalContacts();
-  renderLeads();
+function renderHistoryTable(rows = allMessages) {
+  const tbody = $("reportTable") || $("historyTable") ||
+    $("clientMessageReport");
+  if (!tbody) return;
 
-  await Promise.allSettled([
-    loadDashboard(),
-    loadPhoneNumbers(),
-    loadTemplates()
-  ]);
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="5">No message history available.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.slice(0, 300).map(message => {
+    const phone = phoneFromMessage(message);
+    const incoming = isIncoming(message);
+    return `
+      <tr>
+        <td>${escapeHTML(messageTime(message))}</td>
+        <td>${escapeHTML(phone)}</td>
+        <td>${escapeHTML(incoming ? "Received" : "Sent")}</td>
+        <td>${escapeHTML(messageText(message))}</td>
+        <td>${escapeHTML(message.status || message.delivery_status || "—")}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function exportMessagesCSV() {
+  const rows = [
+    ["Date", "Phone", "Direction", "Message", "Status"],
+    ...allMessages.map(message => [
+      messageTime(message),
+      phoneFromMessage(message),
+      isIncoming(message) ? "Received" : "Sent",
+      messageText(message),
+      message.status || message.delivery_status || ""
+    ])
+  ];
+
+  const csv = rows.map(row =>
+    row.map(value => `"${String(value ?? "").replace(/"/g, '""')}"`).join(",")
+  ).join("\r\n");
+
+  const blob = new Blob(["\uFEFF" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "ak-properties-message-report.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderChart(rows = allMessages) {
+  ["liveChart", "reportChart"].forEach(id => {
+    const canvas = $(id);
+    if (!canvas || typeof canvas.getContext !== "function") return;
+
+    const ctx = canvas.getContext("2d");
+    const width = canvas.clientWidth || 500;
+    const height = canvas.clientHeight || 220;
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const incoming = rows.filter(isIncoming).length;
+    const outgoing = rows.length - incoming;
+    const maxValue = Math.max(incoming, outgoing, 1);
+    const padding = 30;
+    const chartHeight = height - padding * 2;
+    const barWidth = Math.min(70, (width - padding * 3) / 2);
+
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#64748b";
+    ctx.fillText("Received", padding, height - 8);
+    ctx.fillText("Sent", padding + barWidth + 45, height - 8);
+
+    ctx.fillStyle = "#2563eb";
+    const h1 = incoming / maxValue * chartHeight;
+    ctx.fillRect(padding, height - padding - h1, barWidth, h1);
+
+    ctx.fillStyle = "#16a34a";
+    const x2 = padding + barWidth + 45;
+    const h2 = outgoing / maxValue * chartHeight;
+    ctx.fillRect(x2, height - padding - h2, barWidth, h2);
+
+    ctx.fillStyle = "#111827";
+    ctx.fillText(String(incoming), padding, Math.max(14, height - padding - h1 - 6));
+    ctx.fillText(String(outgoing), x2, Math.max(14, height - padding - h2 - 6));
+  });
+}
+
+/* ---------------- SETTINGS ---------------- */
+
+function saveAPISettings() {
+  const urlInput = $("apiUrl") || $("workerUrl");
+  const url = urlInput?.value.trim();
+
+  if (!url) {
+    alert("Worker URL भरा.");
+    return;
+  }
+
+  if (!/^https:\/\/\S+/i.test(url)) {
+    alert("Worker URL https:// ने सुरू होणे आवश्यक आहे.");
+    return;
+  }
+
+  PROJECTS[activeProject].url = url.replace(/\/+$/, "");
+  localStorage.setItem("ak_api_url_" + activeProject, PROJECTS[activeProject].url);
+
+  alert("API URL saved.");
+  testAPI();
+}
+
+async function testAPI() {
+  try {
+    await apiRequest("/health");
+    setStatus("API ACTIVE");
+    alert("API connection successful.");
+  } catch (error) {
+    setStatus("API connection failed", true);
+    alert("API test failed: " + error.message);
+  }
+}
+
+function applySavedURLs() {
+  Object.keys(PROJECTS).forEach(key => {
+    const saved = localStorage.getItem("ak_api_url_" + key);
+    if (saved && /^https:\/\//i.test(saved)) {
+      PROJECTS[key].url = saved;
+    }
+  });
+}
+
+/* ---------------- INITIALIZE ---------------- */
+
+document.addEventListener("DOMContentLoaded", () => {
+  applySavedURLs();
+
+  const projectSelect = $("activeProject");
+  if (projectSelect) {
+    projectSelect.value = activeProject;
+    projectSelect.addEventListener("change", event => {
+      switchProject(event.target.value);
+    });
+  }
+
+  document.querySelectorAll("[data-section]").forEach(button => {
+    button.addEventListener("click", () => {
+      switchSection(button.dataset.section);
+    });
+  });
+
+  const chatSearch = $("chatSearch");
+  if (chatSearch) {
+    chatSearch.addEventListener("input", renderChats);
+  }
+
+  const templateSelect = $("campaignTemplate") || $("templateSelect");
+  if (templateSelect) {
+    templateSelect.addEventListener("change", renderVariables);
+  }
+
+  const backButton = $("backToChats");
+  if (backButton) {
+    backButton.addEventListener("click", showChatList);
+  }
+
+  const sendReplyButton = $("sendReplyButton") || $("sendReplyBtn");
+  if (sendReplyButton) {
+    sendReplyButton.addEventListener("click", sendReply);
+  }
+
+  const sendMediaButton = $("sendMediaButton") || $("sendMediaBtn");
+  if (sendMediaButton) {
+    sendMediaButton.addEventListener("click", sendMedia);
+  }
+
+  renderContactsTable();
+  renderChats();
+  loadDashboard();
+  loadTemplates();
+  loadMessages();
+
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(() => {
+    if (document.visibilityState === "visible") loadMessages();
+  }, 15000);
 });
 
-let chatRefreshBusy = false;
-setInterval(async () => {
-  if ($("inbox")?.classList.contains("active") && !chatRefreshBusy) {
-    chatRefreshBusy = true;
-    try {
-      await loadChats();
-    } finally {
-      chatRefreshBusy = false;
-    }
-  }
-}, 15000);
+window.addEventListener("resize", () => {
+  const layout = $("chatLayout");
+  if (!layout) return;
 
+  const sidebar = $("chatSidebar");
+  const main = $("chatMain");
+
+  if (window.innerWidth > 700) {
+    if (sidebar) sidebar.style.display = "";
+    if (main) main.style.display = "flex";
+  } else if (selectedChat) {
+    if (sidebar) sidebar.style.display = "none";
+    if (main) main.style.display = "flex";
+  } else {
+    if (sidebar) sidebar.style.display = "";
+    if (main) main.style.display = "none";
+  }
+});
 </script>
 </body>
 </html>
