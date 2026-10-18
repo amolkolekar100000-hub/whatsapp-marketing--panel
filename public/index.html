@@ -298,7 +298,8 @@ td,th{
  .layout{display:block}
  nav{width:100%;display:flex;overflow:auto}
  nav button{min-width:max-content;width:auto}
- main{padding:10px}
+ main{padding:10px} 
+  main{padding:10px}
  .grid{grid-template-columns:1fr}
  .chat-layout{
   grid-template-columns:1fr;
@@ -412,8 +413,9 @@ td,th{
   <div id="campaignStatus" class="status">Choose a project and sync templates.</div>
   <pre id="sendResult"></pre>
  </div>
-</section> 
- <section class="view" id="inbox">
+</section>
+
+<section class="view" id="inbox">
  <h2>Live Chat / WhatsApp Inbox</h2>
 
  <div class="chat-layout">
@@ -440,173 +442,58 @@ td,th{
    </div>
 
    <div class="chat-reply">
-    <label for="replyText">Reply Message</label>
-    <textarea id="replyText"
-     placeholder="Type your reply..."></textarea>
-
     <div class="chat-attachment-row">
-     <label for="replyFile">Attach Photo / PDF / Document</label>
-     <input type="file" id="replyFile"
-      accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
+     <input type="file" id="replyFile" accept="image/jpeg,image/png,image/webp,application/pdf">
     </div>
-
-    <button id="replyButton" onclick="sendReply()">
-     Send Reply
-    </button>
-
-    <button id="mediaButton" onclick="sendMedia()">
-     Send Photo / PDF
-    </button>
-
-    <div id="replyStatus" class="status">
-     Select a client first.
-    </div>
+    <textarea id="replyText" placeholder="Type a reply..."></textarea>
+    <button id="replyButton" onclick="sendReply()">Send Reply</button>
+    <div id="chatStatus" class="small"></div>
    </div>
   </div>
  </div>
-</section>
-
-<section class="view" id="leads">
+</section> 
+ <section class="view" id="leads">
  <h2>CRM / Contacts</h2>
-
  <div class="panel">
-  <h3>Add New Contact</h3>
+  <label>Client Name</label>
+  <input id="leadName" placeholder="Client name">
 
-  <label for="contactName">Client Name</label>
-  <input id="contactName" placeholder="Enter client name">
+  <label>WhatsApp Number</label>
+  <input id="leadPhone" placeholder="919876543210">
 
-  <label for="contactPhone">WhatsApp Number</label>
-  <input id="contactPhone" placeholder="919876543210"
-   inputmode="numeric">
+  <label>Project / Tag</label>
+  <input id="leadTag" placeholder="Godrej, Raheja, etc.">
 
-  <label for="contactProject">Project</label>
-  <select id="contactProject">
-   <option value="newlaunch">New Launch</option>
-   <option value="dosti">Dosti Group</option>
-   <option value="godrej">Godrej Properties</option>
-   <option value="delta">Delta Group</option>
-   <option value="raheja">Raheja Group</option>
-   <option value="paradise">Paradise Group</option>
-   <option value="domus">Domus</option>
-   <option value="platinum">Platinum</option>
-   <option value="piramal">Piramal</option>
-  </select>
-
-  <label>
-   <input type="checkbox" id="contactConsent">
-   Client has consented to receive WhatsApp messages.
-  </label>
-
-  <button id="addContactButton" onclick="addContact()">
-   Save Contact
-  </button>
-
-  <div id="contactStatus" class="status"></div>
+  <button onclick="addLead()">Save Contact</button>
+  <div id="leadStatus" class="status"></div>
  </div>
 
  <div class="panel">
-  <h3>Saved Contacts</h3>
-
-  <input id="contactSearch"
-   placeholder="Search name or phone..."
-   oninput="renderContactsTable()">
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Sr.</th>
-      <th>Client Name</th>
-      <th>WhatsApp Number</th>
-      <th>Project</th>
-      <th>Consent</th>
-      <th>Action</th>
-     </tr>
-    </thead>
-    <tbody id="contactTable">
-     <tr>
-      <td colspan="6">Loading contacts...</td>
-     </tr>
-    </tbody>
-   </table>
-  </div>
+  <label>Search Contacts</label>
+  <input id="leadSearch" placeholder="Search name or number..."
+   oninput="renderLeads()">
+  <div id="leadList">Loading contacts...</div>
  </div>
 </section>
 
 <section class="view" id="reports">
  <h2>Reports & Message History</h2>
 
- <div class="cards">
-  <div class="card">
-   Total Messages
-   <h2 id="reportTotal">0</h2>
-  </div>
-
-  <div class="card">
-   Incoming
-   <h2 id="reportIncoming">0</h2>
-  </div>
-
-  <div class="card">
-   Outgoing
-   <h2 id="reportOutgoing">0</h2>
-  </div>
+ <div class="panel">
+  <button onclick="loadReports()">Refresh Reports</button>
+  <div id="reportSummary">Loading reports...</div>
  </div>
 
  <div class="panel">
-  <h3>Historical Message Chart</h3>
-  <canvas id="reportChart"
-   height="220" style="width:100%;display:block"></canvas>
-  <div id="reportStatus" class="status">
-   Reports loading...
-  </div>
+  <h3>Daily Messages</h3>
+  <div id="dailyReports"></div>
  </div>
 
  <div class="panel">
-  <h3>Client-wise Message Report</h3>
-
-  <div class="table-wrap">
-   <table>
-    <thead>
-     <tr>
-      <th>Client Name</th>
-      <th>WhatsApp Number</th>
-      <th>Sent</th>
-      <th>Received</th>
-      <th>YES Replies</th>
-      <th>NO Replies</th>
-     </tr>
-    </thead>
-
-    <tbody id="clientMessageReport">
-     <tr>
-      <td colspan="6">Loading report...</td>
-     </tr>
-    </tbody>
-   </table>
-  </div>
- </div>
-
- <div class="panel">
-  <h3>Message History</h3>
-
-  <div class="grid">
-   <div>
-    <label for="historySearch">Search Client / Number</label>
-    <input id="historySearch"
-     placeholder="Name or WhatsApp number..."
-     oninput="renderHistoryTable()">
-   </div>
-
-   <div>
-    <label for="historyLimit">Display Limit</label>
-    <select id="historyLimit" onchange="loadMessages()">
-     <option value="100">100 messages</option>
-     <option value="500">500 messages</option>
-     <option value="1000" selected>1000 messages</option>
-    </select>
-   </div>
-  </div>
+  <h3>All Saved Messages</h3>
+  <label>Search by client, number or message</label>
+  <input id="historySearch" placeholder="Search messages..."
+   oninput="renderHistory()">
 
   <div class="table-wrap">
    <table>
@@ -620,85 +507,62 @@ td,th{
       <th>Status</th>
      </tr>
     </thead>
-
-    <tbody id="reportTable">
-     <tr>
-      <td colspan="6">No messages loaded yet.</td>
-     </tr>
+    <tbody id="historyTable">
+     <tr><td colspan="6">Loading...</td></tr>
     </tbody>
    </table>
   </div>
 
-  <button onclick="loadMessages()">Refresh History</button>
+  <button onclick="loadMessages()">Refresh Message History</button>
   <div id="historyStatus" class="status"></div>
  </div>
 </section>
 
 <section class="view" id="templates">
- <h2>WhatsApp Templates</h2>
-
+ <h2>Approved WhatsApp Templates</h2>
  <div class="panel">
-  <h3>Available Templates</h3>
-
-  <button onclick="loadTemplates()">
-   Refresh Templates
-  </button>
-
-  <div id="templateList">
-   Templates loading...
-  </div>
+  <button onclick="loadTemplates()">Refresh Templates</button>
+  <div id="templateList">Loading templates...</div>
  </div>
 </section>
 
 <section class="view" id="settings">
  <h2>API Settings</h2>
 
- <div class="notice">
-  Worker URL सेट करताना Cloudflare Dashboard मधील
-  पूर्ण HTTPS URL वापरा. API tokens सार्वजनिकपणे share करू नका.
+ <div class="panel">
+  <label>Cloudflare Worker URL</label>
+  <input id="workerUrl"
+   placeholder="https://your-worker.workers.dev">
+
+  <button onclick="saveSettings()">Save Worker URL</button>
+  <button onclick="testConnection()">Test API</button>
+  <div id="settingsStatus" class="status"></div>
  </div>
 
  <div class="panel">
-  <label for="apiUrl">Cloudflare Worker URL</label>
-  <input id="apiUrl"
-   placeholder="https://your-worker.your-subdomain.workers.dev">
-
-  <button id="saveApi" onclick="saveAPISettings()">
-   Save Settings
-  </button>
-
-  <button id="testApi" onclick="testAPI()">
-   Test API Connection
-  </button>
-
-  <div id="apiStatus" class="status">
-   API connection not tested yet.
-  </div>
- </div>
-
- <div class="panel">
-  <h3>Project API Configuration</h3>
-
+  <h3>Project Worker URLs</h3>
   <p class="small">
-   प्रत्येक project साठी योग्य Worker URL आणि WhatsApp
-   account configuration वापरा.
+   प्रत्येक project साठी त्या project चा योग्य Worker URL सेट करा.
   </p>
+  <label>Project</label>
+  <select id="projectSettingsSelect">
+   <option value="newlaunch">New Launch</option>
+   <option value="dosti">Dosti Group</option>
+   <option value="godrej">Godrej Properties</option>
+   <option value="delta">Delta Group</option>
+   <option value="raheja">Raheja Group</option>
+   <option value="paradise">Paradise Group</option>
+   <option value="domus">Domus</option>
+   <option value="platinum">Platinum</option>
+   <option value="piramal">Piramal</option>
+  </select>
 
-  <div id="projectSettings"></div>
- </div>
+  <label>Worker URL</label>
+  <input id="projectWorkerUrl"
+   placeholder="https://project-worker.workers.dev">
 
- <div class="panel">
-  <h3>Data & Sync</h3>
-
-  <button onclick="syncAll()">Sync Dashboard</button>
-
-  <button onclick="loadMessages()">Refresh Messages</button>
-
-  <button onclick="loadReports()">Refresh Reports</button>
-
-  <div id="settingsStatus" class="status">
-   Ready.
-  </div>
+  <button onclick="saveProjectURL()">Save Project URL</button>
+  <div id="projectSettingsStatus" class="status"></div>
  </div>
 </section>
 
@@ -707,129 +571,184 @@ td,th{
 
 <div id="toast" role="status"></div>
 
-<script> 
- 
-/* ==========================================
-   AK PROPERTIES WHATSAPP DASHBOARD
-   PART 3 - CORE JAVASCRIPT
-========================================== */
+<script>
+/* PART 3 — Core setup */
 
 const $ = id => document.getElementById(id);
 
-const DEFAULT_PROJECT = "newlaunch";
+const DEFAULT_WORKER_URL =
+ "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
 
-const PROJECTS = {
+const PROJECT_NAMES = {
  newlaunch: "New Launch",
- godrej: "Godrej Properties",
  dosti: "Dosti Group",
+ godrej: "Godrej Properties",
  delta: "Delta Group",
  raheja: "Raheja Group",
  paradise: "Paradise Group",
  domus: "Domus",
  platinum: "Platinum",
- piramal: "Piramal",
- today: "Today Group"
+ piramal: "Piramal"
 };
 
-let activeProject = DEFAULT_PROJECT;
-let selectedChat = "";
-
+let activeProject = "newlaunch";
+let projectURLs = {};
 let messages = [];
 let leads = [];
 let templates = [];
 let phoneNumbers = [];
-let reports = [];
-
-let projectUrls = {};
+let dailyReports = [];
+let selectedChat = "";
 let polling = false;
+let refreshTimer = null;
+let lastReadByChat = {};
 
-/* ---------- LOCAL STORAGE ---------- */
+function escapeHTML(value) {
+ return String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+ })[c]);
+}
 
-function loadLocalData() {
+function normalizePhone(value) {
+ return String(value ?? "").replace(/\D/g, "");
+}
+
+function getPhone(message) {
+ return String(
+  message.wa_id ??
+  message.phone ??
+  message.phone_number ??
+  message.from ??
+  message.to ??
+  ""
+ );
+}
+
+function getText(message) {
+ return String(
+  message.message ??
+  message.text ??
+  message.body ??
+  message.content ??
+  ""
+ );
+}
+
+function getDirection(message) {
+ const direction = String(message.direction ?? "").toLowerCase();
+ return direction === "outgoing" || direction === "out"
+  ? "outgoing"
+  : "incoming";
+}
+
+function getTime(message) {
+ return message.timestamp || message.created_at || "";
+}
+
+function formatDate(value) {
+ if (!value) return "-";
+ const date = new Date(value);
+ if (Number.isNaN(date.getTime())) return String(value);
+
+ return date.toLocaleString("en-IN", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit"
+ });
+}
+
+function showToast(text, error = false) {
+ const toast = $("toast");
+ if (!toast) return;
+
+ toast.textContent = text;
+ toast.style.display = "block";
+ toast.style.background = error ? "#b42318" : "#075e54";
+
+ setTimeout(() => {
+  toast.style.display = "none";
+ }, 3500);
+}
+
+function setStatus(id, text, error = false) {
+ const el = $(id);
+ if (!el) return;
+ el.textContent = text;
+ el.style.color = error ? "#b42318" : "";
+} 
+ /* =====================================
+   PART 4 — PROJECT SETTINGS & API
+===================================== */
+
+function loadSettings() {
  try {
-  projectUrls = JSON.parse(
+  projectURLs = JSON.parse(
    localStorage.getItem("ak_project_urls") || "{}"
   );
  } catch {
-  projectUrls = {};
+  projectURLs = {};
  }
 
  try {
   leads = JSON.parse(
    localStorage.getItem("ak_leads") || "[]"
   );
-
   if (!Array.isArray(leads)) leads = [];
  } catch {
   leads = [];
  }
 
  activeProject =
-  localStorage.getItem("ak_active_project") ||
-  DEFAULT_PROJECT;
+  localStorage.getItem("ak_active_project") || "newlaunch";
 
- if (!PROJECTS[activeProject]) {
-  activeProject = DEFAULT_PROJECT;
+ if (!PROJECT_NAMES[activeProject]) {
+  activeProject = "newlaunch";
  }
 
- if (!projectUrls.newlaunch) {
-  projectUrls.newlaunch =
-   "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
+ if (!projectURLs.newlaunch) {
+  projectURLs.newlaunch = DEFAULT_WORKER_URL;
  }
 
- if (!projectUrls.dosti) {
-  projectUrls.dosti =
-   "https://dosti-whatsapp-api.amolkolekar100000.workers.dev";
+ if ($("project")) $("project").value = activeProject;
+ if ($("projectSettingsSelect")) {
+  $("projectSettingsSelect").value = activeProject;
  }
 
- saveURLs();
+ if ($("workerUrl")) {
+  $("workerUrl").value =
+   projectURLs[activeProject] || DEFAULT_WORKER_URL;
+ }
+
+ updateProjectURLField();
 }
 
-/* ---------- SAVE SETTINGS ---------- */
-
-function saveURLs() {
+function saveProjectURLs() {
  localStorage.setItem(
   "ak_project_urls",
-  JSON.stringify(projectUrls)
+  JSON.stringify(projectURLs)
  );
 }
 
-function saveLeads() {
- localStorage.setItem(
-  "ak_leads",
-  JSON.stringify(leads)
- );
+function getWorkerURL() {
+ const input = $("workerUrl");
+ const url = (
+  input?.value.trim() ||
+  projectURLs[activeProject] ||
+  DEFAULT_WORKER_URL
+ ).replace(/\/+$/, "");
+
+ return url;
 }
 
-function saveActiveProject() {
- localStorage.setItem(
-  "ak_active_project",
-  activeProject
- );
-}
-
-/* ---------- API URL ---------- */
-
-function apiURL(path = "") {
- const base = (
-  projectUrls[activeProject] || ""
- ).trim().replace(/\/+$/, "");
-
- if (!base) {
-  throw new Error(
-   "या project साठी Worker URL सेट केलेला नाही."
-  );
- }
-
- return base + (
-  path.startsWith("/") ? path : "/" + path
- );
-}
-
-/* ---------- API REQUEST ---------- */
-
-async function request(path, options = {}) {
- const url = apiURL(path);
+async function apiRequest(path, options = {}) {
+ const url = getWorkerURL() +
+  (path.startsWith("/") ? path : "/" + path);
 
  const response = await fetch(url, {
   ...options,
@@ -839,7 +758,6 @@ async function request(path, options = {}) {
  });
 
  const raw = await response.text();
-
  let data = {};
 
  try {
@@ -853,1689 +771,1647 @@ async function request(path, options = {}) {
 
  if (!response.ok || data.success === false) {
   throw new Error(
-   data.error ||
-   data.message ||
-   ("HTTP " + response.status)
+   data.error || data.message || "HTTP " + response.status
   );
  }
 
  return data;
 }
 
-/* ---------- TEXT HELPERS ---------- */
+function saveSettings() {
+ const url = $("workerUrl")?.value.trim() || "";
 
-function esc(value) {
- return String(value ?? "").replace(
-  /[&<>"']/g,
-  character => ({
-   "&": "&amp;",
-   "<": "&lt;",
-   ">": "&gt;",
-   '"': "&quot;",
-   "'": "&#39;"
-  })[character]
- );
-}
-
-function normalizePhone(value) {
- return String(value ?? "").replace(/\D/g, "");
-}
-
-function phoneOf(message) {
- return normalizePhone(
-  message?.phone ||
-  message?.from ||
-  message?.to ||
-  message?.wa_id ||
-  message?.contact_phone ||
-  ""
- );
-}
-
-function messageText(message) {
- return String(
-  message?.message ||
-  message?.text ||
-  message?.body ||
-  message?.caption ||
-  ""
- );
-}
-
-function isIncoming(message) {
- const direction = String(
-  message?.direction ||
-  message?.type ||
-  ""
- ).toLowerCase();
-
- return [
-  "incoming",
-  "inbound",
-  "received",
-  "in"
- ].includes(direction);
-}
-
-function displayName(phone) {
- const contact = leads.find(
-  item => normalizePhone(item.phone) === normalizePhone(phone)
- );
-
- if (contact?.name) return contact.name;
-
- const message = messages.find(
-  item =>
-   phoneOf(item) === normalizePhone(phone) &&
-   (item.name || item.contact_name)
- );
-
- return message?.name || message?.contact_name || phone;
-}
-
-/* ---------- STATUS AND NOTIFICATIONS ---------- */
-
-function setStatus(id, message) {
- const element = $(id);
-
- if (element) {
-  element.textContent = String(message ?? "");
- }
-}
-
-function toast(message) {
- const element = $("toast");
-
- if (!element) {
-  console.log(message);
+ if (!/^https:\/\/\S+$/i.test(url)) {
+  setStatus(
+   "settingsStatus",
+   "योग्य HTTPS Worker URL भरा.",
+   true
+  );
   return;
  }
 
- element.textContent = String(message);
- element.classList.add("show");
+ projectURLs[activeProject] = url.replace(/\/+$/, "");
+ saveProjectURLs();
 
- if (element._hideTimer) {
-  clearTimeout(element._hideTimer);
- }
+ setStatus(
+  "settingsStatus",
+  "Worker URL save झाला: " + projectURLs[activeProject]
+ );
 
- element._hideTimer = setTimeout(() => {
-  element.classList.remove("show");
- }, 3000);
+ showToast("Worker URL saved.");
 }
 
-/* ---------- PAGE NAVIGATION ---------- */
+function updateProjectURLField() {
+ const select = $("projectSettingsSelect");
+ const input = $("projectWorkerUrl");
 
-function showPage(pageId) {
- document.querySelectorAll(".view").forEach(section => {
-  section.classList.toggle(
-   "active",
-   section.id === pageId
-  );
- });
+ if (!select || !input) return;
 
- document.querySelectorAll("[data-page]").forEach(button => {
-  button.classList.toggle(
-   "active",
-   button.dataset.page === pageId
-  );
- });
-
- if (pageId === "dashboard") {
-  loadDashboard().catch(error =>
-   setStatus("dashStatus", error.message)
-  );
- }
-
- if (pageId === "inbox") {
-  renderChats();
-  renderChatHistory();
- }
-
- if (pageId === "leads") {
-  renderContactsTable();
- }
-
- if (pageId === "reports") {
-  loadReports().catch(error =>
-   setStatus("reportStatus", error.message)
-  );
- }
-
- if (pageId === "templates") {
-  loadTemplates().catch(error =>
-   setStatus("templateStatus", error.message)
-  );
- }
-
- if (pageId === "settings") {
-  populateProjectSettings();
- }
+ const key = select.value || activeProject;
+ input.value = projectURLs[key] || "";
 }
 
-function goBack() {
- if (typeof showPage === "function") {
-  showPage("dashboard");
- }
-}
+function saveProjectURL() {
+ const key = $("projectSettingsSelect")?.value;
+ const url = $("projectWorkerUrl")?.value.trim() || "";
 
-/* ---------- PROJECT SWITCHING ---------- */
-
-function switchProject(project) {
- if (!PROJECTS[project]) {
-  toast("Invalid project selected.");
+ if (!key || !PROJECT_NAMES[key]) {
+  setStatus("projectSettingsStatus", "Project निवडा.", true);
   return;
  }
+
+ if (!/^https:\/\/\S+$/i.test(url)) {
+  setStatus(
+   "projectSettingsStatus",
+   "योग्य HTTPS Worker URL भरा.",
+   true
+  );
+  return;
+ }
+
+ projectURLs[key] = url.replace(/\/+$/, "");
+ saveProjectURLs();
+
+ if (key === activeProject && $("workerUrl")) {
+  $("workerUrl").value = projectURLs[key];
+ }
+
+ setStatus(
+  "projectSettingsStatus",
+  PROJECT_NAMES[key] + " Worker URL save झाला."
+ );
+}
+
+async function testConnection() {
+ try {
+  setStatus("settingsStatus", "Testing Worker connection...");
+
+  const result = await apiRequest("/health");
+
+  $("connection").textContent = "API ACTIVE";
+  setStatus(
+   "settingsStatus",
+   "Connected successfully. Project: " +
+   (result.project || PROJECT_NAMES[activeProject])
+  );
+
+  showToast("Worker connection successful.");
+ } catch (error) {
+  $("connection").textContent = "API ERROR";
+  setStatus(
+   "settingsStatus",
+   "Connection failed: " + error.message,
+   true
+  );
+ }
+}
+
+async function switchProject(project) {
+ if (!PROJECT_NAMES[project]) return;
 
  activeProject = project;
+ localStorage.setItem("ak_active_project", project);
 
- saveActiveProject();
-
- if ($("apiUrl")) {
-  $("apiUrl").value = projectUrls[activeProject] || "";
+ if ($("workerUrl")) {
+  $("workerUrl").value =
+   projectURLs[project] || DEFAULT_WORKER_URL;
  }
 
- if ($("projectSettings")) {
-  $("projectSettings").textContent =
-   "Selected project: " + PROJECTS[activeProject];
- }
+ updateProjectURLField();
 
  messages = [];
  templates = [];
  phoneNumbers = [];
- reports = [];
-
  selectedChat = "";
 
- renderChats();
- renderChatHistory();
+ await syncAll();
+}
 
- syncAll().catch(error => {
-  console.error("Project sync error:", error);
+/* =====================================
+   NAVIGATION
+===================================== */
+
+let previousPage = "dashboard";
+
+function showPage(page) {
+ const current = document.querySelector(".view.active");
+
+ if (current && current.id !== page) {
+  previousPage = current.id;
+ }
+
+ document.querySelectorAll(".view").forEach(section => {
+  section.classList.toggle("active", section.id === page);
  });
+
+ document.querySelectorAll("nav button[data-page]").forEach(button => {
+  button.classList.toggle("active", button.dataset.page === page);
+ });
+
+ if (page === "inbox") {
+  renderChats();
+  renderChatHistory();
+ }
+
+ if (page === "leads") renderLeads();
+ if (page === "reports") renderHistory();
+
+ if (page === "templates") loadTemplates();
 }
 
-/* ---------- BROWSER NOTIFICATIONS ---------- */
-
-async function enableNotifications() {
- if (!("Notification" in window)) {
-  toast("या browser मध्ये notifications उपलब्ध नाहीत.");
-  return;
- }
-
- try {
-  const permission = await Notification.requestPermission();
-
-  toast(
-   permission === "granted"
-    ? "Notifications enabled."
-    : "Notification permission denied."
-  );
- } catch (error) {
-  toast("Notification error: " + error.message);
- }
-
-/* Function closed correctly */
+function goBack() {
+ showPage(previousPage || "dashboard");
 }
 
-/* ---------- INITIAL PROJECT SETTINGS ---------- */
+document.querySelectorAll("nav button[data-page]").forEach(button => {
+ button.addEventListener("click", () => {
+  showPage(button.dataset.page);
+ });
+});
 
-function populateProjectSettings() {
- if ($("apiUrl")) {
-  $("apiUrl").value = projectUrls[activeProject] || "";
- }
+$("projectSettingsSelect")?.addEventListener(
+ "change",
+ updateProjectURLField
+);
+ /* ==========================================
+   PART 5 — LOAD & MANAGE WHATSAPP MESSAGES
+   ========================================== */
 
- if ($("projectSettings")) {
-  $("projectSettings").textContent =
-   "Selected project: " + (PROJECTS[activeProject] || activeProject);
- }
-} 
- async function checkConnection() {
- try {
-  const result = await request("/health");
-
-  setStatus(
-   "connection",
-   result.success ? "API ACTIVE" : "API ERROR"
-  );
-
-  setStatus("apiStatus", "API connection successful.");
-  return result;
- } catch (error) {
-  setStatus("connection", "API ERROR");
-  setStatus("apiStatus", error.message);
-  throw error;
- }
-}
-
-async function loadDashboard() {
- const result = await request("/reports");
-
- const totals = result.totals || {};
-
- const totalMessages = Number(
-  totals.totalMessages || 0
- );
-
- const incoming = Number(totals.incoming || 0);
- const outgoing = Number(totals.outgoing || 0);
-
- if ($("total")) {
-  $("total").textContent = totalMessages;
- }
-
- if ($("incomingCount")) {
-  $("incomingCount").textContent = incoming;
- }
-
- if ($("outgoingCount")) {
-  $("outgoingCount").textContent = outgoing;
- }
-
- if ($("reportTotal")) {
-  $("reportTotal").textContent = totalMessages;
- }
-
- if ($("reportIncoming")) {
-  $("reportIncoming").textContent = incoming;
- }
-
- if ($("reportOutgoing")) {
-  $("reportOutgoing").textContent = outgoing;
- }
-
- reports = result.daily || [];
-
- renderChart(reports);
-
- setStatus(
-  "dashStatus",
-  "Dashboard data refreshed successfully."
- );
-}
-
-async function loadPhoneNumbers() {
- const result = await request("/phone-numbers");
-
- phoneNumbers = result.data || result.phoneNumbers || [];
-
- renderNumbers();
-
- const selector = $("sendNumber");
-
- if (selector) {
-  const previous = selector.value;
-
-  selector.innerHTML = phoneNumbers.map(number => `
-   <option value="${esc(number.phoneNumberId)}">
-    ${esc(number.displayPhoneNumber || number.phoneNumberId)}
-    ${number.verifiedName
-      ? " — " + esc(number.verifiedName)
-      : ""}
-   </option>
-  `).join("");
-
-  if (phoneNumbers.some(number =>
-   number.phoneNumberId === previous
-  )) {
-   selector.value = previous;
+function getMessageKey(message) {
+  if (message.message_id) {
+    return String(message.message_id);
   }
- }
 
- if ($("contactCount")) {
-  $("contactCount").textContent = phoneNumbers.length;
- }
-
- return phoneNumbers;
+  return [
+    getPhone(message),
+    getDirection(message),
+    getTime(message),
+    getText(message)
+  ].join("|");
 }
 
-function renderNumbers() {
- const container = $("numberList");
- if (!container) return;
-
- if (!phoneNumbers.length) {
-  container.textContent = "No WhatsApp numbers returned by API.";
-  return;
- }
-
- container.innerHTML = phoneNumbers.map(number => `
-  <div class="number-row">
-   <strong>${esc(number.displayPhoneNumber || "")}</strong>
-   <div>${esc(number.verifiedName || "WhatsApp Business")}</div>
-   <div class="small">
-    Quality: ${esc(number.qualityRating || "UNKNOWN")}
-    · Status: ${esc(number.status || "UNKNOWN")}
-   </div>
-   <div class="small">
-    Phone Number ID: ${esc(number.phoneNumberId || number.id || "")}
-   </div>
-  </div>
- `).join("");
+function normalizeMessage(message) {
+  return {
+    ...message,
+    wa_id: getPhone(message),
+    name: message.name || getPhone(message) || "Unknown",
+    message: getText(message),
+    direction: getDirection(message),
+    timestamp: message.timestamp || message.created_at || "",
+    status: message.status || "unknown"
+  };
 }
+
+function mergeMessages(existing, incoming) {
+  const map = new Map();
+
+  [...existing, ...incoming].forEach(item => {
+    const message = normalizeMessage(item);
+    const key = getMessageKey(message);
+    const old = map.get(key);
+
+    map.set(key, old ? { ...old, ...message } : message);
+  });
+
+  return Array.from(map.values()).sort((a, b) => {
+    const timeA = new Date(a.timestamp || 0).getTime() || 0;
+    const timeB = new Date(b.timestamp || 0).getTime() || 0;
+    return timeA - timeB;
+  });
+}
+
+/* Load all messages already saved in Worker D1 */
 
 async function loadMessages() {
- try {
-  const result = await request("/messages?limit=1000");
+  try {
+    setStatus("Loading WhatsApp messages...");
 
-  messages = result.data || result.messages || [];
+    const allMessages = [];
+    const pageSize = 1000;
+    let offset = 0;
 
-  renderChats();
-  renderHistoryTable();
-  renderClientMessageReport();
+    while (true) {
+      const result = await apiRequest(
+        `/messages?limit=${pageSize}&offset=${offset}`
+      );
 
-  setStatus(
-   "inboxStatus",
-   `Loaded ${messages.length} messages.`
-  );
+      const rows = Array.isArray(result.messages)
+        ? result.messages
+        : Array.isArray(result.data)
+          ? result.data
+          : [];
 
-  setStatus(
-   "historyStatus",
-   `Loaded ${messages.length} messages from the Worker.`
-  );
+      allMessages.push(...rows);
 
-  if (selectedChat) {
-   renderChatHistory();
-  }
+      if (rows.length < pageSize) break;
 
-  return messages;
- } catch (error) {
-  setStatus("inboxStatus", error.message);
-  setStatus("historyStatus", error.message);
-  throw error;
- }
-}
+      offset += rows.length;
 
-async function loadTemplates() {
- try {
-  const result = await request("/templates");
-
-  templates = result.data || result.templates || [];
-
-  renderTemplates();
-  renderCampaignTemplateOptions();
-
-  if ($("approvedCount")) {
-   $("approvedCount").textContent =
-    templates.filter(item =>
-     String(item.status).toUpperCase() === "APPROVED"
-    ).length;
-  }
-
-  setStatus(
-   "templateStatus",
-   `Loaded ${templates.length} templates.`
-  );
-
-  return templates;
- } catch (error) {
-  setStatus("templateStatus", error.message);
-  throw error;
- }
-}
-
-function renderTemplates() {
- const container = $("templateList");
- if (!container) return;
-
- if (!templates.length) {
-  container.textContent = "No templates returned by API.";
-  return;
- }
-
- container.innerHTML = templates.map(template => `
-  <div class="template-row">
-   <strong>${esc(template.name || "Unnamed Template")}</strong>
-   <div class="small">
-    Status: ${esc(template.status || "UNKNOWN")}
-    · Language: ${esc(template.language || "")}
-    · Category: ${esc(template.category || "")}
-   </div>
-  </div>
- `).join("");
-}
-
-function renderCampaignTemplateOptions() {
- const selector = $("campaignTemplate");
- if (!selector) return;
-
- const approved = templates.filter(template =>
-  String(template.status).toUpperCase() === "APPROVED"
- );
-
- selector.innerHTML = approved.map(template => `
-  <option value="${esc(template.name)}"
-   data-language="${esc(template.language || "")}">
-   ${esc(template.name)} (${esc(template.language || "")})
-  </option>
- `).join("");
-
- renderVariables();
-}
-
-async function loadReports() {
- try {
-  const result = await request("/reports");
-
-  reports = result.daily || [];
-
-  const totals = result.totals || {};
-
-  if ($("reportTotal")) {
-   $("reportTotal").textContent =
-    Number(totals.totalMessages || 0);
-  }
-
-  if ($("reportIncoming")) {
-   $("reportIncoming").textContent =
-    Number(totals.incoming || 0);
-  }
-
-  if ($("reportOutgoing")) {
-   $("reportOutgoing").textContent =
-    Number(totals.outgoing || 0);
-  }
-
-  renderChart(reports);
-  renderReportsTable(reports);
-  renderClientMessageReport();
-
-  setStatus(
-   "reportStatus",
-   "Reports loaded successfully."
-  );
-
-  return result;
- } catch (error) {
-  setStatus("reportStatus", error.message);
-  throw error;
- }
-}
-
-async function syncAll() {
- if (polling) return;
-
- polling = true;
-
- try {
-  setStatus("connection", "Checking API...");
-
-  await checkConnection();
-
-  await Promise.allSettled([
-   loadDashboard(),
-   loadPhoneNumbers(),
-   loadMessages(),
-   loadTemplates(),
-   loadReports()
-  ]);
-
-  setStatus("connection", "API ACTIVE");
- } catch (error) {
-  setStatus("connection", "API ERROR: " + error.message);
-  console.error("Sync error:", error);
- } finally {
-  polling = false;
- }
-}
-
-function testAPI() {
- return checkConnection()
-  .then(() => toast("API connection successful."))
-  .catch(error => toast("API failed: " + error.message));
-}
-
-function saveAPISettings() {
- const url = $("apiUrl")?.value?.trim() || "";
-
- if (!/^https:\/\/[^/\s]+/i.test(url)) {
-  toast("Valid HTTPS Worker URL टाका.");
-  return;
- }
-
- projectUrls[activeProject] = url.replace(/\/+$/, "");
- saveURLs();
-
- setStatus("apiStatus", "Worker URL saved.");
- syncAll();
-}
-function messageTime(message) {
- const value =
-  message.timestamp ||
-  message.created_at ||
-  message.createdAt ||
-  "";
-
- if (!value) return "";
-
- const date = new Date(
-  typeof value === "number" && value < 1000000000000
-   ? value * 1000
-   : value
- );
-
- return Number.isNaN(date.getTime())
-  ? ""
-  : date.toLocaleString("en-IN");
-}
-
-function renderChats() {
- const container = $("chatList");
- if (!container) return;
-
- const search = (
-  $("chatSearch")?.value || ""
- ).trim().toLowerCase();
-
- const grouped = {};
-
- messages.forEach(message => {
-  const phone = phoneOf(message);
-  if (!phone) return;
-
-  if (!grouped[phone]) grouped[phone] = [];
-  grouped[phone].push(message);
- });
-
- const phones = Object.keys(grouped).filter(phone => {
-  const name = displayName(phone).toLowerCase();
-
-  return (
-   !search ||
-   phone.includes(search) ||
-   name.includes(search)
-  );
- });
-
- phones.sort((a, b) => {
-  const timeA = new Date(
-   grouped[a][grouped[a].length - 1].created_at ||
-   grouped[a][grouped[a].length - 1].timestamp ||
-   0
-  ).getTime();
-
-  const timeB = new Date(
-   grouped[b][grouped[b].length - 1].created_at ||
-   grouped[b][grouped[b].length - 1].timestamp ||
-   0
-  ).getTime();
-
-  return timeB - timeA;
- });
-
- container.innerHTML = phones.map(phone => {
-  const history = grouped[phone];
-  const last = history[history.length - 1];
-
-  return `
-   <div class="chat-contact ${
-    selectedChat === phone ? "selected" : ""
-   }"
-    role="button"
-    tabindex="0"
-    onclick="openChat('${esc(phone)}')"
-    onkeydown="if(event.key==='Enter')openChat('${esc(phone)}')">
-
-    <b>${esc(displayName(phone))}</b>
-
-    <div class="small">${esc(phone)}</div>
-
-    <span class="preview-text">
-     ${esc(messageText(last).slice(0, 100))}
-    </span>
-
-    <div class="small">${esc(messageTime(last))}</div>
-   </div>
-  `;
- }).join("");
-
- if (!phones.length) {
-  container.innerHTML =
-   "<p style='padding:12px'>No conversations found.</p>";
- }
-}
-
-function openChat(phone) {
- selectedChat = normalizePhone(phone);
-
- const header = $("chatHeader");
- if (header) header.classList.add("has-chat");
-
- const title = $("chatTitle");
- if (title) {
-  title.textContent =
-   displayName(selectedChat) + " · " + selectedChat;
- }
-
- renderChats();
- renderChatHistory();
-
- const status = $("replyStatus");
- if (status) status.textContent = "Ready to reply.";
-}
-
-function renderChatHistory() {
- const container = $("chatHistory");
- if (!container) return;
-
- if (!selectedChat) {
-  container.textContent = "Select a client to view messages.";
-  return;
- }
-
- const history = messages
-  .filter(message => phoneOf(message) === selectedChat)
-  .sort((a, b) => {
-   const timeA = new Date(
-    a.created_at || a.timestamp || 0
-   ).getTime();
-
-   const timeB = new Date(
-    b.created_at || b.timestamp || 0
-   ).getTime();
-
-   return timeA - timeB;
-  });
-
- if (!history.length) {
-  container.textContent = "No messages for this client.";
-  return;
- }
-
- container.innerHTML = history.map(message => `
-  <div class="bubble ${isIncoming(message) ? "in" : "out"}">
-   <div>${esc(messageText(message))}</div>
-   <div class="small">
-    ${esc(messageTime(message))}
-    · ${esc(message.status || message.direction || "")}
-   </div>
-  </div>
- `).join("");
-
- container.scrollTop = container.scrollHeight;
-}
-
-function showChatList() {
- selectedChat = "";
-
- const header = $("chatHeader");
- if (header) header.classList.remove("has-chat");
-
- if ($("chatTitle")) {
-  $("chatTitle").textContent = "Select a conversation";
- }
-
- renderChats();
- renderChatHistory();
-}
-
-async function sendReply() {
- if (!selectedChat) {
-  toast("आधी Live Chat मधून client निवडा.");
-  return;
- }
-
- const text = $("replyText")?.value?.trim() || "";
- const file = $("replyFile")?.files?.[0];
-
- if (file) {
-  await sendMedia();
-  return;
- }
-
- if (!text) {
-  toast("Reply message लिहा.");
-  return;
- }
-
- try {
-  setStatus("replyStatus", "Sending message...");
-
-  const result = await request("/send", {
-   method: "POST",
-   headers: {
-    "Content-Type": "application/json"
-   },
-   body: JSON.stringify({
-    to: selectedChat,
-    phone: selectedChat,
-    message: text,
-    text: text
-   })
-  });
-
-  $("replyText").value = "";
-
-  setStatus(
-   "replyStatus",
-   result.message || "Message accepted by Meta."
-  );
-
-  await loadMessages();
-  await loadDashboard();
- } catch (error) {
-  setStatus("replyStatus", "Send failed: " + error.message);
- }
-}
-
-async function sendMedia() {
- if (!selectedChat) {
-  toast("आधी client निवडा.");
-  return;
- }
-
- const file = $("replyFile")?.files?.[0];
- const caption = $("replyText")?.value?.trim() || "";
-
- if (!file) {
-  toast("Photo किंवा PDF निवडा.");
-  return;
- }
-
- const allowed = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "application/pdf"
- ];
-
- if (!allowed.includes(file.type)) {
-  toast("फक्त JPG, PNG, WEBP किंवा PDF निवडा.");
-  return;
- }
-
- if (file.size > 15 * 1024 * 1024) {
-  toast("File size 15 MB पेक्षा कमी असावी.");
-  return;
- }
-
- const formData = new FormData();
- formData.append("to", selectedChat);
- formData.append("file", file);
- formData.append("caption", caption);
-
- try {
-  setStatus("replyStatus", "Uploading media...");
-
-  const response = await fetch(
-   apiURL("/send-media"),
-   {
-    method: "POST",
-    body: formData
-   }
-  );
-
-  const result = await response.json().catch(() => ({}));
-
-  if (!response.ok || result.success === false) {
-   throw new Error(
-    result.error || result.message || "Media sending failed"
-   );
-  }
-
-  $("replyText").value = "";
-  $("replyFile").value = "";
-
-  setStatus(
-   "replyStatus",
-   result.message || "Media accepted by Meta."
-  );
-
-  await loadMessages();
-  await loadDashboard();
- } catch (error) {
-  setStatus("replyStatus", "Media failed: " + error.message);
- }
-} 
- function renderContactsTable() {
- const table = $("contactTable");
- if (!table) return;
-
- const search = (
-  $("contactSearch")?.value || ""
- ).trim().toLowerCase();
-
- const filtered = leads.filter(contact => {
-  const name = String(contact.name || "").toLowerCase();
-  const phone = String(contact.phone || "").toLowerCase();
-  const project = String(contact.project || "").toLowerCase();
-
-  return (
-   !search ||
-   name.includes(search) ||
-   phone.includes(search) ||
-   project.includes(search)
-  );
- });
-
- table.innerHTML = `
-  <table class="data-table">
-   <thead>
-    <tr>
-     <th>Name</th>
-     <th>WhatsApp Number</th>
-     <th>Project</th>
-     <th>Consent</th>
-     <th>Action</th>
-    </tr>
-   </thead>
-   <tbody>
-    ${filtered.map((contact, index) => `
-     <tr>
-      <td>${esc(contact.name || "")}</td>
-      <td>${esc(contact.phone || "")}</td>
-      <td>${esc(contact.project || "")}</td>
-      <td>${contact.consent ? "Opted in" : "Not confirmed"}</td>
-      <td>
-       <button type="button"
-        onclick="deleteContact(${leads.indexOf(contact)})">
-        Delete
-       </button>
-      </td>
-     </tr>
-    `).join("")}
-   </tbody>
-  </table>
- `;
-
- if ($("contactCount")) {
-  $("contactCount").textContent = leads.length;
- }
-
- if (!filtered.length) {
-  table.innerHTML += "<p>No contacts found.</p>";
- }
-}
-
-function addContact() {
- const name = $("contactName")?.value?.trim() || "";
- const rawPhone = $("contactPhone")?.value?.trim() || "";
- const project = $("contactProject")?.value?.trim() || "";
- const consent = $("contactConsent")?.checked || false;
-
- if (!name || !rawPhone) {
-  setStatus("contactStatus", "Name आणि WhatsApp number भरा.");
-  return;
- }
-
- const phone = normalizePhone(rawPhone);
-
- if (!/^\d{10,15}$/.test(phone)) {
-  setStatus(
-   "contactStatus",
-   "WhatsApp number country code सहित तपासा. उदाहरण: 919876543210"
-  );
-  return;
- }
-
- if (leads.some(contact => normalizePhone(contact.phone) === phone)) {
-  setStatus("contactStatus", "हा number आधीपासून contacts मध्ये आहे.");
-  return;
- }
-
- leads.push({
-  id: Date.now().toString(),
-  name,
-  phone,
-  project,
-  consent,
-  createdAt: new Date().toISOString()
- });
-
- saveLeads();
- renderContactsTable();
-
- $("contactName").value = "";
- $("contactPhone").value = "";
- $("contactProject").value = "";
-
- if ($("contactConsent")) {
-  $("contactConsent").checked = false;
- }
-
- setStatus("contactStatus", "Contact dashboard मध्ये save झाला.");
-}
-
-function deleteContact(index) {
- if (!Number.isInteger(index) || index < 0 || index >= leads.length) {
-  return;
- }
-
- if (!confirm("हा contact delete करायचा आहे का?")) return;
-
- leads.splice(index, 1);
- saveLeads();
- renderContactsTable();
-
- setStatus("contactStatus", "Contact deleted.");
-}
-
-function exportContactsCSV() {
- const rows = [
-  ["Name", "WhatsApp Number", "Project", "Consent"],
-  ...leads.map(contact => [
-   contact.name || "",
-   contact.phone || "",
-   contact.project || "",
-   contact.consent ? "Yes" : "No"
-  ])
- ];
-
- const csv = rows.map(row =>
-  row.map(value =>
-   '"' + String(value).replace(/"/g, '""') + '"'
-  ).join(",")
- ).join("\r\n");
-
- const blob = new Blob(["\uFEFF" + csv], {
-  type: "text/csv;charset=utf-8;"
- });
-
- const url = URL.createObjectURL(blob);
- const link = document.createElement("a");
-
- link.href = url;
- link.download = "ak-properties-contacts.csv";
- link.click();
-
- URL.revokeObjectURL(url);
-}
-
-function searchContacts() {
- renderContactsTable();
-}
-
-function exportMessagesCSV() {
- const rows = [
-  ["Client Number", "Direction", "Message", "Status", "Time"],
-  ...messages.map(message => [
-   phoneOf(message),
-   isIncoming(message) ? "Incoming" : "Outgoing",
-   messageText(message),
-   message.status || "",
-   messageTime(message)
-  ])
- ];
-
- const csv = rows.map(row =>
-  row.map(value =>
-   '"' + String(value ?? "").replace(/"/g, '""') + '"'
-  ).join(",")
- ).join("\r\n");
-
- const blob = new Blob(["\uFEFF" + csv], {
-  type: "text/csv;charset=utf-8;"
- });
-
- const url = URL.createObjectURL(blob);
- const link = document.createElement("a");
-
- link.href = url;
- link.download = "ak-properties-message-history.csv";
- link.click();
-
- URL.revokeObjectURL(url);
-} 
- /* ==========================================
-   PART 7 - META TEMPLATE FORMAT
-   Dynamic HEADER + BODY VARIABLES
-========================================== */
-
-function getTemplateInfo(templateName) {
- return templates.find(item =>
-  (item.name || item.id) === templateName
- ) || null;
-}
-
-function getTemplateComponents(template) {
- return Array.isArray(template?.components)
-  ? template.components
-  : [];
-}
-
-function getRequiredVariableCount(templateName, template) {
- const body = getTemplateComponents(template)
-  .find(component =>
-   String(component.type).toUpperCase() === "BODY"
-  );
-
- if (body?.text) {
-  const matches = [...body.text.matchAll(/\{\{\s*(\d+)\s*\}\}/g)];
-  return matches.length
-   ? Math.max(...matches.map(match => Number(match[1])))
-   : 0;
- }
-
- // Fallback for the known template when component details
- // are not returned by the Worker.
- if (templateName === "new_launch_project") return 11;
-
- return Number(
-  template?.variableCount ||
-  template?.variablesCount ||
-  0
- );
-}
-
-function renderCampaignTemplateOptions() {
- const select = $("campaignTemplate");
- if (!select) return;
-
- const previous = select.value;
-
- const approved = templates.filter(template =>
-  String(template.status || template.state || "")
-   .toUpperCase() === "APPROVED"
- );
-
- select.innerHTML =
-  '<option value="">Select approved template</option>' +
-  approved.map(template => {
-   const name = template.name || template.id || "";
-   const language = template.language || "en";
-
-   return `
-    <option value="${esc(name)}"
-     data-language="${esc(language)}">
-     ${esc(name)} (${esc(language)})
-    </option>
-   `;
-  }).join("");
-
- if ([...select.options].some(option => option.value === previous)) {
-  select.value = previous;
- }
-
- renderVariables();
-}
-
-function renderVariables() {
- const container = $("variableFields");
- const headerContainer = $("headerField");
-
- if (!container || !headerContainer) return;
-
- const templateName = $("campaignTemplate")?.value || "";
- const template = getTemplateInfo(templateName);
-
- if (!templateName || !template) {
-  container.innerHTML = "";
-  headerContainer.innerHTML = "";
-  return;
- }
-
- const components = getTemplateComponents(template);
-
- const header = components.find(component =>
-  String(component.type).toUpperCase() === "HEADER"
- );
-
- const headerFormat = String(header?.format || "").toUpperCase();
-
- if (headerFormat === "IMAGE") {
-  headerContainer.innerHTML = `
-   <label for="headerImageUrl">Approved Template IMAGE Header URL</label>
-   <input id="headerImageUrl"
-    type="url"
-    placeholder="https://public-image-url.jpg"
-    required>
-   <p class="small">
-    Public HTTPS image URL आवश्यक आहे. Template मधील image format शी जुळणारी image वापरा.
-   </p>
-  `;
- } else if (headerFormat === "TEXT") {
-  const headerText = header?.text || "";
-
-  const headerVariables = [
-   ...headerText.matchAll(/\{\{\s*(\d+)\s*\}\}/g)
-  ];
-
-  headerContainer.innerHTML = headerVariables.length
-   ? `
-     <label>Header Variables</label>
-     ${headerVariables.map(match => `
-      <input
-       id="header_variable_${Number(match[1])}"
-       placeholder="Header Variable {{${Number(match[1])}}}">
-     `).join("")}
-    `
-   : `<p class="small">Template TEXT header automatically used.</p>`;
- } else {
-  headerContainer.innerHTML = "";
- }
-
- const count = getRequiredVariableCount(templateName, template);
-
- if (count <= 0) {
-  container.innerHTML =
-   "<p>BODY variables ओळखता आले नाहीत. Worker template components तपासा.</p>";
-  return;
- }
-
- container.innerHTML = `
-  <label>Body Variables (${count})</label>
-  ${Array.from({ length: count }, (_, index) => `
-   <div>
-    <label for="variable_${index + 1}">
-     Body Variable {{${index + 1}}}
-    </label>
-    <input id="variable_${index + 1}"
-     placeholder="Enter {{${index + 1}}}"
-     autocomplete="off"
-     required>
-   </div>
-  `).join("")}
- `;
-}
-
-function getCampaignVariables() {
- const container = $("variableFields");
- if (!container) return [];
-
- return Array.from(
-  container.querySelectorAll("input"),
-  input => input.value.trim()
- );
-}
-
-function getCampaignRecipients() {
- const raw = $("recipients")?.value || "";
-
- return [...new Set(
-  raw.split(/[\n,;]+/)
-   .map(value => normalizePhone(value.trim()))
-   .filter(value => /^\d{10,15}$/.test(value))
- )];
-}
-
-async function sendCampaign(testMode = false) {
- const templateName = $("campaignTemplate")?.value || "";
- const template = getTemplateInfo(templateName);
- const recipients = getCampaignRecipients();
- const variables = getCampaignVariables();
- const phoneNumberId = $("sendNumber")?.value || "";
-
- const language =
-  $("campaignTemplate")?.selectedOptions?.[0]?.dataset?.language ||
-  template?.language ||
-  "en";
-
- const components = getTemplateComponents(template);
-
- const header = components.find(component =>
-  String(component.type).toUpperCase() === "HEADER"
- );
-
- const headerFormat = String(header?.format || "").toUpperCase();
-
- const headerImageUrl =
-  $("headerImageUrl")?.value?.trim() || "";
-
- if (!templateName || !template) {
-  setStatus("campaignStatus", "Approved template निवडा.");
-  return;
- }
-
- const requiredCount = getRequiredVariableCount(
-  templateName,
-  template
- );
-
- if (requiredCount <= 0 || variables.length !== requiredCount) {
-  setStatus(
-   "campaignStatus",
-   `या template ला ${requiredCount} body variables आवश्यक आहेत.`
-  );
-  return;
- }
-
- if (variables.some(value => !value)) {
-  setStatus("campaignStatus", "सर्व Body Variables भरा.");
-  return;
- }
-
- if (headerFormat === "IMAGE") {
-  if (!/^https:\/\/\S+$/i.test(headerImageUrl)) {
-   setStatus(
-    "campaignStatus",
-    "IMAGE header साठी public HTTPS image URL भरा."
-   );
-   return;
-  }
- }
-
- if (!recipients.length) {
-  setStatus("campaignStatus", "Valid recipient numbers भरा.");
-  return;
- }
-
- if (!phoneNumberId) {
-  setStatus("campaignStatus", "WhatsApp number निवडा.");
-  return;
- }
-
- if (!testMode && !$("consent")?.checked) {
-  setStatus("campaignStatus", "Client opt-in consent confirm करा.");
-  return;
- }
-
- if (testMode && recipients.length !== 1) {
-  setStatus("campaignStatus", "Test साठी एक recipient number ठेवा.");
-  return;
- }
-
- const targets = testMode ? recipients.slice(0, 1) : recipients;
- let sent = 0;
- let failed = 0;
- const errors = [];
-
- const buttons = document.querySelectorAll("#campaigns button");
- buttons.forEach(button => button.disabled = true);
-
- try {
-  for (const recipient of targets) {
-   try {
-    const payload = {
-     to: recipient,
-     templateName,
-     language,
-     variables,
-     phoneNumberId
-    };
-
-    if (headerFormat === "IMAGE") {
-     payload.headerImageUrl = headerImageUrl;
+      if (offset >= 100000) {
+        console.warn("Message history capped at 100,000 records.");
+        break;
+      }
     }
 
-    await request("/send-template", {
-     method: "POST",
-     headers: {
-      "Content-Type": "application/json"
-     },
-     body: JSON.stringify(payload)
-    });
+    messages = mergeMessages([], allMessages);
 
-    sent++;
-   } catch (error) {
-    failed++;
-    errors.push(recipient + ": " + error.message);
-   }
+    renderChatList();
+    renderSelectedChat();
 
-   setStatus(
-    "sendResult",
-    `Processed: ${sent + failed}/${targets.length}\nAccepted: ${sent}\nFailed: ${failed}`
-   );
+    setStatus(`Messages loaded: ${messages.length}`);
+
+    return messages;
+  } catch (error) {
+    console.error("loadMessages error:", error);
+    showToast("Messages load झाले नाहीत. Worker URL तपासा.");
+    setStatus("Message loading failed");
+    return [];
   }
+}
 
-  setStatus(
-   "campaignStatus",
-   `Campaign complete. Accepted: ${sent}, Failed: ${failed}.`
-  );
+/* Refresh the latest messages without clearing old history */
 
-  if ($("sendResult")) {
-   $("sendResult").textContent =
-    errors.slice(0, 10).join("\n") || "No sending errors reported.";
+async function refreshLatestMessages() {
+  try {
+    const result = await apiRequest("/messages?limit=1000&offset=0");
+
+    const latest = Array.isArray(result.messages)
+      ? result.messages
+      : Array.isArray(result.data)
+        ? result.data
+        : [];
+
+    messages = mergeMessages(messages, latest);
+
+    renderChatList();
+
+    if (selectedChat) {
+      renderSelectedChat();
+    }
+
+    return latest;
+  } catch (error) {
+    console.error("Latest message refresh failed:", error);
+    return [];
   }
-
-  await Promise.allSettled([
-   loadDashboard(),
-   loadMessages(),
-   loadReports()
-  ]);
- } finally {
-  buttons.forEach(button => button.disabled = false);
- }
-} 
- function renderHistoryTable() {
- const table = $("reportTable");
- if (!table) return;
-
- const search = (
-  $("historySearch")?.value || ""
- ).trim().toLowerCase();
-
- const limit = Math.max(
-  1,
-  Math.min(
-   1000,
-   Number($("historyLimit")?.value || 100)
-  )
- );
-
- const filtered = messages.filter(message => {
-  const phone = phoneOf(message);
-  const text = messageText(message);
-  const status = String(message.status || "");
-
-  return (
-   !search ||
-   phone.toLowerCase().includes(search) ||
-   text.toLowerCase().includes(search) ||
-   status.toLowerCase().includes(search)
-  );
- });
-
- const rows = filtered.slice(0, limit);
-
- table.innerHTML = `
-  <table class="data-table">
-   <thead>
-    <tr>
-     <th>Client</th>
-     <th>Direction</th>
-     <th>Message</th>
-     <th>Status</th>
-     <th>Date / Time</th>
-    </tr>
-   </thead>
-   <tbody>
-    ${rows.map(message => `
-     <tr>
-      <td>${esc(phoneOf(message))}</td>
-      <td>${isIncoming(message) ? "Incoming" : "Outgoing"}</td>
-      <td>${esc(messageText(message))}</td>
-      <td>${esc(message.status || "Unknown")}</td>
-      <td>${esc(messageTime(message))}</td>
-     </tr>
-    `).join("")}
-   </tbody>
-  </table>
- `;
-
- if (!rows.length) {
-  table.innerHTML += "<p>No message history found.</p>";
- }
-
- setStatus(
-  "historyStatus",
-  `Showing ${rows.length} of ${filtered.length} loaded messages.`
- );
 }
 
-function renderClientMessageReport() {
- const container = $("clientMessageReport");
- if (!container) return;
+/* Build one chat list entry for each WhatsApp number */
 
- const incoming = messages.filter(isIncoming);
- const outgoing = messages.filter(message => !isIncoming(message));
+function getChatGroups() {
+  const groups = new Map();
 
- const yesCount = incoming.filter(message =>
-  /^\s*(yes|yes[!. ]|हो|होय|interested)\b/i.test(
-   messageText(message)
-  )
- ).length;
+  messages.forEach(message => {
+    const phone = getPhone(message);
+    if (!phone) return;
 
- const noCount = incoming.filter(message =>
-  /^\s*(no|no[!. ]|नाही|not interested)\b/i.test(
-   messageText(message)
-  )
- ).length;
+    if (!groups.has(phone)) {
+      groups.set(phone, {
+        phone,
+        name: message.name || phone,
+        messages: [],
+        lastMessage: message,
+        unread: 0
+      });
+    }
 
- container.innerHTML = `
-  <div class="report-summary">
-   <div><b>${messages.length}</b><span>Loaded Messages</span></div>
-   <div><b>${incoming.length}</b><span>Incoming</span></div>
-   <div><b>${outgoing.length}</b><span>Outgoing</span></div>
-   <div><b>${yesCount}</b><span>Positive Replies</span></div>
-   <div><b>${noCount}</b><span>Negative Replies</span></div>
-  </div>
- `;
+    const group = groups.get(phone);
+    group.messages.push(message);
+
+    const previousTime =
+      new Date(group.lastMessage.timestamp || 0).getTime() || 0;
+
+    const currentTime =
+      new Date(message.timestamp || 0).getTime() || 0;
+
+    if (currentTime >= previousTime) {
+      group.lastMessage = message;
+      if (message.name) group.name = message.name;
+    }
+  });
+
+  return Array.from(groups.values()).sort((a, b) => {
+    const timeA =
+      new Date(a.lastMessage.timestamp || 0).getTime() || 0;
+
+    const timeB =
+      new Date(b.lastMessage.timestamp || 0).getTime() || 0;
+
+    return timeB - timeA;
+  });
 }
 
-function renderReportsTable(rows = reports) {
- const container = $("reportTable");
- if (!container) return;
+/* Track unread incoming messages */
 
- const reportRows = Array.isArray(rows) ? rows : [];
-
- container.innerHTML = `
-  <table class="data-table">
-   <thead>
-    <tr>
-     <th>Date</th>
-     <th>Total</th>
-     <th>Outgoing</th>
-     <th>Incoming</th>
-     <th>Delivered</th>
-     <th>Failed</th>
-    </tr>
-   </thead>
-   <tbody>
-    ${reportRows.map(row => `
-     <tr>
-      <td>${esc(row.date || "")}</td>
-      <td>${Number(row.total || 0)}</td>
-      <td>${Number(row.outgoing || 0)}</td>
-      <td>${Number(row.incoming || 0)}</td>
-      <td>${Number(row.delivered || 0)}</td>
-      <td>${Number(row.failed || 0)}</td>
-     </tr>
-    `).join("")}
-   </tbody>
-  </table>
- `;
-
- if (!reportRows.length) {
-  container.innerHTML += "<p>No daily report data available.</p>";
- }
-}
-
-function renderChart(rows = reports) {
- const container = $("reportChart");
- if (!container) return;
-
- const data = (Array.isArray(rows) ? rows : []).slice(-7);
-
- if (!data.length) {
-  container.innerHTML = "<p>No chart data available yet.</p>";
-  return;
- }
-
- const maxValue = Math.max(
-  1,
-  ...data.map(row => Number(row.total || 0))
- );
-
- container.innerHTML = `
-  <div class="simple-chart">
-   ${data.map(row => {
-    const total = Number(row.total || 0);
-    const height = Math.max(
-     4,
-     Math.round((total / maxValue) * 140)
+function getLastReadTime(phone) {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem("ak_last_read_by_chat") || "{}"
     );
 
-    return `
-     <div class="chart-column">
-      <span>${total}</span>
-      <div class="chart-bar" style="height:${height}px"></div>
-      <small>${esc(String(row.date || "").slice(-5))}</small>
-     </div>
+    return Number(saved[phone] || 0);
+  } catch {
+    return 0;
+  }
+}
+
+function saveLastReadTime(phone, timestamp) {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem("ak_last_read_by_chat") || "{}"
+    );
+
+    saved[phone] = Number(timestamp) || Date.now();
+
+    localStorage.setItem(
+      "ak_last_read_by_chat",
+      JSON.stringify(saved)
+    );
+  } catch (error) {
+    console.warn("Unable to save read status:", error);
+  }
+}
+
+function getUnreadCount(chat) {
+  const lastRead = getLastReadTime(chat.phone);
+
+  return chat.messages.filter(message => {
+    if (getDirection(message) !== "incoming") return false;
+
+    const time =
+      new Date(message.timestamp || 0).getTime() || 0;
+
+    return time > lastRead;
+  }).length;
+}
+
+/* Format the latest message preview */
+
+function getLastMessagePreview(message) {
+  if (!message) return "No messages";
+
+  const text = getText(message);
+
+  if (text) return text;
+
+  return getDirection(message) === "incoming"
+    ? "Incoming message"
+    : "Outgoing message";
+}
+
+/* Render the WhatsApp chat list */
+
+function renderChatList() {
+  const container = $("chatList");
+  if (!container) return;
+
+  const chats = getChatGroups();
+
+  if (!chats.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <p>No messages found.</p>
+        <small>Incoming messages will appear after the Worker webhook saves them.</small>
+      </div>
     `;
-   }).join("")}
-  </div>
- `;
-}
+    return;
+  }
 
-function searchMessageHistory() {
- renderHistoryTable();
-}
+  container.innerHTML = chats.map(chat => {
+    const unread = getUnreadCount(chat);
+    const active = selectedChat === chat.phone;
+    const last = chat.lastMessage;
 
-function refreshReports() {
- return loadReports();
-}
-
-function exportReportCSV() {
- const rows = [
-  ["Date", "Total", "Outgoing", "Incoming", "Delivered", "Failed"],
-  ...reports.map(row => [
-   row.date || "",
-   row.total || 0,
-   row.outgoing || 0,
-   row.incoming || 0,
-   row.delivered || 0,
-   row.failed || 0
-  ])
- ];
-
- const csv = rows.map(row =>
-  row.map(value =>
-   '"' + String(value).replace(/"/g, '""') + '"'
-  ).join(",")
- ).join("\r\n");
-
- const blob = new Blob(["\uFEFF" + csv], {
-  type: "text/csv;charset=utf-8;"
- });
-
- const url = URL.createObjectURL(blob);
- const link = document.createElement("a");
-
- link.href = url;
- link.download = "ak-properties-reports.csv";
- link.click();
-
- URL.revokeObjectURL(url);
-} 
- 
-function renderTemplates() {
- const container = $("templateList");
- if (!container) return;
-
- if (!templates.length) {
-  container.innerHTML = "<p>No templates loaded yet.</p>";
-  return;
- }
-
- container.innerHTML = templates.map(template => {
-  const name = template.name || template.id || "";
-  const status = template.status || template.state || "Unknown";
-  const language = template.language || "en";
-
-  return `
-   <div class="template-card">
-    <b>${esc(name)}</b>
-    <div>Status: ${esc(status)}</div>
-    <div>Language: ${esc(language)}</div>
-   </div>
-  `;
- }).join("");
-}
-
-function renderCampaignTemplateOptions() {
- const select = $("campaignTemplate");
- if (!select) return;
-
- const previous = select.value;
-
- const approved = templates.filter(template =>
-  String(template.status || template.state || "")
-   .toUpperCase() === "APPROVED"
- );
-
- select.innerHTML =
-  '<option value="">Select approved template</option>' +
-  approved.map(template => {
-   const name = template.name || template.id || "";
-
-   return `
-    <option value="${esc(name)}">${esc(name)}</option>
-   `;
+    return `
+      <button
+        type="button"
+        class="chat-item ${active ? "active" : ""} ${unread ? "has-unread" : ""}"
+        data-chat-phone="${escapeHTML(chat.phone)}"
+        style="width:100%;text-align:left;cursor:pointer;"
+      >
+        <div class="chat-item-top">
+          <strong>${escapeHTML(chat.name || chat.phone)}</strong>
+          ${unread
+            ? `<span class="unread-badge">${unread}</span>`
+            : ""}
+        </div>
+        <div class="chat-phone">
+          ${escapeHTML(chat.phone)}
+        </div>
+        <div class="chat-preview">
+          ${escapeHTML(getLastMessagePreview(last))}
+        </div>
+        <small>${escapeHTML(formatDate(last.timestamp))}</small>
+      </button>
+    `;
   }).join("");
 
- if ([...select.options].some(option => option.value === previous)) {
-  select.value = previous;
- }
-
- renderVariables();
+  container.querySelectorAll("[data-chat-phone]").forEach(button => {
+    button.addEventListener("click", () => {
+      selectChat(button.dataset.chatPhone);
+    });
+  });
 }
 
-function saveProjectSettings() {
- const url = $("apiUrl")?.value?.trim() || "";
+/* Select a chat and mark its current messages as read */
 
- if (url && !/^https:\/\/[^ ]+$/i.test(url)) {
-  setStatus("settingsStatus", "Valid HTTPS Worker URL भरा.");
-  return;
- }
+function selectChat(phone) {
+  selectedChat = phone;
 
- projectUrls[activeProject] = url.replace(/\/+$/, "");
- saveURLs();
+  const chat = getChatGroups().find(item => item.phone === phone);
 
- setStatus("settingsStatus", "Worker URL saved in this browser.");
- toast("Settings saved.");
+  if (chat) {
+    const latestTime = chat.messages.reduce((latest, message) => {
+      const time =
+        new Date(message.timestamp || 0).getTime() || 0;
+
+      return Math.max(latest, time);
+    }, Date.now());
+
+    saveLastReadTime(phone, latestTime);
+  }
+
+  renderChatList();
+  renderSelectedChat();
+
+  const phoneInput = $("replyTo");
+  if (phoneInput) phoneInput.value = phone;
+
+  const nameLabel = $("selectedChatName");
+  if (nameLabel) {
+    nameLabel.textContent = chat
+      ? `${chat.name} (${chat.phone})`
+      : phone;
+  }
 }
 
-function populateProjectSettings() {
- if ($("apiUrl")) {
-  $("apiUrl").value = projectUrls[activeProject] || "";
- }
+/* Render the selected conversation */
 
- if ($("projectSettings")) {
-  $("projectSettings").textContent =
-   "Selected project: " + (PROJECTS[activeProject] || activeProject);
- }
+function renderSelectedChat() {
+  const container = $("chatMessages");
+  if (!container) return;
+
+  if (!selectedChat) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <p>Select a chat to view messages.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const chatMessages = messages
+    .filter(message => getPhone(message) === selectedChat)
+    .sort((a, b) => {
+      const timeA =
+        new Date(a.timestamp || 0).getTime() || 0;
+
+      const timeB =
+        new Date(b.timestamp || 0).getTime() || 0;
+
+      return timeA - timeB;
+    });
+
+  if (!chatMessages.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <p>No saved messages for this number.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = chatMessages.map(message => {
+    const outgoing = getDirection(message) === "outgoing";
+    const messageText = getText(message);
+
+    return `
+      <div class="message-row ${outgoing ? "outgoing" : "incoming"}">
+        <div class="message-bubble">
+          <div class="message-text">
+            ${escapeHTML(messageText || "[Media or template message]")}
+          </div>
+          <div class="message-meta">
+            <span>${escapeHTML(formatDate(message.timestamp))}</span>
+            ${outgoing
+              ? `<span>${escapeHTML(message.status || "sent")}</span>`
+              : ""}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  container.scrollTop = container.scrollHeight;
 }
 
-function setupDashboardEvents() {
- $("chatSearch")?.addEventListener("input", renderChats);
- $("contactSearch")?.addEventListener("input", renderContactsTable);
- $("historySearch")?.addEventListener("input", renderHistoryTable);
+console.log("Part 5 loaded: message history and Live Chat functions ready.");
+ /* ==========================================
+   PART 6 — DASHBOARD, NUMBERS & TEMPLATES
+   ========================================== */
 
- $("addContactButton")?.addEventListener("click", addContact);
- $("replyButton")?.addEventListener("click", sendReply);
- $("mediaButton")?.addEventListener("click", sendMedia);
+/* LOAD WHATSAPP PHONE NUMBERS */
 
- $("campaignTemplate")?.addEventListener(
+async function loadPhoneNumbers() {
+  try {
+    const result = await apiRequest("/phone-numbers");
+
+    phoneNumbers = Array.isArray(result.phoneNumbers)
+      ? result.phoneNumbers
+      : Array.isArray(result.data)
+        ? result.data
+        : [];
+
+    const select = $("sendNumber");
+
+    if (select) {
+      const previousValue = select.value;
+
+      select.innerHTML = `
+        <option value="">Select WhatsApp number</option>
+        ${phoneNumbers.map(number => {
+          const id =
+            number.phoneNumberId ||
+            number.phone_number_id ||
+            number.id ||
+            "";
+
+          const display =
+            number.displayPhoneNumber ||
+            number.display_phone_number ||
+            number.displayName ||
+            number.verified_name ||
+            id;
+
+          return `
+            <option value="${escapeHTML(id)}">
+              ${escapeHTML(display)}
+            </option>
+          `;
+        }).join("")}
+      `;
+
+      if (previousValue) select.value = previousValue;
+    }
+
+    const numberList = $("numberList");
+
+    if (numberList) {
+      numberList.innerHTML = phoneNumbers.length
+        ? phoneNumbers.map(number => `
+            <div class="number-item">
+              <strong>
+                ${escapeHTML(
+                  number.displayPhoneNumber ||
+                  number.display_phone_number ||
+                  number.displayName ||
+                  number.verified_name ||
+                  "WhatsApp Number"
+                )}
+              </strong>
+              <small>
+                ID:
+                ${escapeHTML(
+                  number.phoneNumberId ||
+                  number.phone_number_id ||
+                  number.id ||
+                  "Not available"
+                )}
+              </small>
+            </div>
+          `).join("")
+        : "<p>No WhatsApp numbers returned by Worker.</p>";
+    }
+
+    return phoneNumbers;
+  } catch (error) {
+    console.error("Phone number loading failed:", error);
+    showToast("WhatsApp numbers load झाले नाहीत.");
+    return [];
+  }
+}
+
+/* LOAD APPROVED AND OTHER AVAILABLE TEMPLATES */
+
+async function loadTemplates() {
+  try {
+    const result = await apiRequest("/templates");
+
+    templates = Array.isArray(result.templates)
+      ? result.templates
+      : Array.isArray(result.data)
+        ? result.data
+        : [];
+
+    const select = $("campaignTemplate");
+
+    if (select) {
+      const previousValue = select.value;
+
+      select.innerHTML = `
+        <option value="">Select WhatsApp template</option>
+        ${templates.map(template => `
+          <option value="${escapeHTML(template.name)}">
+            ${escapeHTML(template.name)}
+            (${escapeHTML(template.status || "UNKNOWN")})
+          </option>
+        `).join("")}
+      `;
+
+      if (previousValue) select.value = previousValue;
+    }
+
+    renderTemplateList();
+    renderTemplateVariables();
+
+    return templates;
+  } catch (error) {
+    console.error("Template loading failed:", error);
+    showToast("Templates load झाले नाहीत.");
+    return [];
+  }
+}
+
+/* TEMPLATE LIST */
+
+function renderTemplateList() {
+  const container = $("templateList");
+  if (!container) return;
+
+  if (!templates.length) {
+    container.innerHTML = "<p>No templates found.</p>";
+    return;
+  }
+
+  container.innerHTML = templates.map(template => {
+    const body = (template.components || [])
+      .find(component => component.type === "BODY");
+
+    return `
+      <div class="template-item">
+        <strong>${escapeHTML(template.name || "Unnamed")}</strong>
+        <div>
+          Status:
+          ${escapeHTML(template.status || "Unknown")}
+        </div>
+        <div>
+          Language:
+          ${escapeHTML(template.language || "Unknown")}
+        </div>
+        <p>${escapeHTML(body?.text || "No body preview available.")}</p>
+      </div>
+    `;
+  }).join("");
+}
+
+/* FIND SELECTED TEMPLATE */
+
+function getSelectedTemplate() {
+  const name = $("campaignTemplate")?.value;
+
+  return templates.find(template => template.name === name) || null;
+}
+
+/* BUILD TEMPLATE INPUTS */
+
+function renderTemplateVariables() {
+  const container = $("templateVariables");
+  if (!container) return;
+
+  const template = getSelectedTemplate();
+
+  if (!template) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const components = template.components || [];
+  const body = components.find(item => item.type === "BODY");
+  const header = components.find(item => item.type === "HEADER");
+
+  const bodyText = body?.text || "";
+  const matches = [...bodyText.matchAll(/\{\{(\d+)\}\}/g)];
+
+  const variableCount = matches.reduce((max, match) => {
+    return Math.max(max, Number(match[1]) || 0);
+  }, 0);
+
+  let html = "";
+
+  if (header?.format === "IMAGE") {
+    html += `
+      <label for="templateHeaderImage">Header Image URL (HTTPS)</label>
+      <input
+        id="templateHeaderImage"
+        type="url"
+        placeholder="https://example.com/image.jpg"
+      />
+    `;
+  }
+
+  for (let i = 1; i <= variableCount; i++) {
+    html += `
+      <label for="templateVar${i}">
+        Template variable {{${i}}}
+      </label>
+      <input
+        id="templateVar${i}"
+        type="text"
+        placeholder="Enter value for {{${i}}}"
+        data-template-variable="${i}"
+      />
+    `;
+  }
+
+  if (!variableCount && header?.format !== "IMAGE") {
+    html = "<p>This template has no BODY variables or image header.</p>";
+  }
+
+  container.innerHTML = html;
+}
+
+/* REFRESH TEMPLATE INPUTS WHEN SELECTION CHANGES */
+
+$("campaignTemplate")?.addEventListener(
   "change",
-  renderVariables
- );
+  renderTemplateVariables
+);
 
- $("saveApi")?.addEventListener("click", saveProjectSettings);
- $("testApi")?.addEventListener("click", testAPI);
+/* LOAD DASHBOARD REPORTS */
 
- $("historyLimit")?.addEventListener("change", renderHistoryTable);
+async function loadDashboard() {
+  try {
+    const result = await apiRequest("/reports");
+    const totals = result.totals || {};
 
- document.querySelectorAll("[data-page]").forEach(button => {
-  button.addEventListener("click", () => {
-   showPage(button.dataset.page);
-  });
- });
+    const setText = (id, value) => {
+      const element = $(id);
+      if (element) element.textContent = String(value ?? 0);
+    };
+
+    setText("total", totals.totalMessages);
+    setText("incomingCount", totals.incoming);
+    setText("outgoingCount", totals.outgoing);
+    setText("contactCount", getChatGroups().length);
+
+    const unreadTotal = getChatGroups().reduce((sum, chat) => {
+      return sum + getUnreadCount(chat);
+    }, 0);
+
+    setText("unreadCount", unreadTotal);
+
+    dailyReports = Array.isArray(result.daily)
+      ? result.daily
+      : [];
+
+    renderDailyReports();
+
+    const status = $("dashStatus");
+    if (status) {
+      status.textContent = "Connected — reports updated";
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Dashboard loading failed:", error);
+
+    const status = $("dashStatus");
+    if (status) status.textContent = "Worker connection failed";
+
+    return null;
+  }
 }
 
-function initializeDashboard() {
- try {
-  loadLocalData();
+/* RENDER DAILY REPORTS */
 
-  // Default URLs are used only if the browser has no saved URL.
-  if (!projectUrls.newlaunch) {
-   projectUrls.newlaunch =
-    "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
+function renderDailyReports() {
+  const container = $("dailyReportList");
+  if (!container) return;
+
+  if (!dailyReports.length) {
+    container.innerHTML = "<p>No daily report data available.</p>";
+    return;
   }
 
-  if (!projectUrls.dosti) {
-   projectUrls.dosti =
-    "https://dosti-whatsapp-api.amolkolekar100000.workers.dev";
-  }
-
-  saveURLs();
-  populateProjectSettings();
-  renderContactsTable();
-  renderChats();
-  renderTemplates();
-  renderCampaignTemplateOptions();
-  renderHistoryTable();
-  renderClientMessageReport();
-
-  setupDashboardEvents();
-
-  syncAll().catch(error => {
-   console.error("Dashboard startup error:", error);
-  });
- } catch (error) {
-  console.error("Dashboard initialization failed:", error);
-  toast("Dashboard initialization failed. Check browser console.");
- }
+  container.innerHTML = dailyReports.map(day => `
+    <div class="report-item">
+      <strong>${escapeHTML(day.date || "")}</strong>
+      <div>Total: ${escapeHTML(day.total ?? 0)}</div>
+      <div>Incoming: ${escapeHTML(day.incoming ?? 0)}</div>
+      <div>Outgoing: ${escapeHTML(day.outgoing ?? 0)}</div>
+      <div>Delivered: ${escapeHTML(day.delivered ?? 0)}</div>
+      <div>Read: ${escapeHTML(day.readCount ?? 0)}</div>
+      <div>Failed: ${escapeHTML(day.failed ?? 0)}</div>
+    </div>
+  `).join("");
 }
 
-document.addEventListener("DOMContentLoaded", initializeDashboard);
-</script>
-</body>
-</html>
+/* REFRESH ALL MAIN DATA */
+
+async function syncAll() {
+  await Promise.allSettled([
+    loadMessages(),
+    loadPhoneNumbers(),
+    loadTemplates(),
+    loadDashboard()
+  ]);
+}
+
+/* INITIALIZE DATA WHEN THE PAGE IS READY */
+
+async function initializeDashboard() {
+  loadSettings();
+
+  await syncAll();
+
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+  }
+
+  refreshTimer = setInterval(async () => {
+    await Promise.allSettled([
+      refreshLatestMessages(),
+      loadDashboard()
+    ]);
+  }, 10000);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeDashboard,
+    { once: true }
+  );
+} else {
+  initializeDashboard();
+}
+
+console.log("Part 6 loaded: dashboard, numbers and templates ready.");
+ /* ==========================================
+   PART 7 — SEND MESSAGE & CAMPAIGNS
+   ========================================== */
+
+/* SEND NORMAL WHATSAPP TEXT MESSAGE */
+
+async function sendWhatsAppText(to, message, phoneNumberId) {
+  const phone = normalizePhone(to);
+
+  if (!phone || !message.trim()) {
+    throw new Error("WhatsApp number आणि message आवश्यक आहेत.");
+  }
+
+  const payload = {
+    to: phone,
+    message: message.trim()
+  };
+
+  if (phoneNumberId) {
+    payload.phoneNumberId = phoneNumberId;
+  }
+
+  return await apiRequest("/send", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+}
+
+/* SEND APPROVED WHATSAPP TEMPLATE */
+
+async function sendWhatsAppTemplate(
+  to,
+  templateName,
+  language,
+  variables,
+  phoneNumberId,
+  headerImageUrl
+) {
+  const phone = normalizePhone(to);
+
+  if (!phone || !templateName) {
+    throw new Error("Number आणि template निवडा.");
+  }
+
+  const payload = {
+    to: phone,
+    templateName,
+    language: language || "en_US",
+    variables: variables || []
+  };
+
+  if (phoneNumberId) {
+    payload.phoneNumberId = phoneNumberId;
+  }
+
+  if (headerImageUrl) {
+    payload.headerImageUrl = headerImageUrl;
+  }
+
+  return await apiRequest("/send-template", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+}
+
+/* GET SELECTED SENDING NUMBER */
+
+function getSelectedPhoneNumberId() {
+  return $("sendNumber")?.value || "";
+}
+
+/* SEND TEST TEMPLATE */
+
+async function sendTestTemplate() {
+  try {
+    const phone = $("testPhone")?.value?.trim();
+    const template = getSelectedTemplate();
+
+    if (!phone) {
+      showToast("Test WhatsApp number टाका.");
+      return;
+    }
+
+    if (!template) {
+      showToast("Template निवडा.");
+      return;
+    }
+
+    const variables = [];
+    const body = (template.components || [])
+      .find(component => component.type === "BODY");
+
+    const bodyText = body?.text || "";
+    const matches = [...bodyText.matchAll(/\{\{(\d+)\}\}/g)];
+
+    const variableCount = matches.reduce((max, match) => {
+      return Math.max(max, Number(match[1]) || 0);
+    }, 0);
+
+    for (let i = 1; i <= variableCount; i++) {
+      const value = $(`templateVar${i}`)?.value?.trim();
+
+      if (!value) {
+        showToast(`Template variable {{${i}}} भरा.`);
+        return;
+      }
+
+      variables.push(value);
+    }
+
+    const headerImageUrl =
+      $("templateHeaderImage")?.value?.trim() || "";
+
+    const button = $("sendTest");
+    if (button) button.disabled = true;
+
+    const result = await sendWhatsAppTemplate(
+      phone,
+      template.name,
+      template.language || "en_US",
+      variables,
+      getSelectedPhoneNumberId(),
+      headerImageUrl
+    );
+
+    showToast(
+      result.success
+        ? "Test template request successful."
+        : "Test template failed."
+    );
+
+    await refreshLatestMessages();
+    await loadDashboard();
+  } catch (error) {
+    console.error("Test template error:", error);
+    showToast(error.message || "Test template send failed.");
+  } finally {
+    const button = $("sendTest");
+    if (button) button.disabled = false;
+  }
+}
+
+/* GET RECIPIENTS FROM TEXTAREA */
+
+function getCampaignRecipients() {
+  const input =
+    $("campaignRecipients") ||
+    $("recipientNumbers") ||
+    $("campaignNumbers");
+
+  if (!input) return [];
+
+  const raw = input.value || "";
+
+  return [...new Set(
+    raw.split(/[\n,;\t ]+/)
+      .map(item => normalizePhone(item))
+      .filter(Boolean)
+  )];
+}
+
+/* READ CAMPAIGN TEMPLATE VARIABLES */
+
+function getCampaignTemplateVariables() {
+  const template = getSelectedTemplate();
+
+  if (!template) {
+    throw new Error("WhatsApp template निवडा.");
+  }
+
+  const body = (template.components || [])
+    .find(component => component.type === "BODY");
+
+  const bodyText = body?.text || "";
+  const matches = [...bodyText.matchAll(/\{\{(\d+)\}\}/g)];
+
+  const variableCount = matches.reduce((max, match) => {
+    return Math.max(max, Number(match[1]) || 0);
+  }, 0);
+
+  const variables = [];
+
+  for (let i = 1; i <= variableCount; i++) {
+    const value = $(`templateVar${i}`)?.value?.trim();
+
+    if (!value) {
+      throw new Error(`Template variable {{${i}}} भरा.`);
+    }
+
+    variables.push(value);
+  }
+
+  const header = (template.components || [])
+    .find(component => component.type === "HEADER");
+
+  const headerImageUrl =
+    $("templateHeaderImage")?.value?.trim() || "";
+
+  if (header?.format === "IMAGE" && !headerImageUrl) {
+    throw new Error("Header image URL आवश्यक आहे.");
+  }
+
+  return {
+    template,
+    variables,
+    headerImageUrl
+  };
+}
+
+/* START CAMPAIGN — APPROVED TEMPLATE ONLY */
+
+async function startCampaign() {
+  const recipients = getCampaignRecipients();
+
+  if (!recipients.length) {
+    showToast("Campaign recipients टाका.");
+    return;
+  }
+
+  const consent = $("campaignConsent");
+
+  if (consent && !consent.checked) {
+    showToast("Recipients ची permission confirm करा.");
+    return;
+  }
+
+  let campaignData;
+
+  try {
+    campaignData = getCampaignTemplateVariables();
+  } catch (error) {
+    showToast(error.message);
+    return;
+  }
+
+  const template = campaignData.template;
+
+  if (String(template.status || "").toUpperCase() !== "APPROVED") {
+    showToast("फक्त APPROVED template वापरा.");
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `${recipients.length} recipients ला WhatsApp template पाठवायचा आहे का?`
+  );
+
+  if (!confirmed) return;
+
+  const startButton = $("startCampaign");
+  if (startButton) startButton.disabled = true;
+
+  let sent = 0;
+  let failed = 0;
+  const errors = [];
+
+  try {
+    for (let i = 0; i < recipients.length; i++) {
+      try {
+        const result = await sendWhatsAppTemplate(
+          recipients[i],
+          template.name,
+          template.language || "en_US",
+          campaignData.variables,
+          getSelectedPhoneNumberId(),
+          campaignData.headerImageUrl
+        );
+
+        if (result.success) {
+          sent++;
+        } else {
+          failed++;
+          errors.push({
+            phone: recipients[i],
+            error: result.error || "Send failed"
+          });
+        }
+      } catch (error) {
+        failed++;
+        errors.push({
+          phone: recipients[i],
+          error: error.message || "Send failed"
+        });
+      }
+
+      const progress = $("campaignProgress");
+
+      if (progress) {
+        progress.textContent =
+          `Processed ${i + 1}/${recipients.length} | ` +
+          `Successful: ${sent} | Failed: ${failed}`;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+
+    showToast(
+      `Campaign completed. Successful: ${sent}, Failed: ${failed}`
+    );
+
+    const report = $("campaignResult");
+
+    if (report) {
+      report.textContent = JSON.stringify({
+        total: recipients.length,
+        successful: sent,
+        failed,
+        errors
+      }, null, 2);
+    }
+
+    await refreshLatestMessages();
+    await loadDashboard();
+  } finally {
+    if (startButton) startButton.disabled = false;
+  }
+}
+
+/* CONNECT CAMPAIGN BUTTONS */
+
+$("sendTest")?.addEventListener("click", sendTestTemplate);
+
+$("startCampaign")?.addEventListener("click", startCampaign);
+
+console.log("Part 7 loaded: WhatsApp sending and campaign functions ready.");
+ /* ==========================================
+   PART 8 — LIVE CHAT REPLY & MEDIA
+   ========================================== */
+
+/* SEND REPLY FROM LIVE CHAT */
+
+async function sendReply() {
+  const phoneInput = $("replyTo");
+  const messageInput = $("replyMessage");
+
+  const phone = phoneInput?.value?.trim() || selectedChat || "";
+  const message = messageInput?.value?.trim() || "";
+  const fileInput = $("replyFile");
+  const file = fileInput?.files?.[0] || null;
+
+  if (!phone) {
+    showToast("Customer WhatsApp number निवडा.");
+    return;
+  }
+
+  if (!message && !file) {
+    showToast("Message किंवा file निवडा.");
+    return;
+  }
+
+  const button = $("sendReply");
+  if (button) button.disabled = true;
+
+  try {
+    let result;
+
+    if (file) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf"
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error("फक्त JPG, PNG, WEBP किंवा PDF file पाठवा.");
+      }
+
+      if (file.size > 15 * 1024 * 1024) {
+        throw new Error("File size 15 MB पेक्षा कमी असावी.");
+      }
+
+      const formData = new FormData();
+
+      formData.append("file", file);
+      formData.append("to", normalizePhone(phone));
+      formData.append("caption", message);
+
+      const phoneNumberId = getSelectedPhoneNumberId();
+
+      if (phoneNumberId) {
+        formData.append("phoneNumberId", phoneNumberId);
+      }
+
+      result = await apiRequest("/send-media", {
+        method: "POST",
+        body: formData
+      });
+    } else {
+      result = await sendWhatsAppText(
+        phone,
+        message,
+        getSelectedPhoneNumberId()
+      );
+    }
+
+    if (!result || result.success !== true) {
+      throw new Error(
+        result?.error || "WhatsApp message send failed."
+      );
+    }
+
+    if (messageInput) messageInput.value = "";
+    if (fileInput) fileInput.value = "";
+
+    showToast("WhatsApp message request successful.");
+
+    await refreshLatestMessages();
+    await loadDashboard();
+  } catch (error) {
+    console.error("Live Chat send error:", error);
+    showToast(error.message || "Message send failed.");
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+/* CONNECT LIVE CHAT SEND BUTTON */
+
+$("sendReply")?.addEventListener("click", sendReply);
+
+/* ENTER TO SEND; SHIFT+ENTER FOR NEW LINE */
+
+$("replyMessage")?.addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendReply();
+  }
+});
+
+/* LOAD A PARTICULAR CHAT */
+
+function openChatByPhone(phone) {
+  const normalized = normalizePhone(phone);
+
+  if (!normalized) {
+    showToast("Valid WhatsApp number टाका.");
+    return;
+  }
+
+  selectChat(normalized);
+}
+
+/* UPDATE REPORTS */
+
+async function loadReports() {
+  try {
+    const result = await apiRequest("/reports");
+    const totals = result.totals || {};
+
+    const fields = {
+      reportTotal: totals.totalMessages,
+      reportIncoming: totals.incoming,
+      reportOutgoing: totals.outgoing,
+      reportDelivered: totals.delivered,
+      reportRead: totals.readCount,
+      reportFailed: totals.failed
+    };
+
+    Object.entries(fields).forEach(([id, value]) => {
+      const element = $(id);
+
+      if (element) {
+        element.textContent = String(value ?? 0);
+      }
+    });
+
+    dailyReports = Array.isArray(result.daily)
+      ? result.daily
+      : [];
+
+    renderDailyReports();
+
+    return result;
+  } catch (error) {
+    console.error("Reports load error:", error);
+    showToast("Reports load झाले नाहीत.");
+    return null;
+  }
+}
+
+/* EXPORT SAVED MESSAGE HISTORY AS CSV */
+
+function exportMessagesCSV() {
+  if (!messages.length) {
+    showToast("Export करण्यासाठी messages उपलब्ध नाहीत.");
+    return;
+  }
+
+  const headers = [
+    "Phone",
+    "Name",
+    "Direction",
+    "Message",
+    "Timestamp",
+    "Status",
+    "Message ID"
+  ];
+
+  const rows = messages.map(message => [
+    getPhone(message),
+    message.name || "",
+    getDirection(message),
+    getText(message),
+    message.timestamp || message.created_at || "",
+    message.status || "",
+    message.message_id || ""
+  ]);
+
+  const csvCell = value =>
+    '"' + String(value ?? "").replace(/"/g, '""') + '"';
+
+  const csv = [headers, ...rows]
+    .map(row => row.map(csvCell).join(","))
+    .join("\r\n");
+
+  const blob = new Blob(
+    ["\uFEFF" + csv],
+    { type: "text/csv;charset=utf-8;" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download =
+    "ak-properties-whatsapp-messages-" +
+    new Date().toISOString().slice(0, 10) +
+    ".csv";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+
+  showToast("CSV export तयार झाला.");
+}
+
+/* CONNECT OPTIONAL EXPORT BUTTON */
+
+$("exportMessages")?.addEventListener(
+  "click",
+  exportMessagesCSV
+);
+
+/* MANUAL REFRESH BUTTONS */
+
+$("refreshMessages")?.addEventListener("click", async () => {
+  await refreshLatestMessages();
+  showToast("Messages refreshed.");
+});
+
+$("refreshDashboard")?.addEventListener("click", async () => {
+  await loadDashboard();
+  await loadReports();
+  showToast("Dashboard refreshed.");
+});
+
+/* REFRESH REPORTS WHEN REPORTS PAGE OPENS */
+
+const originalShowPage = showPage;
+
+showPage = function(page) {
+  originalShowPage(page);
+
+  if (page === "reports") {
+    loadReports();
+  }
+
+  if (page === "inbox") {
+    renderChatList();
+    renderSelectedChat();
+  }
+
+  if (page === "templates") {
+    loadTemplates();
+  }
+};
+
+console.log("Part 8 loaded: Live Chat, media and reports ready.");
+ /* ==========================================
+   PART 9 — FINAL SETUP & INITIALIZATION
+   ========================================== */
+
+/* LOCAL CONTACTS */
+
+function loadLocalContacts() {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem("ak_properties_contacts") || "[]"
+    );
+
+    leads = Array.isArray(saved) ? saved : [];
+  } catch {
+    leads = [];
+  }
+
+  renderLocalContacts();
+}
+
+function saveLocalContacts() {
+  try {
+    localStorage.setItem(
+      "ak_properties_contacts",
+      JSON.stringify(leads)
+    );
+  } catch (error) {
+    console.error("Contacts save failed:", error);
+    showToast("Contacts save झाले नाहीत.");
+  }
+}
+
+function renderLocalContacts() {
+  const container = $("leadsList");
+  if (!container) return;
+
+  if (!leads.length) {
+    container.innerHTML = "<p>No locally saved contacts.</p>";
+    return;
+  }
+
+  container.innerHTML = leads.map((lead, index) => `
+    <div class="lead-item">
+      <strong>${escapeHTML(lead.name || "Unknown")}</strong>
+      <div>${escapeHTML(lead.phone || "")}</div>
+      <div>${escapeHTML(lead.notes || "")}</div>
+      <button
+        type="button"
+        data-contact-chat="${index}"
+      >Open Chat</button>
+    </div>
+  `).join("");
+
+  container.querySelectorAll("[data-contact-chat]").forEach(button => {
+    button.addEventListener("click", () => {
+      const lead = leads[Number(button.dataset.contactChat)];
+
+      if (lead?.phone) {
+        showPage("inbox");
+        openChatByPhone(lead.phone);
+      }
+    });
+  });
+}
+
+function addLocalContact(name, phone, notes = "") {
+  const normalizedPhone = normalizePhone(phone);
+
+  if (!name.trim() || !normalizedPhone) {
+    showToast("Contact name आणि valid number आवश्यक आहेत.");
+    return;
+  }
+
+  const exists = leads.some(
+    lead => normalizePhone(lead.phone) === normalizedPhone
+  );
+
+  if (exists) {
+    showToast("हा contact आधीच save आहे.");
+    return;
+  }
+
+  leads.push({
+    name: name.trim(),
+    phone: normalizedPhone,
+    notes: notes.trim(),
+    createdAt: new Date().toISOString()
+  });
+
+  saveLocalContacts();
+  renderLocalContacts();
+  showToast("Contact locally save झाला.");
+}
+
+/* OPTIONAL CONTACT FORM */
+
+$("addContact")?.addEventListener("click", () => {
+  const name = $("leadName")?.value || "";
+  const phone = $("leadPhone")?.value || "";
+  const notes = $("leadNotes")?.value || "";
+
+  addLocalContact(name, phone, notes);
+
+  if (normalizePhone(phone) && name.trim()) {
+    if ($("leadName")) $("leadName").value = "";
+    if ($("leadPhone")) $("leadPhone").value = "";
+    if ($("leadNotes")) $("leadNotes").value = "";
+  }
+});
+
+/* TEMPLATE AND MESSAGE PAGE REFRESH */
+
+$("refreshTemplates")?.addEventListener("click", loadTemplates);
+
+$("refreshNumbers")?.addEventListener("click", loadPhoneNumbers);
+
+/* PROJECT CHANGE — REFRESH WORKER DATA */
+
+$("projectSelect")?.addEventListener("change", async event => {
+  const project = event.target.value;
+
+  if (typeof switchProject === "function") {
+    await switchProject(project);
+  }
+
+  await syncAll();
+});
+
+/* CONNECTION STATUS */
+
+async function checkWorkerHealth() {
+  const status = $("connectionStatus");
+
+  try {
+    const result = await apiRequest("/health");
+
+    if (status) {
+      status.textContent = result.success
+        ? "API ACTIVE"
+        : "API CHECK REQUIRED";
+    }
+
+    return Boolean(result.success);
+  } catch (error) {
+    if (status) status.textContent = "API OFFLINE";
+
+    console.error("Worker health check failed:", error);
+    return false;
+  }
+}
+
+/* FINAL REFRESH */
+
+async function refreshEverything() {
+  await Promise.allSettled([
+    checkWorkerHealth(),
+    refreshLatestMessages(),
+    loadDashboard(),
+    loadReports()
+  ]);
+
+  renderChatList();
+  renderSelectedChat();
+  renderLocalContacts();
+}
+
+/* INITIALIZE LOCAL CONTACTS */
+
+loadLocalContacts();
+
+/* PREVENT DUPLICATE POLLING TIMERS */
+
+window.addEventListener("beforeunload", () => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+  }
+});
+
+/* FINAL STATUS */
+
+console.log("A K Properties WhatsApp Dashboard — Part 9 loaded.");
+console.log("Please test the Worker connection before sending campaigns.");
