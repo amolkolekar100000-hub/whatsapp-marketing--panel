@@ -1206,30 +1206,50 @@ function renderSelectedChat() {
 /* LOAD MESSAGE HISTORY FROM WORKER */
 
 async function loadChats() {
-  setStatus("chatStatus", "Loading conversations...");
+  setStatus("chatStatus", "Loading conversations (up to 100,000 messages)...");
 
   try {
-    const data = await apiRequest(
-      "/messages?limit=1000&offset=0"
-    );
+    const allMessages = [];
+    const pageSize = 1000;
+    const maxMessages = 100000;
+    let offset = 0;
 
-    messages = extractArray(data, [
-      "data",
-      "messages"
-    ]);
+    // Load records in pages; the Worker must support limit and offset.
+    while (offset < maxMessages) {
+      const limit = Math.min(pageSize, maxMessages - offset);
+      const data = await apiRequest(
+        `/messages?limit=${limit}&offset=${offset}`
+      );
+      const page = extractArray(data, ["data", "messages", "results"]);
 
+      if (!Array.isArray(page) || page.length === 0) break;
+
+      allMessages.push(...page);
+      offset += page.length;
+
+      setStatus(
+        "chatStatus",
+        `Loading... ${allMessages.length.toLocaleString("en-IN")} messages fetched`
+      );
+
+      if (page.length < limit) break;
+    }
+
+    messages = allMessages;
     renderChatList();
     renderSelectedChat();
 
     setStatus(
       "chatStatus",
-      "Conversations loaded: " + getChatGroups().length +
-      " | Messages: " + messages.length
+      "Conversations loaded: " + getChatGroups().length.toLocaleString("en-IN") +
+      " | Messages: " + messages.length.toLocaleString("en-IN") +
+      (messages.length >= maxMessages ? " | Maximum load reached (100,000 messages)" : "")
     );
   } catch (error) {
     setStatus(
       "chatStatus",
-      "Unable to load chats: " + error.message
+      "Unable to load chats: " + error.message +
+      ". Worker/API limit, pagination support, or database availability तपासा."
     );
   }
 }
