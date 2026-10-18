@@ -413,8 +413,7 @@ td,th{
   <pre id="sendResult"></pre>
  </div>
 </section> 
- 
-<section class="view" id="inbox">
+ <section class="view" id="inbox">
  <h2>Live Chat / WhatsApp Inbox</h2>
 
  <div class="chat-layout">
@@ -709,7 +708,8 @@ td,th{
 <div id="toast" role="status"></div>
 
 <script> 
- /* ==========================================
+ 
+/* ==========================================
    AK PROPERTIES WHATSAPP DASHBOARD
    PART 3 - CORE JAVASCRIPT
 ========================================== */
@@ -1875,13 +1875,38 @@ function exportMessagesCSV() {
  URL.revokeObjectURL(url);
 } 
  /* ==========================================
-   PART 7 - CAMPAIGN VARIABLES FIX
+   PART 7 - META TEMPLATE FORMAT
+   Dynamic HEADER + BODY VARIABLES
 ========================================== */
 
+function getTemplateInfo(templateName) {
+ return templates.find(item =>
+  (item.name || item.id) === templateName
+ ) || null;
+}
+
+function getTemplateComponents(template) {
+ return Array.isArray(template?.components)
+  ? template.components
+  : [];
+}
+
 function getRequiredVariableCount(templateName, template) {
- if (templateName === "new_launch_project") {
-  return 11;
+ const body = getTemplateComponents(template)
+  .find(component =>
+   String(component.type).toUpperCase() === "BODY"
+  );
+
+ if (body?.text) {
+  const matches = [...body.text.matchAll(/\{\{\s*(\d+)\s*\}\}/g)];
+  return matches.length
+   ? Math.max(...matches.map(match => Number(match[1])))
+   : 0;
  }
+
+ // Fallback for the known template when component details
+ // are not returned by the Worker.
+ if (templateName === "new_launch_project") return 11;
 
  return Number(
   template?.variableCount ||
@@ -1908,8 +1933,7 @@ function renderCampaignTemplateOptions() {
    const language = template.language || "en";
 
    return `
-    <option
-     value="${esc(name)}"
+    <option value="${esc(name)}"
      data-language="${esc(language)}">
      ${esc(name)} (${esc(language)})
     </option>
@@ -1925,42 +1949,78 @@ function renderCampaignTemplateOptions() {
 
 function renderVariables() {
  const container = $("variableFields");
- if (!container) return;
+ const headerContainer = $("headerField");
+
+ if (!container || !headerContainer) return;
 
  const templateName = $("campaignTemplate")?.value || "";
+ const template = getTemplateInfo(templateName);
 
- const template = templates.find(item =>
-  (item.name || item.id) === templateName
- );
-
- if (!templateName) {
+ if (!templateName || !template) {
   container.innerHTML = "";
+  headerContainer.innerHTML = "";
   return;
  }
 
- const count = getRequiredVariableCount(
-  templateName,
-  template
+ const components = getTemplateComponents(template);
+
+ const header = components.find(component =>
+  String(component.type).toUpperCase() === "HEADER"
  );
+
+ const headerFormat = String(header?.format || "").toUpperCase();
+
+ if (headerFormat === "IMAGE") {
+  headerContainer.innerHTML = `
+   <label for="headerImageUrl">Approved Template IMAGE Header URL</label>
+   <input id="headerImageUrl"
+    type="url"
+    placeholder="https://public-image-url.jpg"
+    required>
+   <p class="small">
+    Public HTTPS image URL आवश्यक आहे. Template मधील image format शी जुळणारी image वापरा.
+   </p>
+  `;
+ } else if (headerFormat === "TEXT") {
+  const headerText = header?.text || "";
+
+  const headerVariables = [
+   ...headerText.matchAll(/\{\{\s*(\d+)\s*\}\}/g)
+  ];
+
+  headerContainer.innerHTML = headerVariables.length
+   ? `
+     <label>Header Variables</label>
+     ${headerVariables.map(match => `
+      <input
+       id="header_variable_${Number(match[1])}"
+       placeholder="Header Variable {{${Number(match[1])}}}">
+     `).join("")}
+    `
+   : `<p class="small">Template TEXT header automatically used.</p>`;
+ } else {
+  headerContainer.innerHTML = "";
+ }
+
+ const count = getRequiredVariableCount(templateName, template);
 
  if (count <= 0) {
   container.innerHTML =
-   "<p>या template चा variable count उपलब्ध नाही.</p>";
+   "<p>BODY variables ओळखता आले नाहीत. Worker template components तपासा.</p>";
   return;
  }
 
  container.innerHTML = `
-  <label>Template Variables (${count})</label>
+  <label>Body Variables (${count})</label>
   ${Array.from({ length: count }, (_, index) => `
    <div>
     <label for="variable_${index + 1}">
-     Variable {{${index + 1}}}
+     Body Variable {{${index + 1}}}
     </label>
-    <input
-     id="variable_${index + 1}"
-     name="variable_${index + 1}"
-     placeholder="Enter value for {{${index + 1}}}"
-     autocomplete="off">
+    <input id="variable_${index + 1}"
+     placeholder="Enter {{${index + 1}}}"
+     autocomplete="off"
+     required>
    </div>
   `).join("")}
  `;
@@ -1988,57 +2048,58 @@ function getCampaignRecipients() {
 
 async function sendCampaign(testMode = false) {
  const templateName = $("campaignTemplate")?.value || "";
+ const template = getTemplateInfo(templateName);
  const recipients = getCampaignRecipients();
  const variables = getCampaignVariables();
  const phoneNumberId = $("sendNumber")?.value || "";
 
- const selectedOption =
-  $("campaignTemplate")?.selectedOptions?.[0];
-
  const language =
-  selectedOption?.dataset?.language || "en";
+  $("campaignTemplate")?.selectedOptions?.[0]?.dataset?.language ||
+  template?.language ||
+  "en";
 
- const headerInput = $("headerField");
+ const components = getTemplateComponents(template);
+
+ const header = components.find(component =>
+  String(component.type).toUpperCase() === "HEADER"
+ );
+
+ const headerFormat = String(header?.format || "").toUpperCase();
 
  const headerImageUrl =
-  headerInput?.value?.trim() || "";
+  $("headerImageUrl")?.value?.trim() || "";
 
- if (!templateName) {
+ if (!templateName || !template) {
   setStatus("campaignStatus", "Approved template निवडा.");
   return;
  }
-
- const template = templates.find(item =>
-  (item.name || item.id) === templateName
- );
 
  const requiredCount = getRequiredVariableCount(
   templateName,
   template
  );
 
- if (requiredCount <= 0) {
+ if (requiredCount <= 0 || variables.length !== requiredCount) {
   setStatus(
    "campaignStatus",
-   "Template variable count उपलब्ध नाही. Template configuration तपासा."
-  );
-  return;
- }
-
- if (variables.length !== requiredCount) {
-  setStatus(
-   "campaignStatus",
-   `या template ला ${requiredCount} variables आवश्यक आहेत. Dashboard मध्ये ${variables.length} आहेत.`
+   `या template ला ${requiredCount} body variables आवश्यक आहेत.`
   );
   return;
  }
 
  if (variables.some(value => !value)) {
-  setStatus(
-   "campaignStatus",
-   `सर्व ${requiredCount} Template Variables भरा.`
-  );
+  setStatus("campaignStatus", "सर्व Body Variables भरा.");
   return;
+ }
+
+ if (headerFormat === "IMAGE") {
+  if (!/^https:\/\/\S+$/i.test(headerImageUrl)) {
+   setStatus(
+    "campaignStatus",
+    "IMAGE header साठी public HTTPS image URL भरा."
+   );
+   return;
+  }
  }
 
  if (!recipients.length) {
@@ -2052,47 +2113,35 @@ async function sendCampaign(testMode = false) {
  }
 
  if (!testMode && !$("consent")?.checked) {
-  setStatus(
-   "campaignStatus",
-   "ग्राहकांची WhatsApp opt-in consent confirm करा."
-  );
+  setStatus("campaignStatus", "Client opt-in consent confirm करा.");
   return;
  }
 
  if (testMode && recipients.length !== 1) {
-  setStatus(
-   "campaignStatus",
-   "Test साठी फक्त एक recipient number ठेवा."
-  );
+  setStatus("campaignStatus", "Test साठी एक recipient number ठेवा.");
   return;
  }
 
- const buttons = document.querySelectorAll(
-  '#campaigns button'
- );
-
- buttons.forEach(button => button.disabled = true);
-
+ const targets = testMode ? recipients.slice(0, 1) : recipients;
  let sent = 0;
  let failed = 0;
  const errors = [];
 
- try {
-  const targets = testMode
-   ? recipients.slice(0, 1)
-   : recipients;
+ const buttons = document.querySelectorAll("#campaigns button");
+ buttons.forEach(button => button.disabled = true);
 
+ try {
   for (const recipient of targets) {
    try {
     const payload = {
      to: recipient,
-     templateName: templateName,
-     language: language,
-     variables: variables,
-     phoneNumberId: phoneNumberId
+     templateName,
+     language,
+     variables,
+     phoneNumberId
     };
 
-    if (headerImageUrl) {
+    if (headerFormat === "IMAGE") {
      payload.headerImageUrl = headerImageUrl;
     }
 
@@ -2107,9 +2156,7 @@ async function sendCampaign(testMode = false) {
     sent++;
    } catch (error) {
     failed++;
-    errors.push(
-     recipient + ": " + error.message
-    );
+    errors.push(recipient + ": " + error.message);
    }
 
    setStatus(
@@ -2125,8 +2172,7 @@ async function sendCampaign(testMode = false) {
 
   if ($("sendResult")) {
    $("sendResult").textContent =
-    errors.slice(0, 10).join("\n") ||
-    "No sending errors reported.";
+    errors.slice(0, 10).join("\n") || "No sending errors reported.";
   }
 
   await Promise.allSettled([
@@ -2134,11 +2180,6 @@ async function sendCampaign(testMode = false) {
    loadMessages(),
    loadReports()
   ]);
- } catch (error) {
-  setStatus(
-   "campaignStatus",
-   "Campaign error: " + error.message
-  );
  } finally {
   buttons.forEach(button => button.disabled = false);
  }
@@ -2354,7 +2395,8 @@ function exportReportCSV() {
 
  URL.revokeObjectURL(url);
 } 
- function renderTemplates() {
+ 
+function renderTemplates() {
  const container = $("templateList");
  if (!container) return;
 
@@ -2496,4 +2538,4 @@ function initializeDashboard() {
 document.addEventListener("DOMContentLoaded", initializeDashboard);
 </script>
 </body>
-</html> 
+</html>
