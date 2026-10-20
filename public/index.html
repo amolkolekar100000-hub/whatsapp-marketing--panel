@@ -368,8 +368,15 @@ td, th {
     <label for="projectSelect">Project:</label>
     <select id="projectSelect">
       <option value="New Launch">New Launch</option>
-
-      <option value="New Launch Project">New Launch Project</option>
+      <option value="Godrej Properties">Godrej Properties</option>
+      <option value="Raheja Group">Raheja Group</option>
+      <option value="Delta Group">Delta Group</option>
+      <option value="Dosti Group">Dosti Group</option>
+      <option value="Piramal">Piramal</option>
+      <option value="Paradise Group">Paradise Group</option>
+      <option value="Platinum">Platinum</option>
+      <option value="Domus">Domus</option>
+      <option value="Today">Today</option>
     </select>
   </div>
 </header>
@@ -543,7 +550,7 @@ td, th {
 
         <label for="leadTag">Project / Tag</label>
         <input id="leadTag" type="text"
-          placeholder="Example: New Launch Project">
+          placeholder="Example: Godrej Properties">
 
         <button type="button" id="saveContactButton">
           Save Contact
@@ -706,20 +713,27 @@ td, th {
         <label for="projectSettingsSelect">Select Project</label>
         <select id="projectSettingsSelect">
           <option value="New Launch">New Launch</option>
-
-              <option value="New Launch Project">New Launch Project</option>
+          <option value="Godrej Properties">Godrej Properties</option>
+          <option value="Raheja Group">Raheja Group</option>
+          <option value="Delta Group">Delta Group</option>
+          <option value="Dosti Group">Dosti Group</option>
+          <option value="Piramal">Piramal</option>
+          <option value="Paradise Group">Paradise Group</option>
+          <option value="Platinum">Platinum</option>
+          <option value="Domus">Domus</option>
+          <option value="Today">Today</option>
         </select>
 
         <label for="projectWorkerUrl">Project Worker URL (Optional)</label>
         <input id="projectWorkerUrl" type="url"
-          placeholder="Enter this project’s dedicated Worker URL">
+          placeholder="Use the main Worker URL if left blank">
 
         <button type="button" id="saveProjectButton">
           Save Project Settings
         </button>
 
         <div class="status" id="projectStatus">
-          प्रत्येक project साठी स्वतंत्र Worker URL सेव्ह करा, म्हणजे त्याच project चा Meta-verified नंबर आणि templates दिसतील.
+          Project settings have not been saved.
         </div>
       </div>
 
@@ -911,19 +925,7 @@ function applyProjectSelection(project) {
   const projectInput = $("projectWorkerUrl");
   if (projectInput) projectInput.value = projectUrl || "";
 
-  // Refresh all project-specific data whenever the project changes.
-  // Each project should have its own Worker URL saved in Project Settings.
-  phoneNumbers = [];
-  templates = [];
-  const numberSelect = $("sendNumber");
-  if (numberSelect) numberSelect.innerHTML = '<option value="">Loading numbers...</option>';
-  const templateSelect = $("campaignTemplate");
-  if (templateSelect) templateSelect.innerHTML = '<option value="">Loading templates...</option>';
-
   loadDashboard();
-  loadCampaignData();
-  if ($("inbox")?.classList.contains("active")) loadChats();
-  if ($("reports")?.classList.contains("active")) loadReportsAndHistory();
 }
 
 $("projectSelect")?.addEventListener("change", (event) => {
@@ -2116,13 +2118,6 @@ async function loadPhoneNumbers() {
 
         if (id) select.add(new Option(label, id));
       });
-
-      // When this project's Worker returns exactly one Meta-verified number,
-      // select it automatically. Multiple numbers remain available for manual choice.
-      if (phoneNumbers.length === 1) {
-        const onlyNumber = phoneNumbers[0];
-        select.value = String(onlyNumber.phoneNumberId || onlyNumber.id || "");
-      }
     }
   } catch (error) {
     setStatus(
