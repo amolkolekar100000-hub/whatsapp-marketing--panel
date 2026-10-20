@@ -1,3 +1,25 @@
+A K Properties WhatsApp Marketing Dashboard
+
+Updated index.html code — Live Chart + 3-second Auto-Refresh
+
+महत्त्वाची माहिती
+
+या आवृत्तीत Dashboard वर Live Message Status Chart जोडला आहे आणि Dashboard उघडे असताना दर 3 सेकंदांनी metrics/chart refresh होतात. जुने messages किंवा database बदलणारा कोणताही SQL यात नाही.
+
+टीप: सध्या /messages API वर D1 SQL syntax error येत असल्यामुळे chart ला messages endpoint मधील डेटा मिळण्यात अडथळा येऊ शकतो. हा दस्तऐवज frontend (public/index.html) साठी आहे; Cloudflare Worker मधील SQL error वेगळा दुरुस्त करावा लागेल. हा code deploy केल्याने backend error आपोआप सुटणार नाही.
+
+GitHub मध्ये वापरण्याची पद्धत
+
+GitHub repository मध्ये public/index.html उघडा.
+
+Edit (पेन्सिल) वर क्लिक करा.
+
+या दस्तऐवजात पुढे दिलेला संपूर्ण HTML code वापरून फाइल बदला.
+
+Commit changes करण्यापूर्वी खात्री करा की ही योग्य फाइल आहे. शक्य असल्यास आधी जुनी फाइल backup म्हणून डाउनलोड करा.
+
+पूर्ण public/index.html कोड
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -433,6 +455,15 @@ td, th {
         <div id="dailyReports">Report will appear here.</div>
       </div>
 
+      <div class="panel">
+        <h3>Live Message Status Chart</h3>
+        <div class="small">Auto-refresh: every 3 seconds</div>
+        <div style="height:300px; position:relative;">
+          <canvas id="liveMessageChart" aria-label="Live message status chart"></canvas>
+        </div>
+        <div class="small" id="chartUpdatedAt">Waiting for report data...</div>
+      </div>
+
       <button type="button" id="refreshDashboard">Refresh Dashboard</button>
       <button type="button" id="checkConnection">Test API Connection</button>
     </section>
@@ -768,6 +799,7 @@ td, th {
 </div>
 
 <div id="toast" role="status" aria-live="polite"></div>  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
 "use strict";
 
@@ -2275,6 +2307,56 @@ $("refreshTemplatesButton")?.addEventListener(
 );
 
 /* =====================================
+   LIVE CHART
+===================================== */
+
+let liveMessageChart = null;
+
+function renderLiveMessageChart(totals = {}, messageList = []) {
+  const canvas = $("liveMessageChart");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  const countByStatus = (status) => messageList.filter((m) =>
+    String(m.status || "").toLowerCase() === status
+  ).length;
+
+  const labels = ["Incoming", "Outgoing", "Delivered", "Read", "Failed"];
+  const values = [
+    Number(totals.incoming ?? messageList.filter(m => String(m.direction || "").toLowerCase() === "incoming").length),
+    Number(totals.outgoing ?? messageList.filter(isOutgoingMessage).length),
+    Number(totals.delivered ?? countByStatus("delivered")),
+    Number(totals.readCount ?? totals.read ?? countByStatus("read")),
+    Number(totals.failed ?? countByStatus("failed"))
+  ];
+
+  if (liveMessageChart) {
+    liveMessageChart.data.labels = labels;
+    liveMessageChart.data.datasets[0].data = values;
+    liveMessageChart.update("none");
+  } else {
+    liveMessageChart = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: "Messages",
+          data: values,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+      }
+    });
+  }
+
+  setStatus("chartUpdatedAt", "Last updated: " + new Date().toLocaleTimeString("en-IN"));
+}
+
+/* =====================================
    DASHBOARD METRICS
 ===================================== */
 
@@ -2313,6 +2395,7 @@ async function loadDashboard() {
     }
 
     const totals = reportData.totals || {};
+    renderLiveMessageChart(totals, messages);
 
     const incoming = messages.filter((message) =>
       String(message.direction || "").toLowerCase() === "incoming"
@@ -2406,6 +2489,21 @@ async function loadSettings() {
    STARTUP
 ===================================== */
 
+let dashboardRefreshInProgress = false;
+
+async function refreshDashboardEveryThreeSeconds() {
+  const dashboard = $("dashboard");
+  if (!dashboard || !dashboard.classList.contains("active")) return;
+  if (dashboardRefreshInProgress) return;
+
+  dashboardRefreshInProgress = true;
+  try {
+    await loadDashboard();
+  } finally {
+    dashboardRefreshInProgress = false;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   loadLocalContacts();
   renderLeads();
@@ -2415,6 +2513,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadPhoneNumbers(),
     loadTemplates()
   ]);
+
+  // Refresh dashboard metrics and chart every 3 seconds while Dashboard is open.
+  window.setInterval(refreshDashboardEveryThreeSeconds, 3000);
 });
 
 </script>
