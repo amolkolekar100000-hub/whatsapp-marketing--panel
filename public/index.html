@@ -716,14 +716,14 @@ td, th {
 
         <label for="projectWorkerUrl">Project Worker URL (Optional)</label>
         <input id="projectWorkerUrl" type="url"
-          placeholder="Use the main Worker URL if left blank">
+          placeholder="Enter this project’s dedicated Worker URL">
 
         <button type="button" id="saveProjectButton">
           Save Project Settings
         </button>
 
         <div class="status" id="projectStatus">
-          Project settings have not been saved.
+          प्रत्येक project साठी स्वतंत्र Worker URL सेव्ह करा, म्हणजे त्याच project चा Meta-verified नंबर आणि templates दिसतील.
         </div>
       </div>
 
@@ -915,7 +915,19 @@ function applyProjectSelection(project) {
   const projectInput = $("projectWorkerUrl");
   if (projectInput) projectInput.value = projectUrl || "";
 
+  // Refresh all project-specific data whenever the project changes.
+  // Each project should have its own Worker URL saved in Project Settings.
+  phoneNumbers = [];
+  templates = [];
+  const numberSelect = $("sendNumber");
+  if (numberSelect) numberSelect.innerHTML = '<option value="">Loading numbers...</option>';
+  const templateSelect = $("campaignTemplate");
+  if (templateSelect) templateSelect.innerHTML = '<option value="">Loading templates...</option>';
+
   loadDashboard();
+  loadCampaignData();
+  if ($("inbox")?.classList.contains("active")) loadChats();
+  if ($("reports")?.classList.contains("active")) loadReportsAndHistory();
 }
 
 $("projectSelect")?.addEventListener("change", (event) => {
@@ -2108,6 +2120,13 @@ async function loadPhoneNumbers() {
 
         if (id) select.add(new Option(label, id));
       });
+
+      // When this project's Worker returns exactly one Meta-verified number,
+      // select it automatically. Multiple numbers remain available for manual choice.
+      if (phoneNumbers.length === 1) {
+        const onlyNumber = phoneNumbers[0];
+        select.value = String(onlyNumber.phoneNumberId || onlyNumber.id || "");
+      }
     }
   } catch (error) {
     setStatus(
