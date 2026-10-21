@@ -1497,8 +1497,13 @@ td, th {
  
 
 const DEFAULT_WORKER_URL =
-
   "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
+
+// Separate default Worker URLs for the two dashboard projects.
+const PROJECT_WORKER_URLS = {
+  "New Launch": "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev",
+  "2nd New Launch": "https://ak-properties-new-launch-2.amolkolekar100000.workers.dev"
+};
 
  
 
@@ -1611,15 +1616,14 @@ function getWorkerUrl() {
  
 
 function getProjectWorkerUrl(project) {
-
   const key = "ak_project_worker_" + project;
-
   const saved = localStorage.getItem(key);
+  const mapped = PROJECT_WORKER_URLS[project];
 
- 
-
-  return (saved || getWorkerUrl()).replace(/\/+$/, "");
-
+  // Known projects always use their own Worker by default.
+  // The main Worker URL is only a fallback for unknown project names.
+  const url = saved || mapped || getWorkerUrl();
+  return url.replace(/\/+$/, "");
 }
 
  
@@ -1749,39 +1753,23 @@ document.querySelectorAll("nav button[data-page]").forEach((button) => {
  
 
 function applyProjectSelection(project) {
-
   currentProject = project || "New Launch";
-
- 
-
   const headerSelect = $("projectSelect");
-
   const settingsSelect = $("projectSettingsSelect");
-
- 
-
   if (headerSelect) headerSelect.value = currentProject;
-
   if (settingsSelect) settingsSelect.value = currentProject;
 
- 
-
-  const projectUrl = localStorage.getItem(
-
-    "ak_project_worker_" + currentProject
-
-  );
-
- 
-
+  const savedProjectUrl = localStorage.getItem("ak_project_worker_" + currentProject);
+  const effectiveUrl = getProjectWorkerUrl(currentProject);
   const projectInput = $("projectWorkerUrl");
-
-  if (projectInput) projectInput.value = projectUrl || "";
-
- 
+  if (projectInput) projectInput.value = savedProjectUrl || PROJECT_WORKER_URLS[currentProject] || "";
+  const workerInput = $("workerUrl");
+  if (workerInput) workerInput.value = effectiveUrl;
 
   loadDashboard();
-
+  // Refresh project-specific data when the project changes.
+  loadPhoneNumbers();
+  loadTemplates();
 }
 
  
@@ -1795,25 +1783,12 @@ $("projectSelect")?.addEventListener("change", (event) => {
  
 
 $("projectSettingsSelect")?.addEventListener("change", (event) => {
-
   currentProject = event.target.value || "New Launch";
-
- 
-
-  const savedUrl = localStorage.getItem(
-
-    "ak_project_worker_" + currentProject
-
-  );
-
- 
-
+  const savedUrl = localStorage.getItem("ak_project_worker_" + currentProject);
   if ($("projectWorkerUrl")) {
-
-    $("projectWorkerUrl").value = savedUrl || "";
-
+    $("projectWorkerUrl").value = savedUrl || PROJECT_WORKER_URLS[currentProject] || "";
   }
-
+  if ($("workerUrl")) $("workerUrl").value = getProjectWorkerUrl(currentProject);
 });
 
  
