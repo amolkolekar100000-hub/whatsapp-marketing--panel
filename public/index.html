@@ -1,466 +1,822 @@
 <!DOCTYPE html>
 
+ 
+
 <html lang="en">
+
+ 
 
 <head>
 
+ 
+
 <meta charset="UTF-8">
+
+ 
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+ 
+
 <title>A K Properties | WhatsApp Marketing Dashboard</title>
+
+ 
 
 <style>
 
+ 
+
 :root {
+
+ 
 
   --green: #075e54;
 
+ 
+
   --accent: #087f5b;
+
+ 
 
   --bg: #f2f6f5;
 
+ 
+
   --border: #dce5e0;
 
+ 
+
 }
+
+ 
 
 * { box-sizing: border-box; }
 
+ 
+
 body {
+
+ 
 
   margin: 0;
 
+ 
+
   font: 14px Arial, sans-serif;
+
+ 
 
   background: var(--bg);
 
+ 
+
   color: #19332e;
 
+ 
+
 }
+
+ 
 
 header {
 
+ 
+
   background: var(--green);
 
+ 
+
   color: white;
+
+ 
 
   padding: 17px 20px;
 
+ 
+
   display: flex;
+
+ 
 
   align-items: center;
 
+ 
+
   justify-content: space-between;
+
+ 
 
   gap: 12px;
 
+ 
+
   flex-wrap: wrap;
 
+ 
+
 }
+
+ 
 
 header h2 { margin: 0 0 5px; }
 
+ 
+
 header select { width: auto; margin: 0; }
+
+ 
 
 .layout {
 
+ 
+
   display: flex;
+
+ 
 
   min-height: calc(100vh - 75px);
 
+ 
+
 }
+
+ 
 
 nav {
 
+ 
+
   width: 205px;
+
+ 
 
   flex-shrink: 0;
 
+ 
+
   background: #123b35;
+
+ 
 
   padding: 12px;
 
+ 
+
 }
+
+ 
 
 nav button {
 
+ 
+
   display: block;
+
+ 
 
   width: 100%;
 
+ 
+
   text-align: left;
+
+ 
 
   background: transparent;
 
+ 
+
   color: white;
 
+ 
+
 }
+
+ 
 
 nav button.active,
 
+ 
+
 nav button:hover { background: var(--accent); }
+
+ 
 
 button {
 
+ 
+
   border: 0;
 
+ 
+
   border-radius: 7px;
+
+ 
 
   padding: 10px 13px;
 
+ 
+
   margin: 3px;
+
+ 
 
   background: var(--accent);
 
+ 
+
   color: white;
+
+ 
 
   cursor: pointer;
 
+ 
+
 }
+
+ 
 
 button:disabled { opacity: .5; cursor: not-allowed; }
 
+ 
+
 main { flex: 1; min-width: 0; padding: 20px; }
+
+ 
 
 .view { display: none; }
 
+ 
+
 .view.active { display: block; }
+
+ 
 
 .panel, .card {
 
+ 
+
   background: white;
+
+ 
 
   border-radius: 11px;
 
+ 
+
   padding: 15px;
 
+ 
+
   margin-bottom: 14px;
+
+ 
 
   box-shadow: 0 2px 7px #0000000b;
 
+ 
+
 }
+
+ 
 
 .cards {
 
+ 
+
   display: grid;
+
+ 
 
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 
+ 
+
   gap: 10px;
 
+ 
+
 }
+
+ 
 
 .card h2 { margin: 8px 0 0; font-size: 25px; }
 
+ 
+
 input, select, textarea {
+
+ 
 
   width: 100%;
 
+ 
+
   padding: 10px;
+
+ 
 
   border: 1px solid #ccd8d4;
 
+ 
+
   border-radius: 7px;
+
+ 
 
   margin: 6px 0 13px;
 
+ 
+
   font: inherit;
+
+ 
 
   background: white;
 
+ 
+
 }
+
+ 
 
 input[type="checkbox"] { width: auto; }
 
+ 
+
 textarea { min-height: 85px; }
+
+ 
 
 label { font-weight: bold; }
 
+ 
+
 .notice {
+
+ 
 
   background: #fff4d5;
 
+ 
+
   border-radius: 8px;
 
+ 
+
   padding: 12px;
+
+ 
 
   margin-bottom: 14px;
 
+ 
+
   line-height: 1.6;
 
+ 
+
 }
+
+ 
 
 .status {
 
+ 
+
   background: #edf6f0;
+
+ 
 
   padding: 10px;
 
+ 
+
   border-radius: 7px;
+
+ 
 
   margin: 8px 0;
 
+ 
+
   white-space: pre-wrap;
+
+ 
 
   overflow-wrap: anywhere;
 
+ 
+
 }
+
+ 
 
 .small { font-size: 12px; color: #65746e; }
 
+ 
+
 .table-wrap { overflow: auto; }
+
+ 
 
 table {
 
+ 
+
   width: 100%;
+
+ 
 
   border-collapse: collapse;
 
+ 
+
   background: white;
 
+ 
+
 }
+
+ 
 
 td, th {
 
+ 
+
   text-align: left;
+
+ 
 
   padding: 9px;
 
+ 
+
   border-bottom: 1px solid var(--border);
+
+ 
 
   overflow-wrap: anywhere;
 
+ 
+
 }
+
+ 
 
 .template-row, .number-row {
 
+ 
+
   border: 1px solid var(--border);
+
+ 
 
   padding: 12px;
 
+ 
+
   border-radius: 8px;
+
+ 
 
   margin: 9px 0;
 
+ 
+
   background: #fbfdfc;
 
+ 
+
 }
+
+ 
 
 .danger { background: #b42318; }
 
+ 
+
 .chat-layout {
+
+ 
 
   display: grid;
 
+ 
+
   grid-template-columns: 330px minmax(0, 1fr);
+
+ 
 
   height: calc(100vh - 220px);
 
+ 
+
   min-height: 520px;
 
+ 
+
   background: white;
+
+ 
 
   border: 1px solid var(--border);
 
+ 
+
   border-radius: 10px;
+
+ 
 
   overflow: hidden;
 
+ 
+
 }
+
+ 
 
 .chat-sidebar {
 
+ 
+
   overflow: auto;
+
+ 
 
   border-right: 1px solid var(--border);
 
+ 
+
   background: white;
 
+ 
+
 }
+
+ 
 
 .chat-sidebar #chatSearch {
 
+ 
+
   width: calc(100% - 20px);
+
+ 
 
   margin: 10px;
 
+ 
+
   background: #f0f2f5;
 
+ 
+
 }
+
+ 
 
 .chat-contact {
 
+ 
+
   padding: 13px 14px;
+
+ 
 
   min-height: 76px;
 
+ 
+
   border-bottom: 1px solid #edf0f2;
+
+ 
 
   cursor: pointer;
 
+ 
+
   overflow-wrap: anywhere;
+
+ 
 
   background: #ffffff;
 
+ 
+
   color: #111b21;
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 .chat-contact:hover {
 
+ 
+
   background: #f0f2f5;
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 .chat-contact.selected {
 
+ 
+
   background: #d9fdd3;
+
+ 
 
   border-left: 4px solid #087f5b;
 
+ 
+
   padding-left: 10px;
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 .chat-contact.has-unread {
 
+ 
+
   background: #e7f3ff;
+
+ 
 
   border-left: 4px solid #1685e8;
 
+ 
+
   padding-left: 10px;
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 .chat-contact b {
+
+ 
 
   display: block;
 
+ 
+
   font-size: 14px;
+
+ 
 
   color: #111b21;
 
+ 
+
   margin-bottom: 5px;
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 .chat-contact .preview-text {
 
+ 
+
   color: #54656f;
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 /* WhatsApp-style conversation rows (the JavaScript renders .chat-item) */
 
+ 
+
 .chat-item {
-
-  display: block;
-
-  width: 100%;
-
-  padding: 13px 14px;
-
-  border: 0;
-
-  border-bottom: 1px solid #edf0f2;
-
-  border-radius: 0;
-
-  margin: 0;
-
-  background: #fff;
-
-  color: #111b21;
-
-  text-align: left;
-
-  cursor: pointer;
-
-}
-
-.chat-item:hover { background: #f5f7f8; }
-
-.chat-item.active {
-
-  background: #d9fdd3;
-
-  box-shadow: inset 4px 0 #087f5b;
-
-}
-
-.chat-item strong { display: block; margin-bottom: 5px; font-size: 14px; }
-
-.chat-item .small { margin-top: 4px; }
-
-.chat-back {
-
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  flex: 0 0 auto;
-
-  margin: 0;
-
-  padding: 9px 12px;
-
-  border-radius: 20px;
-
-  background: #e1e7e9;
-
-  color: #19332e;
-
-  font-weight: 700;
-
-}
-
-.chat-back:hover { background: #d3dcdf; }
-
-.chat-header .chat-title { flex: 1; }
 
  
 
-.chat-contact b {
-
   display: block;
 
-  font-size: 14px;
+ 
+
+  width: 100%;
+
+ 
+
+  padding: 13px 14px;
+
+ 
+
+  border: 0;
+
+ 
+
+  border-bottom: 1px solid #edf0f2;
+
+ 
+
+  border-radius: 0;
+
+ 
+
+  margin: 0;
+
+ 
+
+  background: #fff;
+
+ 
 
   color: #111b21;
 
-  margin-bottom: 5px;
+ 
+
+  text-align: left;
+
+ 
+
+  cursor: pointer;
+
+ 
 
 }
 
-.preview-text {
+ 
 
-  display: block;
+.chat-item:hover { background: #f5f7f8; }
 
-  overflow: hidden;
+ 
 
-  text-overflow: ellipsis;
+.chat-item.active {
 
-  white-space: nowrap;
+ 
 
-  color: #667781;
+  background: #d9fdd3;
 
-  font-size: 13px;
+ 
 
-  margin-top: 5px;
+  box-shadow: inset 4px 0 #087f5b;
+
+ 
+
+}
+
+ 
+
+.chat-item.has-unread {
+
+  background: #e7f3ff;
+
+  box-shadow: inset 5px 0 #1685e8;
+
+  font-weight: 600;
+
+}
+
+.chat-item.has-unread.active {
+
+  background: #d9fdd3;
+
+  box-shadow: inset 5px 0 #087f5b;
 
 }
 
@@ -468,279 +824,709 @@ td, th {
 
   display: inline-block;
 
-  background: #2563eb;
+  margin-left: 8px;
 
-  color: white;
+  padding: 2px 7px;
 
   border-radius: 12px;
 
-  padding: 3px 7px;
+  background: #2563eb;
+
+  color: #fff;
 
   font-size: 11px;
 
-}
-
-.chat-main {
-
-  display: flex;
-
-  flex-direction: column;
-
-  min-width: 0;
-
-  min-height: 0;
-
-  background: #efeae2;
+  font-weight: 700;
 
 }
 
-.chat-header {
+ 
 
-  display: flex;
+.chat-item strong { display: block; margin-bottom: 5px; font-size: 14px; }
+
+ 
+
+.chat-item .small { margin-top: 4px; }
+
+ 
+
+.chat-back {
+
+ 
+
+  display: inline-flex;
+
+ 
 
   align-items: center;
 
-  gap: 12px;
-
-  min-height: 62px;
-
-  padding: 12px 18px;
-
-  background: #f0f2f5;
-
-  border-bottom: 1px solid #d8dfdc;
-
-  color: #111b21;
-
-  font-weight: bold;
-
-}
-
-.chat-title { min-width: 0; overflow-wrap: anywhere; }
-
-.avatar {
-
-  width: 40px;
-
-  height: 40px;
-
-  border-radius: 50%;
-
-  background: #dfe5e7;
-
-  display: flex;
-
-  align-items: center;
+ 
 
   justify-content: center;
 
-  font-size: 20px;
+ 
 
-  flex-shrink: 0;
+  flex: 0 0 auto;
+
+ 
+
+  margin: 0;
+
+ 
+
+  padding: 9px 12px;
+
+ 
+
+  border-radius: 20px;
+
+ 
+
+  background: #e1e7e9;
+
+ 
+
+  color: #19332e;
+
+ 
+
+  font-weight: 700;
+
+ 
 
 }
 
-.chat-history {
+ 
 
-  flex: 1;
+.chat-back:hover { background: #d3dcdf; }
 
-  min-height: 0;
+ 
 
-  overflow-y: auto;
+.chat-header .chat-title { flex: 1; }
 
-  padding: 20px 5%;
+ 
 
-  background: #efeae2;
+ 
 
-}
+ 
 
-.bubble {
+.chat-contact b {
 
-  width: fit-content;
+ 
 
-  max-width: min(78%, 600px);
+  display: block;
 
-  padding: 9px 11px 7px;
-
-  border-radius: 8px;
-
-  background: white;
-
-  color: #111b21;
-
-  margin: 6px 0 10px;
-
-  white-space: pre-wrap;
-
-  overflow-wrap: anywhere;
-
-  box-shadow: 0 1px 1px #00000010;
+ 
 
   font-size: 14px;
 
-  line-height: 1.5;
+ 
+
+  color: #111b21;
+
+ 
+
+  margin-bottom: 5px;
+
+ 
 
 }
 
-.bubble.out { background: #d9fdd3; margin-left: auto; }
+ 
 
-.bubble .small { text-align: right; margin-top: 5px; }
+.preview-text {
 
-.chat-reply {
+ 
 
-  padding: 12px;
+  display: block;
 
-  background: #f0f2f5;
+ 
 
-  border-top: 1px solid #d8dfdc;
+  overflow: hidden;
+
+ 
+
+  text-overflow: ellipsis;
+
+ 
+
+  white-space: nowrap;
+
+ 
+
+  color: #667781;
+
+ 
+
+  font-size: 13px;
+
+ 
+
+  margin-top: 5px;
+
+ 
 
 }
 
-.chat-reply textarea {
+ 
 
-  min-height: 46px;
+.unread-badge {
 
-  max-height: 120px;
+ 
 
-  resize: vertical;
+  display: inline-block;
 
-  margin: 0 0 8px;
+ 
 
-}
+  background: #2563eb;
 
-#replyButton { border-radius: 22px; padding: 11px 20px; }
-
-#toast {
-
-  display: none;
-
-  position: fixed;
-
-  bottom: 20px;
-
-  right: 20px;
-
-  background: #123b35;
+ 
 
   color: white;
 
-  padding: 12px 16px;
+ 
+
+  border-radius: 12px;
+
+ 
+
+  padding: 3px 7px;
+
+ 
+
+  font-size: 11px;
+
+ 
+
+}
+
+ 
+
+.chat-main {
+
+ 
+
+  display: flex;
+
+ 
+
+  flex-direction: column;
+
+ 
+
+  min-width: 0;
+
+ 
+
+  min-height: 0;
+
+ 
+
+  background: #efeae2;
+
+ 
+
+}
+
+ 
+
+.chat-header {
+
+ 
+
+  display: flex;
+
+ 
+
+  align-items: center;
+
+ 
+
+  gap: 12px;
+
+ 
+
+  min-height: 62px;
+
+ 
+
+  padding: 12px 18px;
+
+ 
+
+  background: #f0f2f5;
+
+ 
+
+  border-bottom: 1px solid #d8dfdc;
+
+ 
+
+  color: #111b21;
+
+ 
+
+  font-weight: bold;
+
+ 
+
+}
+
+ 
+
+.chat-title { min-width: 0; overflow-wrap: anywhere; }
+
+ 
+
+.avatar {
+
+ 
+
+  width: 40px;
+
+ 
+
+  height: 40px;
+
+ 
+
+  border-radius: 50%;
+
+ 
+
+  background: #dfe5e7;
+
+ 
+
+  display: flex;
+
+ 
+
+  align-items: center;
+
+ 
+
+  justify-content: center;
+
+ 
+
+  font-size: 20px;
+
+ 
+
+  flex-shrink: 0;
+
+ 
+
+}
+
+ 
+
+.chat-history {
+
+ 
+
+  flex: 1;
+
+ 
+
+  min-height: 0;
+
+ 
+
+  overflow-y: auto;
+
+ 
+
+  padding: 20px 5%;
+
+ 
+
+  background: #efeae2;
+
+ 
+
+}
+
+ 
+
+.bubble {
+
+ 
+
+  width: fit-content;
+
+ 
+
+  max-width: min(78%, 600px);
+
+ 
+
+  padding: 9px 11px 7px;
+
+ 
 
   border-radius: 8px;
 
+ 
+
+  background: white;
+
+ 
+
+  color: #111b21;
+
+ 
+
+  margin: 6px 0 10px;
+
+ 
+
+  white-space: pre-wrap;
+
+ 
+
+  overflow-wrap: anywhere;
+
+ 
+
+  box-shadow: 0 1px 1px #00000010;
+
+ 
+
+  font-size: 14px;
+
+ 
+
+  line-height: 1.5;
+
+ 
+
+}
+
+ 
+
+.bubble.out { background: #d9fdd3; margin-left: auto; }
+
+ 
+
+.bubble .small { text-align: right; margin-top: 5px; }
+
+ 
+
+.chat-reply {
+
+ 
+
+  padding: 12px;
+
+ 
+
+  background: #f0f2f5;
+
+ 
+
+  border-top: 1px solid #d8dfdc;
+
+ 
+
+}
+
+ 
+
+.chat-reply textarea {
+
+ 
+
+  min-height: 46px;
+
+ 
+
+  max-height: 120px;
+
+ 
+
+  resize: vertical;
+
+ 
+
+  margin: 0 0 8px;
+
+ 
+
+}
+
+ 
+
+#replyButton { border-radius: 22px; padding: 11px 20px; }
+
+ 
+
+#toast {
+
+ 
+
+  display: none;
+
+ 
+
+  position: fixed;
+
+ 
+
+  bottom: 20px;
+
+ 
+
+  right: 20px;
+
+ 
+
+  background: #123b35;
+
+ 
+
+  color: white;
+
+ 
+
+  padding: 12px 16px;
+
+ 
+
+  border-radius: 8px;
+
+ 
+
   z-index: 99;
+
+ 
 
   max-width: 90vw;
 
+ 
+
 }
+
+ 
 
 #toast.show { display: block; }
 
+ 
+
 @media (max-width: 700px) {
+
+ 
 
   .layout { display: block; }
 
+ 
+
   nav { width: 100%; display: flex; overflow: auto; }
+
+ 
 
   nav button { min-width: max-content; width: auto; }
 
+ 
+
   main { padding: 10px; }
+
+ 
 
   .chat-layout {
 
+ 
+
     grid-template-columns: 1fr;
+
+ 
 
     height: 72vh;
 
+ 
+
     min-height: 480px;
 
+ 
+
   }
+
+ 
 
   .chat-sidebar {
 
+ 
+
     max-height: 100%;
+
+ 
 
     min-height: 0;
 
+ 
+
     border-right: 0;
+
+ 
 
     border-bottom: 1px solid var(--border);
 
+ 
+
   }
+
+ 
 
   /* Mobile: show list first, then only the selected conversation */
 
+ 
+
   .chat-layout:not(.chat-open) .chat-main { display: none; }
+
+ 
 
   .chat-layout.chat-open .chat-sidebar { display: none; }
 
+ 
+
   .chat-layout.chat-open .chat-main { display: flex; height: 100%; }
+
+ 
 
   .chat-header { padding: 9px 10px; gap: 8px; }
 
+ 
+
   .chat-history { padding: 12px; }
+
+ 
 
   .bubble { max-width: 90%; }
 
+ 
+
 }
+
+ 
 
 </style>
 
+ 
+
 </head>  
+
+ 
 
   <body>
 
  
 
+ 
+
+ 
+
 <header>
 
+ 
+
   <div>
+
+ 
 
     <h2>A K Properties</h2>
 
+ 
+
     <div>WhatsApp Marketing Dashboard</div>
+
+ 
 
   </div>
 
+ 
+
   <div>
+
+ 
 
     <label for="projectSelect">Project:</label>
 
+ 
+
     <select id="projectSelect">
+
+ 
 
       <option value="New Launch">New Launch</option>
 
  
 
+ 
+
+ 
+
       <option value="2nd New Launch">2nd New Launch</option>
+
+ 
 
     </select>
 
+ 
+
   </div>
+
+ 
 
 </header>
 
  
 
+ 
+
+ 
+
 <div class="layout">
+
+ 
 
   <nav aria-label="Main navigation">
 
+ 
+
     <button type="button" class="active" data-page="dashboard">Dashboard</button>
+
+ 
 
     <button type="button" data-page="campaigns">Send Message / Campaign</button>
 
+ 
+
     <button type="button" data-page="inbox">Live Chat</button>
+
+ 
 
     <button type="button" data-page="leads">Contacts</button>
 
+ 
+
     <button type="button" data-page="reports">Reports / History</button>
+
+ 
 
     <button type="button" data-page="templates">Templates</button>
 
+ 
+
     <button type="button" data-page="settings">API Settings</button>
 
+ 
+
   </nav>
+
+ 
+
+ 
 
  
 
@@ -748,131 +1534,263 @@ td, th {
 
  
 
+ 
+
+ 
+
     <!-- DASHBOARD -->
+
+ 
 
     <section class="view active" id="dashboard">
 
+ 
+
       <h2>Dashboard</h2>
 
+ 
+
       <div class="status" id="connectionStatus">Checking API...</div>
+
+ 
 
       <div class="status" id="dashStatus">Loading dashboard...</div>
 
  
 
+ 
+
+ 
+
       <div class="cards">
 
+ 
+
         <div class="card">
+
+ 
 
           <div>Total Messages</div>
 
+ 
+
           <h2 id="total">0</h2>
+
+ 
 
         </div>
 
+ 
+
         <div class="card">
+
+ 
 
           <div>Incoming Messages</div>
 
+ 
+
           <h2 id="incomingCount">0</h2>
+
+ 
 
         </div>
 
+ 
+
         <div class="card">
+
+ 
 
           <div>Outgoing Messages</div>
 
+ 
+
           <h2 id="outgoingCount">0</h2>
+
+ 
 
         </div>
 
+ 
+
         <div class="card">
+
+ 
 
           <div>Contacts</div>
 
+ 
+
           <h2 id="contactCount">0</h2>
 
+ 
+
         </div>
+
+ 
 
         <div class="card">
 
+ 
+
           <div>Unread Chats</div>
+
+ 
 
           <h2 id="unreadCount">0</h2>
 
+ 
+
         </div>
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>WhatsApp Numbers</h3>
 
+ 
+
         <div id="numberList">Numbers will appear here.</div>
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>Daily Message Report</h3>
 
+ 
+
         <div id="dailyReports">Report will appear here.</div>
 
+ 
+
       </div>
+
+ 
+
+ 
 
  
 
       <button type="button" id="refreshDashboard">Refresh Dashboard</button>
 
+ 
+
       <button type="button" id="checkConnection">Test API Connection</button>
+
+ 
 
     </section>
 
  
 
+ 
+
+ 
+
     <!-- CAMPAIGNS -->
 
+ 
+
     <section class="view" id="campaigns">
+
+ 
 
       <h2>Send WhatsApp Message</h2>
 
  
 
+ 
+
+ 
+
       <div class="notice">
+
+ 
 
         Send messages only to recipients who have agreed to receive
 
+ 
+
         WhatsApp communication. Use approved templates when required
 
+ 
+
         by WhatsApp policies.
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <label for="sendNumber">WhatsApp Business Number</label>
 
+ 
+
         <select id="sendNumber">
 
+ 
+
           <option value="">Loading numbers...</option>
+
+ 
 
         </select>
 
  
 
+ 
+
+ 
+
         <label for="campaignTemplate">Approved Template</label>
+
+ 
 
         <select id="campaignTemplate">
 
+ 
+
           <option value="">Loading templates...</option>
 
+ 
+
         </select>
+
+ 
+
+ 
 
  
 
@@ -880,127 +1798,255 @@ td, th {
 
  
 
+ 
+
+ 
+
         <label for="recipients">Recipient Numbers</label>
 
+ 
+
         <textarea id="recipients"
+
+ 
 
           placeholder="Enter country-code numbers, one per line"></textarea>
 
  
 
+ 
+
+ 
+
         <label>
+
+ 
 
           <input type="checkbox" id="consent">
 
+ 
+
           I confirm these recipients have opted in.
+
+ 
 
         </label>
 
  
 
+ 
+
+ 
+
         <div class="small">
+
+ 
 
           First test with one recipient before sending a campaign.
 
+ 
+
         </div>
+
+ 
+
+ 
 
  
 
         <button type="button" id="sendTestButton">Send Test</button>
 
+ 
+
         <button type="button" id="startCampaignButton">Start Campaign</button>
+
+ 
+
+ 
 
  
 
         <div class="status" id="campaignStatus">Ready.</div>
 
+ 
+
         <pre class="status" id="sendResult"></pre>
 
+ 
+
       </div>
+
+ 
 
     </section>
 
  
 
+ 
+
+ 
+
     <!-- LIVE CHAT -->
 
+ 
+
     <section class="view" id="inbox">
+
+ 
 
       <h2>Live Chat / Inbox</h2>
 
  
 
+ 
+
+ 
+
       <div class="status" id="chatStatus">
 
+ 
+
         Loading conversations...
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="chat-layout" id="chatLayout">
+
+ 
 
         <div class="chat-sidebar">
 
+ 
+
           <input id="chatSearch" type="search"
+
+ 
 
             placeholder="Search name or number...">
 
+ 
+
           <div id="chatList">
+
+ 
 
             <div class="chat-contact">Loading chats...</div>
 
+ 
+
           </div>
+
+ 
 
         </div>
 
  
 
+ 
+
+ 
+
         <div class="chat-main">
+
+ 
 
           <div class="chat-header">
 
+ 
+
             <button type="button" id="backToChats" class="chat-back" aria-label="Back to client list">← Back</button>
+
+ 
 
             <div class="avatar">👤</div>
 
+ 
+
             <div class="chat-title" id="chatTitle">
+
+ 
 
               Select a conversation
 
+ 
+
             </div>
 
+ 
+
           </div>
+
+ 
+
+ 
 
  
 
           <div class="chat-history" id="chatHistory">
 
+ 
+
             <div class="small">
+
+ 
 
               Select a contact to view message history.
 
+ 
+
             </div>
+
+ 
 
           </div>
 
  
 
+ 
+
+ 
+
           <div class="chat-reply">
+
+ 
 
             <label for="replyFile">Attach Image / PDF</label>
 
+ 
+
             <input id="replyFile" type="file"
+
+ 
 
               accept="image/jpeg,image/png,image/webp,application/pdf">
 
  
 
+ 
+
+ 
+
             <label for="replyText">Reply Message</label>
+
+ 
 
             <textarea id="replyText"
 
+ 
+
               placeholder="Type your reply..."></textarea>
+
+ 
+
+ 
 
  
 
@@ -1008,502 +2054,1005 @@ td, th {
 
  
 
+ 
+
+ 
+
             <div class="small">
+
+ 
 
               Replies require a valid WhatsApp number and API permission.
 
+ 
+
               Outside the customer-service window, an approved template
+
+ 
 
               may be required.
 
+ 
+
             </div>
+
+ 
 
           </div>
 
+ 
+
         </div>
+
+ 
 
       </div>
 
+ 
+
     </section>  
+
+ 
 
       <!-- CONTACTS -->
 
+ 
+
     <section class="view" id="leads">
+
+ 
 
       <h2>Contacts / Leads</h2>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>Add New Contact</h3>
 
  
 
+ 
+
+ 
+
         <label for="leadName">Contact Name</label>
 
+ 
+
         <input id="leadName" type="text"
+
+ 
 
           placeholder="Enter customer name">
 
  
 
+ 
+
+ 
+
         <label for="leadPhone">WhatsApp Number</label>
 
+ 
+
         <input id="leadPhone" type="tel"
+
+ 
 
           placeholder="Example: 919876543210">
 
  
 
+ 
+
+ 
+
         <label for="leadTag">Project / Tag</label>
 
+ 
+
         <input id="leadTag" type="text"
+
+ 
 
           placeholder="Example: Godrej Properties">
 
  
 
+ 
+
+ 
+
         <button type="button" id="saveContactButton">
+
+ 
 
           Save Contact
 
+ 
+
         </button>
+
+ 
+
+ 
 
  
 
         <button type="button" id="exportContactsButton">
 
+ 
+
           Export Contacts CSV
 
+ 
+
         </button>
+
+ 
+
+ 
 
  
 
         <div class="status" id="contactStatus">
 
+ 
+
           Contacts are stored locally in this browser unless connected
+
+ 
 
           to a backend.
 
+ 
+
         </div>
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <label for="leadSearch">Search Contacts</label>
 
+ 
+
         <input id="leadSearch" type="search"
+
+ 
 
           placeholder="Search name, number or project...">
 
  
 
+ 
+
+ 
+
         <div id="leadList">No contacts loaded.</div>
+
+ 
 
       </div>
 
+ 
+
     </section>
+
+ 
+
+ 
 
  
 
     <!-- REPORTS AND MESSAGE HISTORY -->
 
+ 
+
     <section class="view" id="reports">
+
+ 
 
       <h2>Reports / Message History</h2>
 
  
 
+ 
+
+ 
+
       <div class="cards">
 
+ 
+
         <div class="card">
+
+ 
 
           <div>Total Messages</div>
 
+ 
+
           <h2 id="reportTotal">0</h2>
+
+ 
 
         </div>
 
+ 
+
         <div class="card">
+
+ 
 
           <div>Delivered</div>
 
+ 
+
           <h2 id="reportDelivered">0</h2>
+
+ 
 
         </div>
 
+ 
+
         <div class="card">
+
+ 
 
           <div>Read</div>
 
+ 
+
           <h2 id="reportRead">0</h2>
 
+ 
+
         </div>
+
+ 
 
         <div class="card">
 
+ 
+
           <div>Failed</div>
+
+ 
 
           <h2 id="reportFailed">0</h2>
 
+ 
+
         </div>
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>Daily Reports</h3>
 
+ 
+
         <div id="dailyReportList">Loading reports...</div>
+
+ 
 
         <button type="button" id="refreshReportsButton">
 
+ 
+
           Refresh Reports
 
+ 
+
         </button>
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>Message History</h3>
 
  
 
+ 
+
+ 
+
         <label for="historySearch">Search Message History</label>
 
+ 
+
         <input id="historySearch" type="search"
+
+ 
 
           placeholder="Search phone number, message or status...">
 
  
 
+ 
+
+ 
+
         <button type="button" id="refreshHistoryButton">
 
+ 
+
           Refresh History
+
+ 
 
         </button>
 
  
 
+ 
+
+ 
+
         <div class="table-wrap">
+
+ 
 
           <table>
 
+ 
+
             <thead>
 
+ 
+
               <tr>
+
+ 
 
                 <th>Date / Time</th>
 
+ 
+
                 <th>Number</th>
+
+ 
 
                 <th>Message</th>
 
+ 
+
                 <th>Direction</th>
+
+ 
 
                 <th>Status</th>
 
+ 
+
               </tr>
+
+ 
 
             </thead>
 
+ 
+
             <tbody id="historyTable">
+
+ 
 
               <tr>
 
+ 
+
                 <td colspan="5">Loading message history...</td>
+
+ 
 
               </tr>
 
+ 
+
             </tbody>
+
+ 
 
           </table>
 
+ 
+
         </div>
+
+ 
 
       </div>
 
+ 
+
     </section>
+
+ 
+
+ 
 
  
 
     <!-- WHATSAPP TEMPLATES -->
 
+ 
+
     <section class="view" id="templates">
+
+ 
 
       <h2>WhatsApp Templates</h2>
 
  
 
+ 
+
+ 
+
       <div class="notice">
+
+ 
 
         येथे WhatsApp Business Account मधील उपलब्ध templates दिसतील.
 
+ 
+
         नवीन template तयार किंवा approve करण्यासाठी Meta WhatsApp
 
+ 
+
         Manager मध्ये आवश्यक प्रक्रिया पूर्ण करा.
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <button type="button" id="refreshTemplatesButton">
 
+ 
+
           Refresh Templates
 
+ 
+
         </button>
+
+ 
+
+ 
 
  
 
         <div class="status" id="templateStatus">
 
+ 
+
           Loading templates...
 
+ 
+
         </div>
+
+ 
+
+ 
 
  
 
         <div class="table-wrap">
 
+ 
+
           <table>
+
+ 
 
             <thead>
 
+ 
+
               <tr>
+
+ 
 
                 <th>Template Name</th>
 
+ 
+
                 <th>Language</th>
+
+ 
 
                 <th>Category</th>
 
+ 
+
                 <th>Status</th>
 
+ 
+
               </tr>
+
+ 
 
             </thead>
 
+ 
+
             <tbody id="templateTable">
+
+ 
 
               <tr>
 
+ 
+
                 <td colspan="4">Templates will appear here.</td>
+
+ 
 
               </tr>
 
+ 
+
             </tbody>
+
+ 
 
           </table>
 
+ 
+
         </div>
+
+ 
 
       </div>
 
+ 
+
     </section>
+
+ 
+
+ 
 
  
 
     <!-- API SETTINGS -->
 
+ 
+
     <section class="view" id="settings">
+
+ 
 
       <h2>API Settings</h2>
 
  
 
+ 
+
+ 
+
       <div class="notice">
+
+ 
 
         तुमच्या Cloudflare Worker चा URL येथे सेट करा.
 
+ 
+
         Access Token किंवा App Secret सार्वजनिक HTML मध्ये ठेवू नका.
 
+ 
+
         ते Cloudflare Worker Secrets मध्येच ठेवा.
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>Worker Connection</h3>
 
  
 
+ 
+
+ 
+
         <label for="workerUrl">Cloudflare Worker URL</label>
 
+ 
+
         <input id="workerUrl" type="url"
+
+ 
 
           placeholder="https://your-worker.workers.dev">
 
  
 
+ 
+
+ 
+
         <button type="button" id="saveWorkerButton">
+
+ 
 
           Save Worker URL
 
+ 
+
         </button>
+
+ 
+
+ 
 
  
 
         <button type="button" id="testWorkerButton">
 
+ 
+
           Test Connection
 
+ 
+
         </button>
+
+ 
+
+ 
 
  
 
         <div class="status" id="workerStatus">
 
+ 
+
           Worker URL not checked yet.
 
+ 
+
         </div>
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>Project Settings</h3>
 
  
 
+ 
+
+ 
+
         <label for="projectSettingsSelect">Select Project</label>
 
+ 
+
         <select id="projectSettingsSelect">
+
+ 
 
           <option value="New Launch">New Launch</option>
 
  
 
+ 
+
+ 
+
           <option value="2nd New Launch">2nd New Launch</option>
+
+ 
 
         </select>
 
  
 
+ 
+
+ 
+
         <label for="projectWorkerUrl">Project Worker URL (Optional)</label>
 
+ 
+
         <input id="projectWorkerUrl" type="url"
+
+ 
 
           placeholder="Use the main Worker URL if left blank">
 
  
 
+ 
+
+ 
+
         <button type="button" id="saveProjectButton">
+
+ 
 
           Save Project Settings
 
+ 
+
         </button>
+
+ 
+
+ 
 
  
 
         <div class="status" id="projectStatus">
 
+ 
+
           Project settings have not been saved.
 
+ 
+
         </div>
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>API Information</h3>
 
+ 
+
         <div id="apiInfo" class="status">
+
+ 
 
           API information will appear here.
 
+ 
+
         </div>
+
+ 
 
         <button type="button" id="refreshApiInfoButton">
 
+ 
+
           Refresh API Information
 
+ 
+
         </button>
+
+ 
 
       </div>
 
  
 
+ 
+
+ 
+
       <div class="panel">
+
+ 
 
         <h3>Dashboard Maintenance</h3>
 
+ 
+
         <button type="button" id="reloadAppButton">
+
+ 
 
           Reload Dashboard
 
+ 
+
         </button>
+
+ 
 
         <button type="button" id="clearLocalSettingsButton"
 
+ 
+
           class="danger">
+
+ 
 
           Clear Local Settings
 
+ 
+
         </button>
+
+ 
 
         <div class="small">
 
+ 
+
           Clear Local Settings हे बटण वापरल्यास या browser मधील
+
+ 
 
           सेव्ह केलेल्या settings हटू शकतात. Worker मधील messages
 
+ 
+
           किंवा contacts यामुळे delete होत नाहीत.
+
+ 
 
         </div>
 
+ 
+
       </div>
+
+ 
 
     </section>
 
  
 
+ 
+
+ 
+
   </main>
+
+ 
 
 </div>
 
  
 
+ 
+
+ 
+
 <div id="toast" role="status" aria-live="polite"></div>  
 
+ 
+
     <script>
+
+ 
 
 "use strict";
 
  
 
+ 
+
+ 
+
 /* =====================================
 
+ 
+
    A K PROPERTIES - DASHBOARD CORE
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 const DEFAULT_WORKER_URL =
+
   "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
 
+ 
+
 // Separate default Worker URLs for the two dashboard projects.
+
 const PROJECT_WORKER_URLS = {
+
   "New Launch": "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev",
+
   "2nd New Launch": "https://ak-properties-new-launch-2.amolkolekar100000.workers.dev"
+
 };
+
+ 
+
+ 
 
  
 
@@ -1511,182 +3060,365 @@ const $ = (id) => document.getElementById(id);
 
  
 
+ 
+
+ 
+
 let workerUrl = "";
+
+ 
 
 let currentProject = "New Launch";
 
+ 
+
 let phoneNumbers = [];
+
+ 
 
 let templates = [];
 
+ 
+
 let messages = [];
+
+ 
 
 let localContacts = [];
 
+ 
+
 let selectedChatNumber = "";
+
+ 
 
 let unreadChats = {};
 
  
 
+ 
+
+ 
+
 function showToast(message) {
+
+ 
 
   const toast = $("toast");
 
  
 
+ 
+
+ 
+
   if (!toast) {
+
+ 
 
     alert(message);
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   toast.textContent = message;
 
+ 
+
   toast.classList.add("show");
+
+ 
+
+ 
 
  
 
   clearTimeout(window.__toastTimer);
 
+ 
+
   window.__toastTimer = setTimeout(() => {
+
+ 
 
     toast.classList.remove("show");
 
+ 
+
   }, 3500);
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function setStatus(id, message) {
 
+ 
+
   const el = $(id);
+
+ 
 
   if (el) el.textContent = message;
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function escapeHTML(value) {
 
+ 
+
   return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+
+ 
 
     "&": "&amp;",
 
+ 
+
     "<": "&lt;",
+
+ 
 
     ">": "&gt;",
 
+ 
+
     '"': "&quot;",
+
+ 
 
     "'": "&#39;"
 
+ 
+
   })[char]);
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function getWorkerUrl() {
 
+ 
+
   const saved = localStorage.getItem("ak_worker_url");
+
+ 
 
   const input = $("workerUrl");
 
  
 
+ 
+
+ 
+
   return (
+
+ 
 
     (input && input.value.trim()) ||
 
+ 
+
     saved ||
+
+ 
 
     DEFAULT_WORKER_URL
 
+ 
+
   ).replace(/\/+$/, "");
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 function getProjectWorkerUrl(project) {
+
   const key = "ak_project_worker_" + project;
+
   const saved = localStorage.getItem(key);
+
   const mapped = PROJECT_WORKER_URLS[project];
 
+ 
+
   // Known projects always use their own Worker by default.
+
   // The main Worker URL is only a fallback for unknown project names.
+
   const url = saved || mapped || getWorkerUrl();
+
   return url.replace(/\/+$/, "");
+
 }
+
+ 
+
+ 
 
  
 
 async function apiRequest(path, options = {}, projectOverride = null) {
 
+ 
+
   const project = projectOverride || currentProject;
+
+ 
 
   const baseUrl = getProjectWorkerUrl(project);
 
  
 
+ 
+
+ 
+
   const response = await fetch(baseUrl + path, {
+
+ 
 
     ...options,
 
+ 
+
     headers: {
+
+ 
 
       ...(options.headers || {})
 
+ 
+
     }
+
+ 
 
   });
 
  
 
+ 
+
+ 
+
   const raw = await response.text();
+
+ 
 
   let data;
 
  
 
+ 
+
+ 
+
   try {
+
+ 
 
     data = raw ? JSON.parse(raw) : {};
 
+ 
+
   } catch {
+
+ 
 
     throw new Error("Worker ने वैध JSON response दिला नाही.");
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if (!response.ok) {
 
+ 
+
     throw new Error(
+
+ 
 
       data.error ||
 
+ 
+
       data.message ||
+
+ 
 
       ("HTTP Error " + response.status)
 
+ 
+
     );
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   return data;
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
@@ -1694,57 +3426,115 @@ async function apiRequest(path, options = {}, projectOverride = null) {
 
  
 
+ 
+
+ 
+
 function showPage(pageId) {
+
+ 
 
   document.querySelectorAll(".view").forEach((view) => {
 
+ 
+
     view.classList.toggle("active", view.id === pageId);
 
+ 
+
   });
+
+ 
+
+ 
 
  
 
   document.querySelectorAll("nav button[data-page]").forEach((button) => {
 
+ 
+
     button.classList.toggle(
+
+ 
 
       "active",
 
+ 
+
       button.dataset.page === pageId
+
+ 
 
     );
 
+ 
+
   });
+
+ 
+
+ 
 
  
 
   if (pageId === "dashboard") loadDashboard();
 
+ 
+
   if (pageId === "campaigns") loadCampaignData();
+
+ 
 
   if (pageId === "inbox") loadChats();
 
+ 
+
   if (pageId === "leads") renderLeads();
+
+ 
 
   if (pageId === "reports") loadReportsAndHistory();
 
+ 
+
   if (pageId === "templates") loadTemplates();
 
+ 
+
   if (pageId === "settings") loadSettings();
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 document.querySelectorAll("nav button[data-page]").forEach((button) => {
+
+ 
 
   button.addEventListener("click", () => {
 
+ 
+
     showPage(button.dataset.page);
+
+ 
 
   });
 
+ 
+
 });
+
+ 
+
+ 
 
  
 
@@ -1752,44 +3542,89 @@ document.querySelectorAll("nav button[data-page]").forEach((button) => {
 
  
 
+ 
+
+ 
+
 function applyProjectSelection(project) {
+
   currentProject = project || "New Launch";
+
   const headerSelect = $("projectSelect");
+
   const settingsSelect = $("projectSettingsSelect");
+
   if (headerSelect) headerSelect.value = currentProject;
+
   if (settingsSelect) settingsSelect.value = currentProject;
 
+ 
+
   const savedProjectUrl = localStorage.getItem("ak_project_worker_" + currentProject);
+
   const effectiveUrl = getProjectWorkerUrl(currentProject);
+
   const projectInput = $("projectWorkerUrl");
+
   if (projectInput) projectInput.value = savedProjectUrl || PROJECT_WORKER_URLS[currentProject] || "";
+
   const workerInput = $("workerUrl");
+
   if (workerInput) workerInput.value = effectiveUrl;
 
+ 
+
   loadDashboard();
+
   // Refresh project-specific data when the project changes.
+
   loadPhoneNumbers();
+
   loadTemplates();
+
 }
+
+ 
+
+ 
 
  
 
 $("projectSelect")?.addEventListener("change", (event) => {
 
+ 
+
   applyProjectSelection(event.target.value);
+
+ 
 
 });
 
  
 
+ 
+
+ 
+
 $("projectSettingsSelect")?.addEventListener("change", (event) => {
+
   currentProject = event.target.value || "New Launch";
+
   const savedUrl = localStorage.getItem("ak_project_worker_" + currentProject);
+
   if ($("projectWorkerUrl")) {
+
     $("projectWorkerUrl").value = savedUrl || PROJECT_WORKER_URLS[currentProject] || "";
+
   }
+
   if ($("workerUrl")) $("workerUrl").value = getProjectWorkerUrl(currentProject);
+
 });
+
+ 
+
+ 
 
  
 
@@ -1797,33 +3632,67 @@ $("projectSettingsSelect")?.addEventListener("change", (event) => {
 
  
 
+ 
+
+ 
+
 function extractArray(data, keys = []) {
+
+ 
 
   if (Array.isArray(data)) return data;
 
  
 
+ 
+
+ 
+
   for (const key of keys) {
+
+ 
 
     if (Array.isArray(data?.[key])) {
 
+ 
+
       return data[key];
 
+ 
+
     }
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   return [];
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 function formatDate(value) {
 
+ 
+
   if (!value) return "";
+
+ 
+
+ 
 
  
 
@@ -1831,207 +3700,505 @@ function formatDate(value) {
 
  
 
+ 
+
+ 
+
   if (Number.isNaN(date.getTime())) {
 
+ 
+
     return String(value);
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   return date.toLocaleString("en-IN", {
+
+ 
 
     day: "2-digit",
 
+ 
+
     month: "short",
+
+ 
 
     year: "numeric",
 
+ 
+
     hour: "2-digit",
+
+ 
 
     minute: "2-digit"
 
+ 
+
   });
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function normalizePhone(value) {
 
+ 
+
   return String(value || "").replace(/\D/g, "");
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function getMessagePhone(message) {
 
+ 
+
   return normalizePhone(
+
+ 
 
     message.wa_id ||
 
+ 
+
     message.phone ||
+
+ 
 
     message.to ||
 
+ 
+
     message.from ||
+
+ 
 
     message.recipient ||
 
+ 
+
     ""
+
+ 
 
   );
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function getMessageTime(message) {
 
+ 
+
   return new Date(
+
+ 
 
     message.created_at ||
 
+ 
+
     message.timestamp ||
+
+ 
 
     message.sent_at ||
 
+ 
+
     0
+
+ 
 
   ).getTime();
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
       /* =====================================
 
+ 
+
    LIVE CHAT - MESSAGE HISTORY
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 function getChatGroups() {
+
+ 
 
   const groups = new Map();
 
  
 
+ 
+
+ 
+
   (Array.isArray(messages) ? messages : []).forEach((message) => {
 
+ 
+
     const phone = getMessagePhone(message);
+
+ 
 
     if (!phone) return;
 
  
 
+ 
+
+ 
+
     if (!groups.has(phone)) {
+
+ 
 
       groups.set(phone, {
 
+ 
+
         phone,
+
+ 
 
         name: message.name || message.contact_name || phone,
 
+ 
+
         messages: [],
+
+ 
 
         lastTime: 0
 
+ 
+
       });
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     const group = groups.get(phone);
 
+ 
+
     group.messages.push(message);
+
+ 
+
+ 
 
  
 
     const time = getMessageTime(message);
 
+ 
+
     if (time > group.lastTime) {
+
+ 
 
       group.lastTime = time;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if (
 
+ 
+
       message.name ||
+
+ 
 
       message.contact_name
 
+ 
+
     ) {
+
+ 
 
       group.name = message.name || message.contact_name;
 
+ 
+
     }
+
+ 
 
   });
 
  
 
+ 
+
+ 
+
   return Array.from(groups.values())
+
+ 
 
     .map((group) => {
 
+ 
+
       group.messages.sort(
+
+ 
 
         (a, b) => getMessageTime(a) - getMessageTime(b)
 
+ 
+
       );
+
+ 
 
       return group;
 
+ 
+
     })
+
+ 
 
     .sort((a, b) => b.lastTime - a.lastTime);
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function isOutgoingMessage(message) {
 
+ 
+
   const direction = String(message.direction || "").toLowerCase();
+
+ 
+
+ 
 
  
 
   return [
 
+ 
+
     "outgoing",
+
+ 
 
     "sent",
 
+ 
+
     "outbound"
 
+ 
+
   ].includes(direction);
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 function getMessageText(message) {
+
+ 
 
   return (
 
+ 
+
     message.message ||
+
+ 
 
     message.text ||
 
+ 
+
     message.body ||
+
+ 
 
     message.caption ||
 
+ 
+
     "(No message text)"
 
+ 
+
   );
+
+ 
+
+}
+
+ 
+
+ 
+
+ 
+
+function getLastSeenStorageKey(phone) {
+
+  return "ak_chat_last_seen_" + currentProject + "_" + normalizePhone(phone);
+
+}
+
+ 
+
+function getLatestIncomingTime(chat) {
+
+  const incoming = chat.messages.filter((message) => !isOutgoingMessage(message));
+
+  return incoming.reduce((latest, message) => Math.max(latest, getMessageTime(message)), 0);
+
+}
+
+ 
+
+function isChatUnread(chat) {
+
+  const lastIncoming = getLatestIncomingTime(chat);
+
+  if (!lastIncoming) return false;
+
+  const stored = localStorage.getItem(getLastSeenStorageKey(chat.phone));
+
+  return stored !== null && lastIncoming > Number(stored);
+
+}
+
+ 
+
+function updateUnreadCount() {
+
+  const count = getChatGroups().filter(isChatUnread).length;
+
+  const el = $("unreadCount");
+
+  if (el) el.textContent = String(count);
+
+}
+
+ 
+
+function markChatRead(phone) {
+
+  const normalized = normalizePhone(phone);
+
+  const chat = getChatGroups().find((item) => item.phone === normalized);
+
+  if (!chat) return;
+
+  const latestIncoming = getLatestIncomingTime(chat);
+
+  localStorage.setItem(getLastSeenStorageKey(normalized), String(latestIncoming));
+
+  updateUnreadCount();
+
+}
+
+ 
+
+function initializeUnreadBaseline() {
+
+  const key = "ak_chat_unread_initialized_" + currentProject;
+
+  if (localStorage.getItem(key) === "1") return;
+
+  // First load establishes a baseline, so old replies are not falsely marked new.
+
+  getChatGroups().forEach((chat) => {
+
+    const storageKey = getLastSeenStorageKey(chat.phone);
+
+    if (localStorage.getItem(storageKey) === null) {
+
+      localStorage.setItem(storageKey, String(getLatestIncomingTime(chat)));
+
+    }
+
+  });
+
+  localStorage.setItem(key, "1");
 
 }
 
@@ -2039,9 +4206,17 @@ function getMessageText(message) {
 
 function renderChatList() {
 
+ 
+
   const list = $("chatList");
 
+ 
+
   if (!list) return;
+
+ 
+
+ 
 
  
 
@@ -2049,135 +4224,283 @@ function renderChatList() {
 
  
 
+ 
+
+ 
+
   if (!chats.length) {
+
+ 
 
     list.innerHTML = `
 
+ 
+
       <div class="small">
+
+ 
 
         No conversations found. Refresh to check for new messages.
 
+ 
+
       </div>
+
+ 
 
     `;
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   list.innerHTML = chats.map((chat) => {
 
+ 
+
     const latest = chat.messages[chat.messages.length - 1];
+
+ 
 
     const active = chat.phone === selectedChatNumber;
 
+ 
+
+    const unread = isChatUnread(chat);
+
+ 
+
     const preview = getMessageText(latest);
+
+ 
 
     const time = latest
 
+ 
+
       ? formatDate(latest.created_at || latest.timestamp)
+
+ 
 
       : "";
 
  
 
+ 
+
+ 
+
     return `
+
+ 
 
       <button
 
+ 
+
         type="button"
 
-        class="chat-item ${active ? "active" : ""}"
+ 
+
+        class="chat-item ${active ? "active" : ""} ${unread ? "has-unread" : ""}"
+
+ 
 
         data-chat-phone="${escapeHTML(chat.phone)}"
 
+ 
+
       >
 
-        <strong>${escapeHTML(chat.name)}</strong>
+ 
+
+        <strong>${escapeHTML(chat.name)} ${unread ? '<span class="unread-badge">NEW REPLY</span>' : ""}</strong>
+
+ 
 
         <div class="small">${escapeHTML(chat.phone)}</div>
 
+ 
+
         <div class="small">${escapeHTML(preview)}</div>
+
+ 
 
         <div class="small">${escapeHTML(time)}</div>
 
+ 
+
       </button>
 
+ 
+
     `;
+
+ 
 
   }).join("");
 
  
 
+ 
+
+ 
+
   list.querySelectorAll("[data-chat-phone]").forEach((button) => {
+
+ 
 
     button.addEventListener("click", () => {
 
+ 
+
       selectChat(button.dataset.chatPhone);
+
+ 
 
     });
 
+ 
+
   });
 
+ 
+
+  updateUnreadCount();
+
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function selectChat(phone) {
 
+ 
+
   selectedChatNumber = normalizePhone(phone);
+
+ 
+
+  markChatRead(selectedChatNumber);
+
+ 
 
   $("chatLayout")?.classList.add("chat-open");
 
  
 
+ 
+
+ 
+
   const chat = getChatGroups().find(
 
+ 
+
     (item) => item.phone === selectedChatNumber
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   if ($("chatTitle")) {
+
+ 
 
     $("chatTitle").textContent = chat
 
+ 
+
       ? chat.name + " (" + chat.phone + ")"
 
+ 
+
       : selectedChatNumber;
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   renderChatList();
+
+ 
 
   renderSelectedChat();
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function showChatList() {
 
+ 
+
   selectedChatNumber = "";
+
+ 
 
   $("chatLayout")?.classList.remove("chat-open");
 
+ 
+
   if ($("chatTitle")) $("chatTitle").textContent = "Select a conversation";
+
+ 
 
   if ($("chatHistory")) {
 
+ 
+
     $("chatHistory").innerHTML = '<div class="small">Select a contact to view message history.</div>';
+
+ 
 
   }
 
+ 
+
   renderChatList();
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
@@ -2185,81 +4508,163 @@ $("backToChats")?.addEventListener("click", showChatList);
 
  
 
+ 
+
+ 
+
 function renderSelectedChat() {
 
+ 
+
   const history = $("chatHistory");
+
+ 
 
   if (!history) return;
 
  
 
+ 
+
+ 
+
   if (!selectedChatNumber) {
+
+ 
 
     history.textContent = "Select a conversation to view messages.";
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   const chat = getChatGroups().find(
 
+ 
+
     (item) => item.phone === selectedChatNumber
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   if (!chat || !chat.messages.length) {
+
+ 
 
     history.textContent = "No message history found for this contact.";
 
+ 
+
     return;
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   history.innerHTML = chat.messages.map((message) => {
+
+ 
 
     const outgoing = isOutgoingMessage(message);
 
+ 
+
     const text = getMessageText(message);
+
+ 
 
     const date = formatDate(
 
+ 
+
       message.created_at || message.timestamp
 
+ 
+
     );
+
+ 
 
     const status = message.status || message.direction || "";
 
  
 
+ 
+
+ 
+
     return `
+
+ 
 
       <div class="bubble ${outgoing ? "out" : ""}">
 
+ 
+
         <div>${escapeHTML(text)}</div>
+
+ 
 
         <div class="small">
 
+ 
+
           ${escapeHTML(date)} · ${escapeHTML(status)}
+
+ 
 
         </div>
 
+ 
+
       </div>
 
+ 
+
     `;
+
+ 
 
   }).join("");
 
  
 
+ 
+
+ 
+
   history.scrollTop = history.scrollHeight;
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
@@ -2267,61 +4672,123 @@ function renderSelectedChat() {
 
  
 
+ 
+
+ 
+
 async function loadChats() {
+
+ 
 
   setStatus("chatStatus", "Loading conversations...");
 
  
 
+ 
+
+ 
+
   try {
+
+ 
 
     const data = await apiRequest(
 
+ 
+
       "/messages?limit=1000&offset=0"
 
+ 
+
     );
+
+ 
+
+ 
 
  
 
     messages = extractArray(data, [
 
+ 
+
       "data",
 
+ 
+
       "messages"
+
+ 
 
     ]);
 
  
 
+    initializeUnreadBaseline();
+
+ 
+
     renderChatList();
+
+ 
 
     renderSelectedChat();
 
  
 
+ 
+
+ 
+
     setStatus(
 
+ 
+
       "chatStatus",
+
+ 
 
       "Conversations loaded: " + getChatGroups().length +
 
+ 
+
       " | Messages: " + messages.length
 
+ 
+
     );
+
+ 
 
   } catch (error) {
 
+ 
+
     setStatus(
+
+ 
 
       "chatStatus",
 
+ 
+
       "Unable to load chats: " + error.message
+
+ 
 
     );
 
+ 
+
   }
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
@@ -2329,83 +4796,167 @@ async function loadChats() {
 
  
 
+ 
+
+ 
+
 $("refreshChatsButton")?.addEventListener("click", loadChats);
+
+ 
 
 $("refreshChatButton")?.addEventListener("click", loadChats);  
 
+ 
+
       /* =====================================
 
+ 
+
    LIVE CHAT - SEND TEXT REPLY
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 async function sendChatReply() {
+
+ 
 
   const textInput = $("replyText");
 
+ 
+
   const sendButton = $("replyButton");
+
+ 
 
   const text = textInput?.value.trim();
 
  
 
+ 
+
+ 
+
   if (!selectedChatNumber) {
+
+ 
 
     showToast("कृपया आधी client ची chat निवडा.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if (!text) {
 
+ 
+
     showToast("कृपया reply message लिहा.");
 
+ 
+
     return;
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   if (sendButton) sendButton.disabled = true;
+
+ 
 
   setStatus("chatStatus", "Sending reply...");
 
  
 
+ 
+
+ 
+
   try {
+
+ 
 
     const response = await apiRequest("/send", {
 
+ 
+
       method: "POST",
+
+ 
 
       headers: {
 
+ 
+
         "Content-Type": "application/json"
+
+ 
 
       },
 
+ 
+
       body: JSON.stringify({
+
+ 
 
         to: selectedChatNumber,
 
+ 
+
         message: text
 
+ 
+
       })
+
+ 
 
     });
 
  
 
+ 
+
+ 
+
     if (response.success === false) {
+
+ 
 
       throw new Error(response.error || "Message send failed.");
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
@@ -2413,13 +4964,27 @@ async function sendChatReply() {
 
  
 
+ 
+
+ 
+
     setStatus(
+
+ 
 
       "chatStatus",
 
+ 
+
       "Reply request accepted. Refreshing message history..."
 
+ 
+
     );
+
+ 
+
+ 
 
  
 
@@ -2427,39 +4992,79 @@ async function sendChatReply() {
 
  
 
+ 
+
+ 
+
     // नव्याने load झालेल्या history मध्ये हाच client निवडा.
+
+ 
 
     selectChat(selectedChatNumber);
 
  
 
+ 
+
+ 
+
     showToast(
+
+ 
 
       "Reply request accepted. Delivery status Worker/API मध्ये तपासा."
 
-    );
-
-  } catch (error) {
-
-    setStatus(
-
-      "chatStatus",
-
-      "Reply failed: " + error.message
+ 
 
     );
 
  
 
+  } catch (error) {
+
+ 
+
+    setStatus(
+
+ 
+
+      "chatStatus",
+
+ 
+
+      "Reply failed: " + error.message
+
+ 
+
+    );
+
+ 
+
+ 
+
+ 
+
     showToast("Reply failed: " + error.message);
+
+ 
 
   } finally {
 
+ 
+
     if (sendButton) sendButton.disabled = false;
+
+ 
 
   }
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
@@ -2467,33 +5072,67 @@ $("replyButton")?.addEventListener("click", sendChatReply);
 
  
 
+ 
+
+ 
+
 /* Enter ने reply पाठवा; Shift+Enter ने नवीन ओळ */
+
+ 
 
 $("replyText")?.addEventListener("keydown", (event) => {
 
+ 
+
   if (event.key === "Enter" && !event.shiftKey) {
+
+ 
 
     event.preventDefault();
 
+ 
+
     sendChatReply();
 
+ 
+
   }
+
+ 
 
 });
 
  
 
+ 
+
+ 
+
 /* =====================================
 
+ 
+
    LIVE CHAT - OPTIONAL FILE ATTACHMENT
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 $("replyFile")?.addEventListener("change", () => {
 
+ 
+
   const file = $("replyFile")?.files?.[0];
+
+ 
+
+ 
 
  
 
@@ -2501,25 +5140,51 @@ $("replyFile")?.addEventListener("change", () => {
 
  
 
+ 
+
+ 
+
   setStatus(
+
+ 
 
     "chatStatus",
 
+ 
+
     "Selected file: " + file.name +
+
+ 
 
     ". File sending must be supported by the Worker API."
 
+ 
+
   );
+
+ 
 
 });
 
  
 
+ 
+
+ 
+
 /* =====================================
+
+ 
 
    CHAT REFRESH AND INITIAL LOAD
 
+ 
+
 ===================================== */
+
+ 
+
+ 
 
  
 
@@ -2527,9 +5192,19 @@ let chatRefreshInProgress = false;
 
  
 
+ 
+
+ 
+
 async function refreshChatHistory() {
 
+ 
+
   if (chatRefreshInProgress) return;
+
+ 
+
+ 
 
  
 
@@ -2537,69 +5212,139 @@ async function refreshChatHistory() {
 
  
 
+ 
+
+ 
+
   try {
+
+ 
 
     await loadChats();
 
+ 
+
   } finally {
+
+ 
 
     chatRefreshInProgress = false;
 
+ 
+
   }
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 // Dashboard मधून Live Chat उघडल्यावर loadChats() आधीच चालते.
 
+ 
+
 // हे interval वापरल्यास chat history नियमित refresh होते.
+
+ 
 
 let chatRefreshTimer = null;
 
  
 
+ 
+
+ 
+
 function startChatRefresh() {
+
+ 
 
   if (chatRefreshTimer !== null) return;
 
  
 
+ 
+
+ 
+
   chatRefreshTimer = setInterval(() => {
+
+ 
 
     const inbox = $("inbox");
 
  
 
+ 
+
+ 
+
     if (inbox && inbox.classList.contains("active")) {
+
+ 
 
       refreshChatHistory();
 
+ 
+
     }
 
+ 
+
   }, 15000);
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 startChatRefresh();  
+
+ 
 
       /* =====================================
 
+ 
+
    TEMPLATE VARIABLES
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 function getTemplateVariables() {
+
+ 
 
   const inputs = document.querySelectorAll(
 
+ 
+
     "#variableFields input[data-variable]"
 
+ 
+
   );
+
+ 
+
+ 
 
  
 
@@ -2607,137 +5352,275 @@ function getTemplateVariables() {
 
  
 
+ 
+
+ 
+
   inputs.forEach((input) => {
+
+ 
 
     variables[Number(input.dataset.variable) - 1] =
 
+ 
+
       input.value.trim();
+
+ 
 
   });
 
  
 
+ 
+
+ 
+
   return variables;
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 /* =====================================
 
+ 
+
    SEND WHATSAPP TEMPLATE CAMPAIGN
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 async function sendCampaign(isTest = false) {
+
+ 
 
   const templateName = $("campaignTemplate")?.value;
 
+ 
+
   const phoneNumberId = $("sendNumber")?.value;
 
+ 
+
   const recipientsText = $("recipients")?.value || "";
+
+ 
 
   const consent = $("consent")?.checked;
 
  
 
+ 
+
+ 
+
   if (!templateName) {
+
+ 
 
     showToast("कृपया approved template निवडा.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if (!phoneNumberId) {
 
+ 
+
     showToast("WhatsApp Business Number निवडा.");
+
+ 
 
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if (!consent) {
 
+ 
+
     showToast("Recipient opt-in ची पुष्टी करा.");
+
+ 
 
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   const recipients = [
 
+ 
+
     ...new Set(
+
+ 
 
       recipientsText
 
+ 
+
         .split(/[\n,;]+/)
+
+ 
 
         .map(normalizePhone)
 
+ 
+
         .filter((number) =>
+
+ 
 
           number.length >= 10 && number.length <= 15
 
+ 
+
         )
 
+ 
+
     )
+
+ 
 
   ];
 
  
 
+ 
+
+ 
+
   if (!recipients.length) {
+
+ 
 
     showToast("किमान एक योग्य recipient number भरा.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   const selectedTemplate = templates.find(
 
+ 
+
     (template) => template.name === templateName
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   if (!selectedTemplate) {
+
+ 
 
     showToast("Template पुन्हा load करून निवडा.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   const templateStatus = String(
 
+ 
+
     selectedTemplate.status || ""
+
+ 
 
   ).toUpperCase();
 
  
 
+ 
+
+ 
+
   if (templateStatus && templateStatus !== "APPROVED") {
+
+ 
 
     showToast("निवडलेला template APPROVED नाही.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
@@ -2745,75 +5628,151 @@ async function sendCampaign(isTest = false) {
 
  
 
+ 
+
+ 
+
   if (variables.some((value) => !value)) {
+
+ 
 
     showToast("सर्व Template Variables भरा.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   const language = selectedTemplate.language || "en";
 
+ 
+
   const imageUrl = $("headerField")?.value.trim() || "";
+
+ 
+
+ 
 
  
 
   const headerIsImage = (
 
+ 
+
     selectedTemplate.components || []
+
+ 
 
   ).some((component) =>
 
+ 
+
     String(component.type).toUpperCase() === "HEADER" &&
 
+ 
+
     String(component.format).toUpperCase() === "IMAGE"
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   if (headerIsImage && !imageUrl) {
+
+ 
 
     showToast("Header Image URL भरा.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if (headerIsImage && !/^https:\/\//i.test(imageUrl)) {
 
+ 
+
     showToast("Image URL HTTPS असणे आवश्यक आहे.");
 
+ 
+
     return;
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   const targets = isTest
 
+ 
+
     ? recipients.slice(0, 1)
+
+ 
 
     : recipients;
 
  
 
+ 
+
+ 
+
   const resultElement = $("sendResult");
+
+ 
 
   const statusElement = $("campaignStatus");
 
  
 
+ 
+
+ 
+
   const sendButton = isTest
+
+ 
 
     ? $("sendTestButton")
 
+ 
+
     : $("startCampaignButton");
+
+ 
+
+ 
 
  
 
@@ -2821,11 +5780,23 @@ async function sendCampaign(isTest = false) {
 
  
 
+ 
+
+ 
+
   let sent = 0;
+
+ 
 
   let failed = 0;
 
+ 
+
   const details = [];
+
+ 
+
+ 
 
  
 
@@ -2833,143 +5804,287 @@ async function sendCampaign(isTest = false) {
 
  
 
+ 
+
+ 
+
   try {
 
+ 
+
     for (let index = 0; index < targets.length; index++) {
+
+ 
 
       const to = targets[index];
 
  
 
+ 
+
+ 
+
       const payload = {
+
+ 
 
         to,
 
+ 
+
         templateName,
+
+ 
 
         language,
 
+ 
+
         variables,
 
+ 
+
         phoneNumberId
+
+ 
 
       };
 
  
 
+ 
+
+ 
+
       if (headerIsImage) {
+
+ 
 
         payload.imageUrl = imageUrl;
 
+ 
+
       }
+
+ 
+
+ 
 
  
 
       try {
 
+ 
+
         const response = await apiRequest("/send-template", {
+
+ 
 
           method: "POST",
 
+ 
+
           headers: {
+
+ 
 
             "Content-Type": "application/json"
 
+ 
+
           },
 
+ 
+
           body: JSON.stringify(payload)
+
+ 
 
         });
 
  
 
+ 
+
+ 
+
         if (response.success === false) {
+
+ 
 
           throw new Error(
 
+ 
+
             response.error || "Message send failed."
 
+ 
+
           );
+
+ 
 
         }
 
  
 
+ 
+
+ 
+
         sent++;
+
+ 
 
         details.push(to + " — API accepted");
 
+ 
+
       } catch (error) {
+
+ 
 
         failed++;
 
+ 
+
         details.push(
+
+ 
 
           to + " — FAILED: " + error.message
 
+ 
+
         );
 
+ 
+
       }
+
+ 
+
+ 
 
  
 
       if (statusElement) {
 
+ 
+
         statusElement.textContent =
+
+ 
 
           "Progress: " + (index + 1) + "/" + targets.length +
 
+ 
+
           " | API accepted: " + sent +
+
+ 
 
           " | Failed: " + failed;
 
+ 
+
       }
+
+ 
+
+ 
 
  
 
       if (resultElement) {
 
+ 
+
         resultElement.textContent = details.join("\n");
+
+ 
 
       }
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if (statusElement) {
 
+ 
+
       statusElement.textContent =
+
+ 
 
         "Completed. API accepted: " + sent +
 
+ 
+
         " | Failed: " + failed +
 
+ 
+
         ". Actual delivery status may update later.";
+
+ 
 
     }
 
  
 
+ 
+
+ 
+
     showToast(
+
+ 
 
       "Campaign completed. Accepted: " +
 
+ 
+
       sent + ", failed: " + failed
+
+ 
 
     );
 
  
 
+ 
+
+ 
+
     await loadDashboard();
+
+ 
 
   } finally {
 
+ 
+
     if (sendButton) sendButton.disabled = false;
+
+ 
 
   }
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
@@ -2977,101 +6092,203 @@ async function sendCampaign(isTest = false) {
 
  
 
+ 
+
+ 
+
 $("startCampaignButton")?.addEventListener("click", () => {
+
+ 
 
   sendCampaign(false);
 
+ 
+
 });
+
+ 
+
+ 
 
  
 
 $("sendTestButton")?.addEventListener("click", () => {
 
+ 
+
   sendCampaign(true);
+
+ 
 
 });
 
  
 
+ 
+
+ 
+
 /* =====================================
 
+ 
+
    REPORTS AND MESSAGE HISTORY
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 function renderHistory() {
 
+ 
+
   const table = $("historyTable");
+
+ 
 
   if (!table) return;
 
  
 
+ 
+
+ 
+
   const search = (
 
+ 
+
     $("historySearch")?.value || ""
+
+ 
 
   ).toLowerCase();
 
  
 
+ 
+
+ 
+
   const filtered = messages.filter((message) => {
+
+ 
 
     const searchable = [
 
+ 
+
       message.wa_id,
+
+ 
 
       message.name,
 
+ 
+
       getMessageText(message),
+
+ 
 
       message.direction,
 
+ 
+
       message.status,
+
+ 
 
       message.created_at,
 
+ 
+
       message.timestamp
+
+ 
 
     ].join(" ").toLowerCase();
 
  
 
+ 
+
+ 
+
     return searchable.includes(search);
+
+ 
 
   });
 
  
 
+ 
+
+ 
+
   table.innerHTML = filtered.length
+
+ 
 
     ? filtered.map((message) => `
 
+ 
+
         <tr>
+
+ 
 
           <td>${escapeHTML(
 
+ 
+
             formatDate(message.created_at || message.timestamp)
+
+ 
 
           )}</td>
 
+ 
+
           <td>${escapeHTML(message.wa_id || "-")}</td>
+
+ 
 
           <td>${escapeHTML(getMessageText(message))}</td>
 
+ 
+
           <td>${escapeHTML(message.direction || "-")}</td>
+
+ 
 
           <td>${escapeHTML(message.status || "-")}</td>
 
+ 
+
         </tr>
+
+ 
 
       `).join("")
 
+ 
+
     : '<tr><td colspan="5">No matching messages found.</td></tr>';
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
@@ -3079,9 +6296,19 @@ $("historySearch")?.addEventListener("input", renderHistory);
 
  
 
+ 
+
+ 
+
 async function loadReportsAndHistory() {
 
+ 
+
   setStatus("dailyReports", "Loading reports...");
+
+ 
+
+ 
 
  
 
@@ -3089,265 +6316,531 @@ async function loadReportsAndHistory() {
 
  
 
+ 
+
+ 
+
   try {
 
+ 
+
     const data = await apiRequest("/reports");
+
+ 
 
     const totals = data.totals || {};
 
  
 
+ 
+
+ 
+
     if ($("reportTotal")) {
+
+ 
 
       $("reportTotal").textContent =
 
+ 
+
         totals.totalMessages ?? messages.length;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if ($("reportDelivered")) {
 
+ 
+
       $("reportDelivered").textContent =
+
+ 
 
         totals.delivered ?? 0;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if ($("reportRead")) {
 
+ 
+
       $("reportRead").textContent =
+
+ 
 
         totals.readCount ?? 0;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if ($("reportFailed")) {
 
+ 
+
       $("reportFailed").textContent =
+
+ 
 
         totals.failed ?? 0;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     const daily = Array.isArray(data.daily)
 
+ 
+
       ? data.daily
+
+ 
 
       : [];
 
  
 
+ 
+
+ 
+
     if ($("dailyReports")) {
+
+ 
 
       $("dailyReports").innerHTML = daily.length
 
+ 
+
         ? daily.map((item) => `
+
+ 
 
             <div class="number-row">
 
+ 
+
               <b>${escapeHTML(item.date || item.day || "-")}</b>
+
+ 
 
               <div>
 
+ 
+
                 Messages:
+
+ 
 
                 ${escapeHTML(item.count ?? item.total ?? 0)}
 
+ 
+
               </div>
+
+ 
 
             </div>
 
+ 
+
           `).join("")
+
+ 
 
         : "No daily report data available.";
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     renderHistory();
 
+ 
+
   } catch (error) {
+
+ 
 
     setStatus(
 
+ 
+
       "dailyReports",
+
+ 
 
       "Report error: " + error.message
 
+ 
+
     );
+
+ 
 
   }
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 $("refreshReportsButton")?.addEventListener(
 
+ 
+
   "click",
 
+ 
+
   loadReportsAndHistory
+
+ 
 
 );
 
  
 
+ 
+
+ 
+
 $("refreshHistoryButton")?.addEventListener("click", async () => {
+
+ 
 
   await loadChats();
 
+ 
+
   renderHistory();
+
+ 
 
 });  
 
+ 
+
       /* =====================================
 
+ 
+
    CONTACTS - SAVE, SEARCH AND EXPORT
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 function loadLocalContacts() {
+
+ 
 
   try {
 
+ 
+
     const saved = localStorage.getItem("ak_local_contacts");
+
+ 
 
     localContacts = saved ? JSON.parse(saved) : [];
 
  
 
+ 
+
+ 
+
     if (!Array.isArray(localContacts)) {
+
+ 
 
       localContacts = [];
 
+ 
+
     }
+
+ 
 
   } catch {
 
+ 
+
     localContacts = [];
+
+ 
 
   }
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function saveLocalContacts() {
 
+ 
+
   localStorage.setItem(
+
+ 
 
     "ak_local_contacts",
 
+ 
+
     JSON.stringify(localContacts)
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   if ($("contactCount")) {
+
+ 
 
     $("contactCount").textContent = localContacts.length;
 
+ 
+
   }
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function addLead() {
 
+ 
+
   const name = $("leadName")?.value.trim() || "";
 
+ 
+
   const phone = normalizePhone($("leadPhone")?.value || "");
+
+ 
 
   const tag = $("leadTag")?.value.trim() || "";
 
  
 
+ 
+
+ 
+
   if (!name) {
+
+ 
 
     showToast("Contact name भरा.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if (phone.length < 10 || phone.length > 15) {
 
+ 
+
     showToast("योग्य WhatsApp number भरा.");
+
+ 
 
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if (localContacts.some((contact) => contact.phone === phone)) {
 
+ 
+
     showToast("हा number आधीच saved आहे.");
 
+ 
+
     return;
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   localContacts.push({
+
+ 
 
     id: Date.now(),
 
+ 
+
     name,
+
+ 
 
     phone,
 
+ 
+
     tag,
 
+ 
+
     createdAt: new Date().toISOString()
+
+ 
 
   });
 
  
 
+ 
+
+ 
+
   saveLocalContacts();
+
+ 
 
   renderLeads();
 
  
 
+ 
+
+ 
+
   if ($("leadName")) $("leadName").value = "";
 
+ 
+
   if ($("leadPhone")) $("leadPhone").value = "";
+
+ 
 
   if ($("leadTag")) $("leadTag").value = "";
 
  
 
+ 
+
+ 
+
   setStatus("contactStatus", "Contact browser मध्ये save झाला.");
 
+ 
+
   showToast("Contact saved.");
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 function renderLeads() {
+
+ 
 
   const list = $("leadList");
 
+ 
+
   if (!list) return;
+
+ 
+
+ 
 
  
 
@@ -3355,89 +6848,179 @@ function renderLeads() {
 
  
 
+ 
+
+ 
+
   const filtered = localContacts.filter((contact) =>
+
+ 
 
     [contact.name, contact.phone, contact.tag]
 
+ 
+
       .join(" ")
+
+ 
 
       .toLowerCase()
 
+ 
+
       .includes(query)
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   list.innerHTML = filtered.length
+
+ 
 
     ? filtered.map((contact) => `
 
+ 
+
         <div class="number-row">
+
+ 
 
           <b>${escapeHTML(contact.name)}</b>
 
+ 
+
           <div>${escapeHTML(contact.phone)}</div>
+
+ 
 
           <div class="small">
 
+ 
+
             ${escapeHTML(contact.tag || "No project tag")}
+
+ 
 
           </div>
 
+ 
+
           <button type="button" data-use-contact="${escapeHTML(contact.phone)}">
+
+ 
 
             Use in Campaign
 
+ 
+
           </button>
+
+ 
 
           <button type="button" class="danger"
 
+ 
+
             data-delete-contact="${Number(contact.id)}">
+
+ 
 
             Delete
 
+ 
+
           </button>
+
+ 
 
         </div>
 
+ 
+
       `).join("")
+
+ 
 
     : "No contacts found.";
 
  
 
+ 
+
+ 
+
   list.querySelectorAll("[data-use-contact]").forEach((button) => {
+
+ 
 
     button.addEventListener("click", () => {
 
+ 
+
       useContactForCampaign(button.dataset.useContact);
+
+ 
 
     });
 
+ 
+
   });
+
+ 
+
+ 
 
  
 
   list.querySelectorAll("[data-delete-contact]").forEach((button) => {
 
+ 
+
     button.addEventListener("click", () => {
+
+ 
 
       deleteLocalContact(Number(button.dataset.deleteContact));
 
+ 
+
     });
 
+ 
+
   });
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 function useContactForCampaign(phone) {
+
+ 
 
   const recipientBox = $("recipients");
 
+ 
+
   if (!recipientBox) return;
+
+ 
+
+ 
 
  
 
@@ -3445,249 +7028,499 @@ function useContactForCampaign(phone) {
 
  
 
+ 
+
+ 
+
   recipientBox.value = current
 
+ 
+
     ? current + "\n" + phone
+
+ 
 
     : phone;
 
  
 
+ 
+
+ 
+
   showPage("campaigns");
+
+ 
 
   showToast("Number campaign मध्ये भरला.");
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function deleteLocalContact(id) {
 
+ 
+
   if (!confirm("हा contact delete करायचा आहे का?")) return;
+
+ 
+
+ 
 
  
 
   localContacts = localContacts.filter(
 
+ 
+
     (contact) => Number(contact.id) !== Number(id)
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   saveLocalContacts();
+
+ 
 
   renderLeads();
 
+ 
+
   showToast("Contact deleted.");
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 function exportContactsCSV() {
 
+ 
+
   if (!localContacts.length) {
+
+ 
 
     showToast("Export करण्यासाठी contacts नाहीत.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   const rows = [
 
+ 
+
     ["Name", "Phone", "Project", "Created At"],
+
+ 
 
     ...localContacts.map((contact) => [
 
+ 
+
       contact.name,
+
+ 
 
       contact.phone,
 
+ 
+
       contact.tag,
+
+ 
 
       contact.createdAt
 
+ 
+
     ])
+
+ 
 
   ];
 
  
 
+ 
+
+ 
+
   const csv = rows.map((row) =>
+
+ 
 
     row.map((value) =>
 
+ 
+
       '"' + String(value ?? "").replace(/"/g, '""') + '"'
 
+ 
+
     ).join(",")
+
+ 
 
   ).join("\r\n");
 
  
 
+ 
+
+ 
+
   const blob = new Blob(["\uFEFF" + csv], {
 
+ 
+
     type: "text/csv;charset=utf-8;"
+
+ 
 
   });
 
  
 
+ 
+
+ 
+
   const url = URL.createObjectURL(blob);
+
+ 
 
   const anchor = document.createElement("a");
 
  
 
+ 
+
+ 
+
   anchor.href = url;
 
+ 
+
   anchor.download = "ak-properties-contacts.csv";
+
+ 
 
   anchor.click();
 
  
 
+ 
+
+ 
+
   URL.revokeObjectURL(url);
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 $("addContactButton")?.addEventListener("click", addLead);
+
+ 
 
 $("saveContactButton")?.addEventListener("click", addLead);
 
+ 
+
 $("leadSearch")?.addEventListener("input", renderLeads);
+
+ 
 
 $("exportContactsButton")?.addEventListener("click", exportContactsCSV);
 
  
 
+ 
+
+ 
+
 /* =====================================
 
+ 
+
    WORKER SETTINGS
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 $("saveWorkerButton")?.addEventListener("click", () => {
+
+ 
 
   const value = $("workerUrl")?.value.trim() || "";
 
  
 
+ 
+
+ 
+
   if (!value) {
+
+ 
 
     showToast("कृपया Worker URL भरा.");
 
+ 
+
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   try {
 
+ 
+
     const parsed = new URL(value);
+
+ 
+
+ 
 
  
 
     if (parsed.protocol !== "https:") {
 
+ 
+
       showToast("Worker URL HTTPS असणे आवश्यक आहे.");
+
+ 
 
       return;
 
+ 
+
     }
+
+ 
 
   } catch {
 
+ 
+
     showToast("Worker URL योग्य नाही.");
+
+ 
 
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   workerUrl = value.replace(/\/+$/, "");
 
+ 
+
   localStorage.setItem("ak_worker_url", workerUrl);
+
+ 
+
+ 
 
  
 
   setStatus("workerStatus", "Worker URL सेव्ह झाला.");
 
+ 
+
   showToast("Worker URL saved.");
+
+ 
 
 });
 
  
 
+ 
+
+ 
+
 $("saveProjectButton")?.addEventListener("click", () => {
 
+ 
+
   const project =
+
+ 
 
     $("projectSettingsSelect")?.value || currentProject;
 
  
 
+ 
+
+ 
+
   const value = $("projectWorkerUrl")?.value.trim() || "";
+
+ 
 
   const key = "ak_project_worker_" + project;
 
  
 
+ 
+
+ 
+
   if (!value) {
+
+ 
 
     localStorage.removeItem(key);
 
  
 
+ 
+
+ 
+
     setStatus(
+
+ 
 
       "projectStatus",
 
+ 
+
       "या project साठी मुख्य Worker URL वापरला जाईल."
+
+ 
 
     );
 
  
 
+ 
+
+ 
+
     showToast("Project settings saved.");
+
+ 
 
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   try {
 
+ 
+
     const parsed = new URL(value);
+
+ 
+
+ 
 
  
 
     if (parsed.protocol !== "https:") {
 
+ 
+
       showToast("Project Worker URL HTTPS असणे आवश्यक आहे.");
+
+ 
 
       return;
 
+ 
+
     }
+
+ 
 
   } catch {
 
+ 
+
     showToast("Project Worker URL योग्य नाही.");
+
+ 
 
     return;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
@@ -3695,211 +7528,423 @@ $("saveProjectButton")?.addEventListener("click", () => {
 
  
 
+ 
+
+ 
+
   setStatus("projectStatus", project + " settings सेव्ह झाल्या.");
 
+ 
+
   showToast("Project settings saved.");
+
+ 
 
 });
 
  
 
+ 
+
+ 
+
 /* =====================================
+
+ 
 
    WORKER CONNECTION TEST
 
+ 
+
 ===================================== */
+
+ 
+
+ 
 
  
 
 async function testWorkerConnection() {
 
+ 
+
   setStatus("connectionStatus", "Checking Worker connection...");
 
  
 
+ 
+
+ 
+
   try {
+
+ 
 
     const data = await apiRequest("/health");
 
  
 
+ 
+
+ 
+
     setStatus(
+
+ 
 
       "connectionStatus",
 
+ 
+
       "API ACTIVE — Worker ने response दिला."
+
+ 
 
     );
 
  
 
+ 
+
+ 
+
     setStatus("workerStatus", JSON.stringify(data, null, 2));
+
+ 
 
     setStatus("apiInfo", JSON.stringify(data, null, 2));
 
  
 
+ 
+
+ 
+
     showToast("Worker connection successful.");
+
+ 
 
     return true;
 
+ 
+
   } catch (error) {
+
+ 
 
     setStatus("connectionStatus", "API CONNECTION FAILED");
 
+ 
+
     setStatus("workerStatus", error.message);
+
+ 
 
     setStatus("apiInfo", error.message);
 
  
 
+ 
+
+ 
+
     showToast("Connection failed: " + error.message);
+
+ 
 
     return false;
 
+ 
+
   }
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 $("testWorkerButton")?.addEventListener("click", testWorkerConnection);
 
+ 
+
 $("checkConnection")?.addEventListener("click", testWorkerConnection);
+
+ 
 
 $("refreshApiInfoButton")?.addEventListener("click", testWorkerConnection);
 
  
 
+ 
+
+ 
+
 $("refreshDashboard")?.addEventListener("click", loadDashboard);
+
+ 
 
 $("reloadAppButton")?.addEventListener("click", () => location.reload());
 
  
 
+ 
+
+ 
+
 $("clearLocalSettingsButton")?.addEventListener("click", () => {
+
+ 
 
   if (!confirm(
 
+ 
+
     "या browser मधील dashboard settings आणि saved contacts clear करायचे?"
+
+ 
 
   )) return;
 
  
 
+ 
+
+ 
+
   [
+
+ 
 
     "ak_worker_url",
 
+ 
+
     "ak_local_contacts"
+
+ 
 
   ].forEach((key) => localStorage.removeItem(key));
 
  
 
+ 
+
+ 
+
   Object.keys(localStorage)
 
+ 
+
     .filter((key) => key.startsWith("ak_project_worker_"))
+
+ 
 
     .forEach((key) => localStorage.removeItem(key));
 
  
 
+ 
+
+ 
+
   showToast("Local settings clear झाल्या. Dashboard reload होत आहे.");
 
+ 
+
   location.reload();
+
+ 
 
 });
 
  
 
+ 
+
+ 
+
 /* =====================================
+
+ 
 
    INITIAL SETTINGS AND CONTACTS
 
+ 
+
 ===================================== */
+
+ 
+
+ 
 
  
 
 (function initCore() {
 
+ 
+
   workerUrl = getWorkerUrl();
+
+ 
+
+ 
 
  
 
   if ($("workerUrl")) {
 
+ 
+
     $("workerUrl").value =
+
+ 
 
       localStorage.getItem("ak_worker_url") ||
 
+ 
+
       DEFAULT_WORKER_URL;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if ($("projectSelect")) {
 
+ 
+
     currentProject = $("projectSelect").value || "New Launch";
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if ($("projectSettingsSelect")) {
 
+ 
+
     $("projectSettingsSelect").value = currentProject;
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   const projectUrl = localStorage.getItem(
 
+ 
+
     "ak_project_worker_" + currentProject
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   if ($("projectWorkerUrl")) {
 
+ 
+
     $("projectWorkerUrl").value = projectUrl || "";
+
+ 
 
   }
 
  
 
+ 
+
+ 
+
   loadLocalContacts();
+
+ 
 
   renderLeads();
 
+ 
+
 })();  
+
+ 
 
       /* =====================================
 
+ 
+
    LOAD WHATSAPP BUSINESS NUMBERS
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 async function loadPhoneNumbers() {
 
+ 
+
   try {
+
+ 
 
     const data = await apiRequest("/phone-numbers");
 
  
 
+ 
+
+ 
+
     phoneNumbers = extractArray(data, [
+
+ 
 
       "data",
 
+ 
+
       "phoneNumbers"
 
+ 
+
     ]);
+
+ 
+
+ 
 
  
 
@@ -3907,77 +7952,155 @@ async function loadPhoneNumbers() {
 
  
 
+ 
+
+ 
+
     if (select) {
 
+ 
+
       select.innerHTML = "";
+
+ 
 
       select.add(new Option("Select WhatsApp number", ""));
 
  
 
+ 
+
+ 
+
       phoneNumbers.forEach((number) => {
+
+ 
 
         const id = number.phoneNumberId || number.id || "";
 
+ 
+
         const label =
+
+ 
 
           number.displayPhoneNumber ||
 
+ 
+
           number.verifiedName ||
+
+ 
 
           id;
 
  
 
+ 
+
+ 
+
         if (id) select.add(new Option(label, id));
+
+ 
 
       });
 
+ 
+
     }
+
+ 
 
   } catch (error) {
 
+ 
+
     setStatus(
+
+ 
 
       "sendResult",
 
+ 
+
       "WhatsApp numbers load failed: " + error.message
+
+ 
 
     );
 
+ 
+
   }
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 /* =====================================
 
+ 
+
    LOAD APPROVED TEMPLATES
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 async function loadTemplates() {
+
+ 
 
   setStatus("templateStatus", "Loading WhatsApp templates...");
 
  
 
+ 
+
+ 
+
   try {
+
+ 
 
     const data = await apiRequest("/templates");
 
  
 
+ 
+
+ 
+
     templates = extractArray(data, [
+
+ 
 
       "data",
 
+ 
+
       "templates"
 
+ 
+
     ]);
+
+ 
+
+ 
 
  
 
@@ -3985,45 +8108,91 @@ async function loadTemplates() {
 
  
 
+ 
+
+ 
+
     if (select) {
 
+ 
+
       select.innerHTML = "";
+
+ 
 
       select.add(new Option("Select approved template", ""));
 
  
 
+ 
+
+ 
+
       templates.forEach((template) => {
 
+ 
+
         const name = template.name || "";
+
+ 
 
         if (!name) return;
 
  
 
+ 
+
+ 
+
         const status = String(
 
+ 
+
           template.status || ""
+
+ 
 
         ).toUpperCase();
 
  
 
+ 
+
+ 
+
         select.add(
+
+ 
 
           new Option(
 
+ 
+
             name + (status ? " (" + status + ")" : ""),
+
+ 
 
             name
 
+ 
+
           )
+
+ 
 
         );
 
+ 
+
       });
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
@@ -4031,65 +8200,131 @@ async function loadTemplates() {
 
  
 
+ 
+
+ 
+
     if (table) {
+
+ 
 
       table.innerHTML = templates.length
 
+ 
+
         ? templates.map((template) => `
+
+ 
 
             <tr>
 
+ 
+
               <td>${escapeHTML(template.name || "-")}</td>
+
+ 
 
               <td>${escapeHTML(template.language || "-")}</td>
 
+ 
+
               <td>${escapeHTML(template.category || "-")}</td>
+
+ 
 
               <td>${escapeHTML(template.status || "-")}</td>
 
+ 
+
             </tr>
+
+ 
 
           `).join("")
 
+ 
+
         : '<tr><td colspan="4">No templates found.</td></tr>';
+
+ 
 
     }
 
  
 
+ 
+
+ 
+
     setStatus(
+
+ 
 
       "templateStatus",
 
+ 
+
       "Templates loaded: " + templates.length
 
+ 
+
     );
+
+ 
+
+ 
 
  
 
     renderTemplateVariables();
 
+ 
+
   } catch (error) {
+
+ 
 
     setStatus(
 
+ 
+
       "templateStatus",
+
+ 
 
       "Template load failed: " + error.message
 
+ 
+
     );
 
+ 
+
   }
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 function renderTemplateVariables() {
+
+ 
 
   const selectedName = $("campaignTemplate")?.value;
 
+ 
+
   const container = $("variableFields");
+
+ 
+
+ 
 
  
 
@@ -4097,15 +8332,31 @@ function renderTemplateVariables() {
 
  
 
+ 
+
+ 
+
   container.innerHTML = "";
+
+ 
+
+ 
 
  
 
   const template = templates.find(
 
+ 
+
     (item) => item.name === selectedName
 
+ 
+
   );
+
+ 
+
+ 
 
  
 
@@ -4113,211 +8364,423 @@ function renderTemplateVariables() {
 
  
 
+ 
+
+ 
+
   let bodyText = "";
+
+ 
+
+ 
 
  
 
   (template.components || []).forEach((component) => {
 
+ 
+
     if (String(component.type).toUpperCase() === "BODY") {
+
+ 
 
       bodyText = component.text || "";
 
+ 
+
     }
 
+ 
+
   });
+
+ 
+
+ 
 
  
 
   const matches = [
 
+ 
+
     ...bodyText.matchAll(/\{\{\s*(\d+)\s*\}\}/g)
+
+ 
 
   ];
 
  
 
+ 
+
+ 
+
   const variableNumbers = [
 
+ 
+
     ...new Set(matches.map((match) => Number(match[1])))
+
+ 
 
   ].sort((a, b) => a - b);
 
  
 
+ 
+
+ 
+
   variableNumbers.forEach((number) => {
+
+ 
 
     const label = document.createElement("label");
 
+ 
+
     label.htmlFor = "templateVar" + number;
+
+ 
 
     label.textContent = "Variable {{ " + number + " }}";
 
  
 
+ 
+
+ 
+
     const input = document.createElement("input");
+
+ 
 
     input.id = "templateVar" + number;
 
+ 
+
     input.dataset.variable = String(number);
 
+ 
+
     input.placeholder = "Enter variable " + number;
+
+ 
 
     input.required = true;
 
  
 
+ 
+
+ 
+
     container.appendChild(label);
 
+ 
+
     container.appendChild(input);
+
+ 
 
   });
 
  
 
+ 
+
+ 
+
   const imageHeader = (template.components || []).some(
+
+ 
 
     (component) =>
 
+ 
+
       String(component.type).toUpperCase() === "HEADER" &&
 
+ 
+
       String(component.format).toUpperCase() === "IMAGE"
+
+ 
 
   );
 
  
 
+ 
+
+ 
+
   if (imageHeader) {
+
+ 
 
     const label = document.createElement("label");
 
+ 
+
     label.htmlFor = "headerField";
+
+ 
 
     label.textContent = "Header Image URL (HTTPS)";
 
  
 
+ 
+
+ 
+
     const input = document.createElement("input");
+
+ 
 
     input.id = "headerField";
 
+ 
+
     input.type = "url";
+
+ 
 
     input.placeholder = "https://example.com/image.jpg";
 
  
 
+ 
+
+ 
+
     container.appendChild(label);
+
+ 
 
     container.appendChild(input);
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if (!variableNumbers.length && !imageHeader) {
 
+ 
+
     container.textContent = "This template has no variables.";
 
+ 
+
   }
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 $("campaignTemplate")?.addEventListener(
+
+ 
 
   "change",
 
+ 
+
   renderTemplateVariables
 
+ 
+
 );
+
+ 
+
+ 
 
  
 
 $("refreshTemplatesButton")?.addEventListener(
 
+ 
+
   "click",
 
+ 
+
   loadTemplates
+
+ 
 
 );
 
  
 
+ 
+
+ 
+
 /* =====================================
 
+ 
+
    DASHBOARD METRICS
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 async function loadDashboard() {
+
+ 
 
   setStatus("dashStatus", "Loading dashboard data...");
 
  
 
+ 
+
+ 
+
   try {
+
+ 
 
     const results = await Promise.allSettled([
 
+ 
+
       apiRequest("/reports"),
+
+ 
 
       apiRequest("/messages?limit=1000&offset=0"),
 
+ 
+
       apiRequest("/phone-numbers")
+
+ 
 
     ]);
 
  
 
+ 
+
+ 
+
     const reportData =
+
+ 
 
       results[0].status === "fulfilled"
 
+ 
+
         ? results[0].value
 
+ 
+
         : {};
+
+ 
+
+ 
 
  
 
     const messageData =
 
+ 
+
       results[1].status === "fulfilled"
 
+ 
+
         ? results[1].value
+
+ 
 
         : {};
 
  
 
+ 
+
+ 
+
     if (results[1].status === "fulfilled") {
+
+ 
 
       messages = extractArray(messageData, [
 
+ 
+
         "data",
+
+ 
 
         "messages"
 
+ 
+
       ]);
+
+ 
 
     }
 
  
 
+ 
+
+ 
+
     if (results[2].status === "fulfilled") {
+
+ 
 
       phoneNumbers = extractArray(
 
+ 
+
         results[2].value,
+
+ 
 
         ["data", "phoneNumbers"]
 
+ 
+
       );
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
@@ -4325,214 +8788,428 @@ async function loadDashboard() {
 
  
 
+ 
+
+ 
+
     const incoming = messages.filter((message) =>
+
+ 
 
       String(message.direction || "").toLowerCase() === "incoming"
 
+ 
+
     ).length;
+
+ 
+
+ 
 
  
 
     const outgoing = messages.filter((message) =>
 
+ 
+
       isOutgoingMessage(message)
+
+ 
 
     ).length;
 
  
 
+ 
+
+ 
+
     if ($("total")) {
+
+ 
 
       $("total").textContent =
 
+ 
+
         totals.totalMessages ?? messages.length;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if ($("incomingCount")) {
 
+ 
+
       $("incomingCount").textContent =
+
+ 
 
         totals.incoming ?? incoming;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if ($("outgoingCount")) {
 
+ 
+
       $("outgoingCount").textContent =
+
+ 
 
         totals.outgoing ?? outgoing;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if ($("contactCount")) {
 
+ 
+
       $("contactCount").textContent = localContacts.length;
 
+ 
+
     }
+
+ 
+
+ 
 
  
 
     if ($("dailyReports")) {
 
+ 
+
       const daily = Array.isArray(reportData.daily)
 
+ 
+
         ? reportData.daily
+
+ 
 
         : [];
 
  
 
+ 
+
+ 
+
       $("dailyReports").innerHTML = daily.length
+
+ 
 
         ? daily.map((item) => `
 
+ 
+
             <div class="number-row">
+
+ 
 
               <b>${escapeHTML(item.date || item.day || "-")}</b>
 
+ 
+
               <div>
+
+ 
 
                 Messages:
 
+ 
+
                 ${escapeHTML(item.count ?? item.total ?? 0)}
+
+ 
 
               </div>
 
+ 
+
             </div>
+
+ 
 
           `).join("")
 
+ 
+
         : "No daily report data available.";
+
+ 
 
     }
 
  
 
+ 
+
+ 
+
     renderHistory();
 
+ 
+
     renderChatList();
+
+ 
 
     renderSelectedChat();
 
  
 
+ 
+
+ 
+
     const errors = results
 
+ 
+
       .filter((result) => result.status === "rejected")
+
+ 
 
       .map((result) => result.reason?.message || "Unknown error");
 
  
 
-    setStatus(
-
-      "dashStatus",
-
-      errors.length
-
-        ? "Some data could not load: " + errors.join(" | ")
-
-        : "Dashboard data updated successfully."
-
-    );
+ 
 
  
 
     setStatus(
 
-      "connectionStatus",
+ 
 
-      errors.length ? "API PARTIALLY AVAILABLE" : "API ACTIVE"
+      "dashStatus",
+
+ 
+
+      errors.length
+
+ 
+
+        ? "Some data could not load: " + errors.join(" | ")
+
+ 
+
+        : "Dashboard data updated successfully."
+
+ 
 
     );
 
+ 
+
+ 
+
+ 
+
+    setStatus(
+
+ 
+
+      "connectionStatus",
+
+ 
+
+      errors.length ? "API PARTIALLY AVAILABLE" : "API ACTIVE"
+
+ 
+
+    );
+
+ 
+
   } catch (error) {
+
+ 
 
     setStatus("dashStatus", "Dashboard error: " + error.message);
 
+ 
+
     setStatus("connectionStatus", "API CONNECTION FAILED");
+
+ 
 
   }
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 async function loadCampaignData() {
 
+ 
+
   await Promise.allSettled([
+
+ 
 
     loadPhoneNumbers(),
 
+ 
+
     loadTemplates()
+
+ 
 
   ]);
 
+ 
+
 }
+
+ 
+
+ 
 
  
 
 async function loadSettings() {
 
+ 
+
   if ($("workerUrl")) {
+
+ 
 
     $("workerUrl").value = getWorkerUrl();
 
+ 
+
   }
+
+ 
+
+ 
 
  
 
   if ($("apiInfo") && ! $("apiInfo").textContent.trim()) {
 
+ 
+
     $("apiInfo").textContent =
+
+ 
 
       "Use Test Connection to check the Worker.";
 
+ 
+
   }
+
+ 
 
 }
 
  
 
+ 
+
+ 
+
 /* =====================================
 
+ 
+
    STARTUP
+
+ 
 
 ===================================== */
 
  
 
+ 
+
+ 
+
 document.addEventListener("DOMContentLoaded", async () => {
 
+ 
+
   loadLocalContacts();
+
+ 
 
   renderLeads();
 
  
 
+ 
+
+ 
+
   await Promise.allSettled([
+
+ 
 
     loadDashboard(),
 
+ 
+
     loadPhoneNumbers(),
+
+ 
 
     loadTemplates()
 
+ 
+
   ]);
+
+ 
 
 });
 
  
 
+ 
+
+ 
+
 </script>
 
+ 
+
 </body>
+
+ 
 
 </html>
