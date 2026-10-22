@@ -802,46 +802,6 @@ td, th {
 
  
 
-.chat-item.has-unread {
-
-  background: #e7f3ff;
-
-  box-shadow: inset 5px 0 #1685e8;
-
-  font-weight: 600;
-
-}
-
-.chat-item.has-unread.active {
-
-  background: #d9fdd3;
-
-  box-shadow: inset 5px 0 #087f5b;
-
-}
-
-.unread-badge {
-
-  display: inline-block;
-
-  margin-left: 8px;
-
-  padding: 2px 7px;
-
-  border-radius: 12px;
-
-  background: #2563eb;
-
-  color: #fff;
-
-  font-size: 11px;
-
-  font-weight: 700;
-
-}
-
- 
-
 .chat-item strong { display: block; margin-bottom: 5px; font-size: 14px; }
 
  
@@ -1208,6 +1168,14 @@ td, th {
 
 .bubble.out { background: #d9fdd3; margin-left: auto; }
 
+.bubble.incoming { background: #dbeafe; border: 1px solid #93c5fd; margin-right: auto; }
+
+.chat-contact.has-unread { background: #dbeafe !important; border-left: 4px solid #2563eb; }
+
+.unread-badge { background: #2563eb; color: #fff; border-radius: 12px; padding: 2px 7px; font-size: 11px; font-weight: 700; }
+
+#liveMessageChart { width: 100%; max-height: 260px; }
+
  
 
 .bubble .small { text-align: right; margin-top: 5px; }
@@ -1468,6 +1436,8 @@ td, th {
 
       <option value="2nd New Launch">2nd New Launch</option>
 
+      <option value="3rd New Launch">3rd New Launch</option>
+
  
 
     </select>
@@ -1678,9 +1648,11 @@ td, th {
 
  
 
-        <h3>Daily Message Report</h3>
+        <h3>Live Message Chart</h3>
 
- 
+        <div class="small" id="chartUpdatedAt">Auto-refresh every 3 seconds</div>
+
+        <canvas id="liveMessageChart" height="100" aria-label="Daily incoming and outgoing message chart"></canvas>
 
         <div id="dailyReports">Report will appear here.</div>
 
@@ -2820,6 +2792,8 @@ td, th {
 
           <option value="2nd New Launch">2nd New Launch</option>
 
+      <option value="3rd New Launch">3rd New Launch</option>
+
  
 
         </select>
@@ -3036,19 +3010,9 @@ td, th {
 
 const DEFAULT_WORKER_URL =
 
-  "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
-
  
 
-// Separate default Worker URLs for the two dashboard projects.
-
-const PROJECT_WORKER_URLS = {
-
-  "New Launch": "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev",
-
-  "2nd New Launch": "https://ak-properties-new-launch-2.amolkolekar100000.workers.dev"
-
-};
+  "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev";
 
  
 
@@ -3274,21 +3238,29 @@ function getWorkerUrl() {
 
 function getProjectWorkerUrl(project) {
 
+ 
+
   const key = "ak_project_worker_" + project;
 
   const saved = localStorage.getItem(key);
 
-  const mapped = PROJECT_WORKER_URLS[project];
+  const projectDefaults = {
+
+    "New Launch": "https://whatsapp-marketinf-api.amolkolekar100000.workers.dev",
+
+    "2nd New Launch": "https://ak-properties-new-launch-2.amolkolekar100000.workers.dev",
+
+    // Configure the dedicated 3rd New Launch Worker URL in Project Settings after deployment.
+
+    "3rd New Launch": ""
+
+  };
+
+  if (project === "3rd New Launch" && !(saved || projectDefaults[project])) return "";
+
+  return (saved || projectDefaults[project] || getWorkerUrl()).replace(/\/+$/, "");
 
  
-
-  // Known projects always use their own Worker by default.
-
-  // The main Worker URL is only a fallback for unknown project names.
-
-  const url = saved || mapped || getWorkerUrl();
-
-  return url.replace(/\/+$/, "");
 
 }
 
@@ -3310,7 +3282,11 @@ async function apiRequest(path, options = {}, projectOverride = null) {
 
  
 
- 
+  if (!baseUrl) {
+
+    throw new Error("3rd New Launch Worker URL configure करा: API Settings → Project Settings.");
+
+  }
 
  
 
@@ -3548,39 +3524,71 @@ document.querySelectorAll("nav button[data-page]").forEach((button) => {
 
 function applyProjectSelection(project) {
 
+ 
+
   currentProject = project || "New Launch";
+
+ 
+
+ 
+
+ 
 
   const headerSelect = $("projectSelect");
 
+ 
+
   const settingsSelect = $("projectSettingsSelect");
 
+ 
+
+ 
+
+ 
+
   if (headerSelect) headerSelect.value = currentProject;
+
+ 
 
   if (settingsSelect) settingsSelect.value = currentProject;
 
  
 
-  const savedProjectUrl = localStorage.getItem("ak_project_worker_" + currentProject);
+ 
 
-  const effectiveUrl = getProjectWorkerUrl(currentProject);
+ 
+
+  const projectUrl = localStorage.getItem(
+
+ 
+
+    "ak_project_worker_" + currentProject
+
+ 
+
+  );
+
+ 
+
+ 
+
+ 
 
   const projectInput = $("projectWorkerUrl");
 
-  if (projectInput) projectInput.value = savedProjectUrl || PROJECT_WORKER_URLS[currentProject] || "";
+ 
 
-  const workerInput = $("workerUrl");
+  if (projectInput) projectInput.value = projectUrl || "";
 
-  if (workerInput) workerInput.value = effectiveUrl;
+ 
+
+ 
 
  
 
   loadDashboard();
 
-  // Refresh project-specific data when the project changes.
-
-  loadPhoneNumbers();
-
-  loadTemplates();
+ 
 
 }
 
@@ -3608,17 +3616,43 @@ $("projectSelect")?.addEventListener("change", (event) => {
 
 $("projectSettingsSelect")?.addEventListener("change", (event) => {
 
+ 
+
   currentProject = event.target.value || "New Launch";
 
-  const savedUrl = localStorage.getItem("ak_project_worker_" + currentProject);
+ 
+
+ 
+
+ 
+
+  const savedUrl = localStorage.getItem(
+
+ 
+
+    "ak_project_worker_" + currentProject
+
+ 
+
+  );
+
+ 
+
+ 
+
+ 
 
   if ($("projectWorkerUrl")) {
 
-    $("projectWorkerUrl").value = savedUrl || PROJECT_WORKER_URLS[currentProject] || "";
+ 
+
+    $("projectWorkerUrl").value = savedUrl || "";
+
+ 
 
   }
 
-  if ($("workerUrl")) $("workerUrl").value = getProjectWorkerUrl(currentProject);
+ 
 
 });
 
@@ -4116,94 +4150,6 @@ function getMessageText(message) {
 
  
 
-function getLastSeenStorageKey(phone) {
-
-  return "ak_chat_last_seen_" + currentProject + "_" + normalizePhone(phone);
-
-}
-
- 
-
-function getLatestIncomingTime(chat) {
-
-  const incoming = chat.messages.filter((message) => !isOutgoingMessage(message));
-
-  return incoming.reduce((latest, message) => Math.max(latest, getMessageTime(message)), 0);
-
-}
-
- 
-
-function isChatUnread(chat) {
-
-  const lastIncoming = getLatestIncomingTime(chat);
-
-  if (!lastIncoming) return false;
-
-  const stored = localStorage.getItem(getLastSeenStorageKey(chat.phone));
-
-  return stored !== null && lastIncoming > Number(stored);
-
-}
-
- 
-
-function updateUnreadCount() {
-
-  const count = getChatGroups().filter(isChatUnread).length;
-
-  const el = $("unreadCount");
-
-  if (el) el.textContent = String(count);
-
-}
-
- 
-
-function markChatRead(phone) {
-
-  const normalized = normalizePhone(phone);
-
-  const chat = getChatGroups().find((item) => item.phone === normalized);
-
-  if (!chat) return;
-
-  const latestIncoming = getLatestIncomingTime(chat);
-
-  localStorage.setItem(getLastSeenStorageKey(normalized), String(latestIncoming));
-
-  updateUnreadCount();
-
-}
-
- 
-
-function initializeUnreadBaseline() {
-
-  const key = "ak_chat_unread_initialized_" + currentProject;
-
-  if (localStorage.getItem(key) === "1") return;
-
-  // First load establishes a baseline, so old replies are not falsely marked new.
-
-  getChatGroups().forEach((chat) => {
-
-    const storageKey = getLastSeenStorageKey(chat.phone);
-
-    if (localStorage.getItem(storageKey) === null) {
-
-      localStorage.setItem(storageKey, String(getLatestIncomingTime(chat)));
-
-    }
-
-  });
-
-  localStorage.setItem(key, "1");
-
-}
-
- 
-
 function renderChatList() {
 
  
@@ -4276,10 +4222,6 @@ function renderChatList() {
 
  
 
-    const unread = isChatUnread(chat);
-
- 
-
     const preview = getMessageText(latest);
 
  
@@ -4312,7 +4254,7 @@ function renderChatList() {
 
  
 
-        class="chat-item ${active ? "active" : ""} ${unread ? "has-unread" : ""}"
+        class="chat-item ${active ? "active" : ""}"
 
  
 
@@ -4324,7 +4266,7 @@ function renderChatList() {
 
  
 
-        <strong>${escapeHTML(chat.name)} ${unread ? '<span class="unread-badge">NEW REPLY</span>' : ""}</strong>
+        <strong>${escapeHTML(chat.name)}</strong>
 
  
 
@@ -4376,10 +4318,6 @@ function renderChatList() {
 
  
 
-  updateUnreadCount();
-
- 
-
 }
 
  
@@ -4393,10 +4331,6 @@ function selectChat(phone) {
  
 
   selectedChatNumber = normalizePhone(phone);
-
- 
-
-  markChatRead(selectedChatNumber);
 
  
 
@@ -4620,7 +4554,7 @@ function renderSelectedChat() {
 
  
 
-      <div class="bubble ${outgoing ? "out" : ""}">
+      <div class="bubble ${outgoing ? "out" : "incoming"}">
 
  
 
@@ -4678,117 +4612,37 @@ function renderSelectedChat() {
 
 async function loadChats() {
 
- 
-
-  setStatus("chatStatus", "Loading conversations...");
-
- 
-
- 
-
- 
+  setStatus("chatStatus", "Loading full WhatsApp message history...");
 
   try {
 
- 
+    const allMessages = []; const pageSize = 1000; let offset = 0;
 
-    const data = await apiRequest(
+    while (true) {
 
- 
+      const data = await apiRequest(`/messages?limit=${pageSize}&offset=${offset}`);
 
-      "/messages?limit=1000&offset=0"
+      const page = extractArray(data, ["data", "messages", "results"]);
 
- 
+      if (!Array.isArray(page) || !page.length) break;
 
-    );
+      allMessages.push(...page); offset += page.length;
 
- 
+      setStatus("chatStatus", `History loading: ${allMessages.length.toLocaleString("en-IN")} messages`);
 
- 
+      if (page.length < pageSize) break;
 
- 
+    }
 
-    messages = extractArray(data, [
+    messages = allMessages;
 
- 
+    renderChatList(); renderSelectedChat(); renderHistory();
 
-      "data",
+    setStatus("chatStatus", `Full history loaded: ${getChatGroups().length.toLocaleString("en-IN")} chats · ${messages.length.toLocaleString("en-IN")} messages`);
 
- 
-
-      "messages"
-
- 
-
-    ]);
-
- 
-
-    initializeUnreadBaseline();
-
- 
-
-    renderChatList();
-
- 
-
-    renderSelectedChat();
-
- 
-
- 
-
- 
-
-    setStatus(
-
- 
-
-      "chatStatus",
-
- 
-
-      "Conversations loaded: " + getChatGroups().length +
-
- 
-
-      " | Messages: " + messages.length
-
- 
-
-    );
-
- 
-
-  } catch (error) {
-
- 
-
-    setStatus(
-
- 
-
-      "chatStatus",
-
- 
-
-      "Unable to load chats: " + error.message
-
- 
-
-    );
-
- 
-
-  }
-
- 
+  } catch (error) { setStatus("chatStatus", "Unable to load full history: " + error.message); }
 
 }
-
- 
-
- 
 
  
 
@@ -5296,7 +5150,7 @@ function startChatRefresh() {
 
  
 
-  }, 15000);
+  }, 3000);
 
  
 
@@ -5308,7 +5162,29 @@ function startChatRefresh() {
 
  
 
-startChatRefresh();  
+startChatRefresh();
+
+ 
+
+// Refresh dashboard aggregate totals/chart every 3 seconds without downloading message rows.
+
+let dashboardRefreshTimer = null;
+
+function startDashboardRefresh() {
+
+  if (dashboardRefreshTimer !== null) return;
+
+  dashboardRefreshTimer = setInterval(() => {
+
+    const dashboard = $("dashboard");
+
+    if (dashboard && dashboard.classList.contains("active")) loadDashboard();
+
+  }, 3000);
+
+}
+
+startDashboardRefresh();  
 
  
 
@@ -8648,427 +8524,105 @@ $("refreshTemplatesButton")?.addEventListener(
 
  
 
-async function loadDashboard() {
+let dashboardRefreshInProgress = false;
 
- 
-
-  setStatus("dashStatus", "Loading dashboard data...");
-
- 
-
- 
-
- 
-
-  try {
-
- 
-
-    const results = await Promise.allSettled([
-
- 
-
-      apiRequest("/reports"),
-
- 
-
-      apiRequest("/messages?limit=1000&offset=0"),
-
- 
-
-      apiRequest("/phone-numbers")
-
- 
-
-    ]);
-
- 
-
- 
-
- 
-
-    const reportData =
-
- 
-
-      results[0].status === "fulfilled"
-
- 
-
-        ? results[0].value
-
- 
-
-        : {};
-
- 
-
- 
-
- 
-
-    const messageData =
-
- 
-
-      results[1].status === "fulfilled"
-
- 
-
-        ? results[1].value
-
- 
-
-        : {};
-
- 
-
- 
-
- 
-
-    if (results[1].status === "fulfilled") {
-
- 
-
-      messages = extractArray(messageData, [
-
- 
-
-        "data",
-
- 
-
-        "messages"
-
- 
-
-      ]);
-
- 
-
-    }
-
- 
-
- 
-
- 
-
-    if (results[2].status === "fulfilled") {
-
- 
-
-      phoneNumbers = extractArray(
-
- 
-
-        results[2].value,
-
- 
-
-        ["data", "phoneNumbers"]
-
- 
-
-      );
-
- 
-
-    }
-
- 
-
- 
-
- 
-
-    const totals = reportData.totals || {};
-
- 
-
- 
-
- 
-
-    const incoming = messages.filter((message) =>
-
- 
-
-      String(message.direction || "").toLowerCase() === "incoming"
-
- 
-
-    ).length;
-
- 
-
- 
-
- 
-
-    const outgoing = messages.filter((message) =>
-
- 
-
-      isOutgoingMessage(message)
-
- 
-
-    ).length;
-
- 
-
- 
-
- 
-
-    if ($("total")) {
-
- 
-
-      $("total").textContent =
-
- 
-
-        totals.totalMessages ?? messages.length;
-
- 
-
-    }
-
- 
-
- 
-
- 
-
-    if ($("incomingCount")) {
-
- 
-
-      $("incomingCount").textContent =
-
- 
-
-        totals.incoming ?? incoming;
-
- 
-
-    }
-
- 
-
- 
-
- 
-
-    if ($("outgoingCount")) {
-
- 
-
-      $("outgoingCount").textContent =
-
- 
-
-        totals.outgoing ?? outgoing;
-
- 
-
-    }
-
- 
-
- 
-
- 
-
-    if ($("contactCount")) {
-
- 
-
-      $("contactCount").textContent = localContacts.length;
-
- 
-
-    }
-
- 
-
- 
-
- 
-
-    if ($("dailyReports")) {
-
- 
-
-      const daily = Array.isArray(reportData.daily)
-
- 
-
-        ? reportData.daily
-
- 
-
-        : [];
-
- 
-
- 
-
- 
-
-      $("dailyReports").innerHTML = daily.length
-
- 
-
-        ? daily.map((item) => `
-
- 
-
-            <div class="number-row">
-
- 
-
-              <b>${escapeHTML(item.date || item.day || "-")}</b>
-
- 
+let liveChartValues = [];
 
-              <div>
-
- 
-
-                Messages:
-
- 
-
-                ${escapeHTML(item.count ?? item.total ?? 0)}
-
- 
-
-              </div>
-
- 
-
-            </div>
-
- 
-
-          `).join("")
-
- 
-
-        : "No daily report data available.";
-
- 
-
-    }
-
- 
-
- 
-
- 
-
-    renderHistory();
-
- 
-
-    renderChatList();
-
- 
-
-    renderSelectedChat();
-
- 
-
- 
-
- 
-
-    const errors = results
-
- 
-
-      .filter((result) => result.status === "rejected")
-
- 
-
-      .map((result) => result.reason?.message || "Unknown error");
-
- 
-
- 
-
- 
-
-    setStatus(
-
- 
-
-      "dashStatus",
-
- 
-
-      errors.length
-
  
 
-        ? "Some data could not load: " + errors.join(" | ")
+function drawLiveMessageChart(daily = []) {
 
- 
-
-        : "Dashboard data updated successfully."
+  const canvas = $("liveMessageChart");
 
- 
+  if (!canvas) return;
 
-    );
-
- 
+  const ctx = canvas.getContext("2d");
 
- 
+  if (!ctx) return;
 
- 
+  const rows = Array.isArray(daily) ? [...daily].reverse() : [];
 
-    setStatus(
+  const width = Math.max(canvas.clientWidth || 600, 320);
 
- 
+  const height = 230;
 
-      "connectionStatus",
+  const ratio = window.devicePixelRatio || 1;
 
- 
+  canvas.width = width * ratio; canvas.height = height * ratio;
 
-      errors.length ? "API PARTIALLY AVAILABLE" : "API ACTIVE"
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
- 
+  ctx.clearRect(0, 0, width, height);
 
-    );
+  if (!rows.length) { ctx.fillStyle = "#64748b"; ctx.font = "14px sans-serif"; ctx.fillText("Daily chart data will appear after /reports returns daily records.", 10, 30); return; }
 
- 
+  const pad = {l:42, r:12, t:14, b:42};
 
-  } catch (error) {
+  const plotW = width-pad.l-pad.r, plotH=height-pad.t-pad.b;
 
- 
+  const max = Math.max(1, ...rows.map(x => Math.max(Number(x.incoming||0), Number(x.outgoing||0), Number(x.total||0))));
 
-    setStatus("dashStatus", "Dashboard error: " + error.message);
+  ctx.strokeStyle="#e2e8f0"; ctx.fillStyle="#64748b"; ctx.font="10px sans-serif";
 
- 
+  for(let i=0;i<=4;i++){ const y=pad.t+plotH*i/4; ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(width-pad.r,y);ctx.stroke();ctx.fillText(String(Math.round(max*(4-i)/4)),4,y+3); }
 
-    setStatus("connectionStatus", "API CONNECTION FAILED");
+  const slot=plotW/rows.length, barW=Math.max(2,Math.min(14,slot*.32));
 
- 
+  rows.forEach((r,i)=>{ const x=pad.l+i*slot+slot/2; const inc=Number(r.incoming||0), out=Number(r.outgoing||0); const ih=inc/max*plotH, oh=out/max*plotH; ctx.fillStyle="#3b82f6";ctx.fillRect(x-barW-1,pad.t+plotH-ih,barW,ih);ctx.fillStyle="#16a34a";ctx.fillRect(x+1,pad.t+plotH-oh,barW,oh); if(rows.length<=14 || i%Math.ceil(rows.length/10)===0){ctx.fillStyle="#64748b";ctx.save();ctx.translate(x,height-8);ctx.rotate(-Math.PI/5);ctx.fillText(String(r.date||"").slice(5),0,0);ctx.restore();} });
 
-  }
+  ctx.fillStyle="#3b82f6";ctx.fillRect(pad.l, height-16, 8, 8);ctx.fillStyle="#334155";ctx.fillText("Incoming",pad.l+12,height-9);ctx.fillStyle="#16a34a";ctx.fillRect(pad.l+85,height-16,8,8);ctx.fillStyle="#334155";ctx.fillText("Outgoing",pad.l+97,height-9);
 
- 
+  setStatus("chartUpdatedAt", "Live chart refreshed: " + new Date().toLocaleTimeString("en-IN") + " · 3 sec auto refresh");
 
 }
 
  
 
- 
+async function loadDashboard() {
+
+  if (dashboardRefreshInProgress) return;
+
+  dashboardRefreshInProgress = true;
+
+  try {
+
+    const results = await Promise.allSettled([apiRequest("/reports"), apiRequest("/phone-numbers")]);
+
+    const reportData = results[0].status === "fulfilled" ? results[0].value : {};
+
+    if (results[1].status === "fulfilled") phoneNumbers = extractArray(results[1].value, ["data", "phoneNumbers"]);
+
+    const totals = reportData.totals || {};
+
+    if ($("total")) $("total").textContent = Number(totals.totalMessages ?? 0).toLocaleString("en-IN");
+
+    if ($("incomingCount")) $("incomingCount").textContent = Number(totals.incoming ?? 0).toLocaleString("en-IN");
+
+    if ($("outgoingCount")) $("outgoingCount").textContent = Number(totals.outgoing ?? 0).toLocaleString("en-IN");
+
+    if ($("contactCount")) $("contactCount").textContent = localContacts.length.toLocaleString("en-IN");
+
+    if ($("unreadCount")) $("unreadCount").textContent = Object.keys(unreadChats).filter(k => unreadChats[k]).length.toLocaleString("en-IN");
+
+    if ($("numberList")) { const nums = phoneNumbers; $("numberList").innerHTML = nums.length ? nums.map(n => `<div class="number-row"><b>${escapeHTML(n.verifiedName || n.displayPhoneNumber || n.phoneNumberId || n.id || "WhatsApp number")}</b><div>${escapeHTML(n.displayPhoneNumber || "")}</div></div>`).join("") : "No WhatsApp numbers returned by this project."; }
+
+    const daily = Array.isArray(reportData.daily) ? reportData.daily : [];
+
+    drawLiveMessageChart(daily);
+
+    if ($("dailyReports")) $("dailyReports").innerHTML = daily.length ? daily.map(item => `<div class="number-row"><b>${escapeHTML(item.date || item.day || "-")}</b><div>Total: ${escapeHTML(item.total ?? item.count ?? 0)} · Incoming: ${escapeHTML(item.incoming ?? 0)} · Outgoing: ${escapeHTML(item.outgoing ?? 0)}</div></div>`).join("") : "No daily report data available. Check the selected project's /reports endpoint.";
+
+    const errors = results.filter(r => r.status === "rejected").map(r => r.reason?.message || "Unknown error");
+
+    setStatus("dashStatus", errors.length ? "Some data could not load: " + errors.join(" | ") : "Project dashboard updated.");
+
+    setStatus("connectionStatus", errors.length ? "API PARTIALLY AVAILABLE" : "API ACTIVE · " + currentProject);
+
+  } catch (error) { setStatus("dashStatus", "Dashboard error: " + error.message); setStatus("connectionStatus", "API CONNECTION FAILED"); }
+
+  finally { dashboardRefreshInProgress = false; }
+
+}
 
  
 
