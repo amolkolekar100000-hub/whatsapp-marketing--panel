@@ -3250,9 +3250,8 @@ function getProjectWorkerUrl(project) {
 
     "2nd New Launch": "https://ak-properties-new-launch-2.amolkolekar100000.workers.dev",
 
-    // Configure the dedicated 3rd New Launch Worker URL in Project Settings after deployment.
-
-    "3rd New Launch": ""
+    // Dedicated Worker for the 3rd New Launch account.
+    "3rd New Launch": "https://ak-properties-new-launch-3.amolkolekar100000.workers.dev"
 
   };
 
@@ -3523,73 +3522,27 @@ document.querySelectorAll("nav button[data-page]").forEach((button) => {
  
 
 function applyProjectSelection(project) {
-
- 
-
   currentProject = project || "New Launch";
-
- 
-
- 
-
- 
-
   const headerSelect = $("projectSelect");
-
- 
-
   const settingsSelect = $("projectSettingsSelect");
-
- 
-
- 
-
- 
-
   if (headerSelect) headerSelect.value = currentProject;
-
- 
-
   if (settingsSelect) settingsSelect.value = currentProject;
 
- 
-
- 
-
- 
-
-  const projectUrl = localStorage.getItem(
-
- 
-
-    "ak_project_worker_" + currentProject
-
- 
-
-  );
-
- 
-
- 
-
- 
-
+  const projectUrl = localStorage.getItem("ak_project_worker_" + currentProject);
   const projectInput = $("projectWorkerUrl");
-
- 
-
   if (projectInput) projectInput.value = projectUrl || "";
 
- 
-
- 
-
- 
-
+  // Clear previous account data from the visible chat before loading the new project.
+  messages = [];
+  selectedChatNumber = "";
+  if ($("chatTitle")) $("chatTitle").textContent = "Select a conversation";
+  if ($("chatHistory")) $("chatHistory").textContent = "Loading conversations for " + currentProject + "...";
+  if ($("chatLayout")) $("chatLayout").classList.remove("chat-open");
+  renderChatList();
+  renderSelectedChat();
   loadDashboard();
-
- 
-
+  const inbox = $("inbox");
+  if (inbox && inbox.classList.contains("active")) loadChats();
 }
 
  
@@ -4610,38 +4563,37 @@ function renderSelectedChat() {
 
  
 
+let chatLoadSequence = 0;
+
 async function loadChats() {
-
-  setStatus("chatStatus", "Loading full WhatsApp message history...");
-
+  const loadId = ++chatLoadSequence;
+  const projectForLoad = currentProject;
+  setStatus("chatStatus", "Loading full WhatsApp message history for " + projectForLoad + "...");
   try {
-
-    const allMessages = []; const pageSize = 1000; let offset = 0;
-
+    const allMessages = [];
+    const pageSize = 1000;
+    let offset = 0;
     while (true) {
-
-      const data = await apiRequest(`/messages?limit=${pageSize}&offset=${offset}`);
-
+      const data = await apiRequest(`/messages?limit=${pageSize}&offset=${offset}`, {}, projectForLoad);
       const page = extractArray(data, ["data", "messages", "results"]);
-
       if (!Array.isArray(page) || !page.length) break;
-
-      allMessages.push(...page); offset += page.length;
-
+      allMessages.push(...page);
+      offset += page.length;
+      if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
       setStatus("chatStatus", `History loading: ${allMessages.length.toLocaleString("en-IN")} messages`);
-
       if (page.length < pageSize) break;
-
     }
-
+    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
     messages = allMessages;
-
-    renderChatList(); renderSelectedChat(); renderHistory();
-
+    renderChatList();
+    renderSelectedChat();
+    renderHistory();
     setStatus("chatStatus", `Full history loaded: ${getChatGroups().length.toLocaleString("en-IN")} chats · ${messages.length.toLocaleString("en-IN")} messages`);
-
-  } catch (error) { setStatus("chatStatus", "Unable to load full history: " + error.message); }
-
+  } catch (error) {
+    if (loadId === chatLoadSequence && projectForLoad === currentProject) {
+      setStatus("chatStatus", "Unable to load full history for " + projectForLoad + ": " + error.message);
+    }
+  }
 }
 
  
@@ -4740,9 +4692,9 @@ async function sendChatReply() {
 
   if (sendButton) sendButton.disabled = true;
 
- 
-
-  setStatus("chatStatus", "Sending reply...");
+  const replyProject = currentProject;
+  const replyTo = selectedChatNumber;
+  setStatus("chatStatus", "Sending reply from " + replyProject + "...");
 
  
 
@@ -4775,22 +4727,10 @@ async function sendChatReply() {
  
 
       body: JSON.stringify({
-
- 
-
-        to: selectedChatNumber,
-
- 
-
+        to: replyTo,
         message: text
-
- 
-
       })
-
- 
-
-    });
+    }, replyProject);
 
  
 
@@ -4843,18 +4783,8 @@ async function sendChatReply() {
  
 
     await loadChats();
-
- 
-
- 
-
- 
-
-    // नव्याने load झालेल्या history मध्ये हाच client निवडा.
-
- 
-
-    selectChat(selectedChatNumber);
+    // Keep the same contact selected only if the project has not changed.
+    if (currentProject === replyProject) selectChat(replyTo);
 
  
 
