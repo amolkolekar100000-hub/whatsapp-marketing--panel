@@ -1714,28 +1714,6 @@ function normalizePhone(value) {
 
 }
 
-/* Extra number configured for New Launch.
-   The Worker must also accept this Phone Number ID for sending. */
-function mergeConfiguredPhoneNumbers(numbers, project = currentProject) {
-  const merged = Array.isArray(numbers) ? [...numbers] : [];
-
-  if (project === "New Launch") {
-    const extraNumber = {
-      phoneNumberId: "1320322401172331",
-      displayPhoneNumber: "+1 711-108-2441",
-      verifiedName: "New Launch Project"
-    };
-    const extraId = String(extraNumber.phoneNumberId);
-    const alreadyPresent = merged.some((number) =>
-      String(number.phoneNumberId || number.id || "") === extraId ||
-      normalizePhone(number.displayPhoneNumber || "") === normalizePhone(extraNumber.displayPhoneNumber)
-    );
-    if (!alreadyPresent) merged.push(extraNumber);
-  }
-
-  return merged;
-}
-
 function getMessagePhone(message) {
 
   return normalizePhone(
@@ -3418,13 +3396,13 @@ async function loadPhoneNumbers() {
 
     const data = await apiRequest("/phone-numbers");
 
-    phoneNumbers = mergeConfiguredPhoneNumbers(extractArray(data, [
+    phoneNumbers = extractArray(data, [
 
       "data",
 
       "phoneNumbers"
 
-    ]));
+    ]);
 
     const select = $("sendNumber");
 
@@ -3766,8 +3744,7 @@ async function loadDashboard() {
 
     const reportData = results[0].status === "fulfilled" ? results[0].value : {};
 
-    if (results[1].status === "fulfilled") phoneNumbers = mergeConfiguredPhoneNumbers(extractArray(results[1].value, ["data", "phoneNumbers"]));
-    else phoneNumbers = mergeConfiguredPhoneNumbers(phoneNumbers);
+    if (results[1].status === "fulfilled") phoneNumbers = extractArray(results[1].value, ["data", "phoneNumbers"]);
 
     const totals = reportData.totals || {};
 
