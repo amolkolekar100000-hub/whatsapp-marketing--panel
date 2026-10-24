@@ -388,6 +388,25 @@ td, th {
 
 }
 
+/* Latest message incoming असल्यास Live Chat list मध्ये blue highlight */
+.chat-item.has-incoming:not(.active) {
+  background: #dbeafe !important;
+  box-shadow: inset 4px 0 #2563eb;
+}
+
+.chat-item.has-incoming:not(.active):hover {
+  background: #bfdbfe !important;
+}
+
+/* Incoming message bubbles नेहमी स्पष्ट निळ्या रंगात */
+.bubble.incoming {
+  background: #dbeafe !important;
+  border: 1px solid #60a5fa !important;
+  border-left: 4px solid #2563eb !important;
+  color: #1e3a8a !important;
+  margin-right: auto;
+}
+
 .chat-item strong { display: block; margin-bottom: 5px; font-size: 14px; }
 
 .chat-item .small { margin-top: 4px; }
@@ -1849,19 +1868,25 @@ function getChatGroups() {
 }
 
 function isOutgoingMessage(message) {
+  /*
+   * Worker/DB मधून direction वेगवेगळ्या स्वरूपात येऊ शकते:
+   * outgoing, sent, outbound किंवा "outgoing delivered".
+   * Incoming/received/inbound असलेले messages outgoing समजू नयेत.
+   */
+  const direction = String(
+    message.direction ||
+    message.message_direction ||
+    message.type ||
+    ""
+  ).trim().toLowerCase();
 
-  const direction = String(message.direction || "").toLowerCase();
+  if (/\b(outgoing|outbound|sent)\b/.test(direction)) return true;
+  if (/\b(incoming|inbound|received)\b/.test(direction)) return false;
 
-  return [
+  // Direction field नसल्यास WhatsApp incoming message मध्ये sender "from" असतो.
+  if (message.from && !message.to) return false;
 
-    "outgoing",
-
-    "sent",
-
-    "outbound"
-
-  ].includes(direction);
-
+  return false;
 }
 
 function getMessageText(message) {
@@ -1911,6 +1936,8 @@ function renderChatList() {
     const latest = chat.messages[chat.messages.length - 1];
 
     const active = chat.phone === selectedChatNumber;
+    // Latest message customer कडून आलेला असेल तर chat list निळी highlight करा.
+    const latestIsIncoming = latest ? !isOutgoingMessage(latest) : false;
 
     const preview = getMessageText(latest);
 
@@ -1926,7 +1953,7 @@ function renderChatList() {
 
         type="button"
 
-        class="chat-item ${active ? "active" : ""}"
+        class="chat-item ${active ? "active" : ""} ${latestIsIncoming ? "has-incoming" : ""}"
 
         data-chat-phone="${escapeHTML(chat.phone)}"
 
