@@ -388,25 +388,6 @@ td, th {
 
 }
 
-/* Latest message incoming असल्यास Live Chat list मध्ये blue highlight */
-.chat-item.has-incoming:not(.active) {
-  background: #dbeafe !important;
-  box-shadow: inset 4px 0 #2563eb;
-}
-
-.chat-item.has-incoming:not(.active):hover {
-  background: #bfdbfe !important;
-}
-
-/* Incoming message bubbles नेहमी स्पष्ट निळ्या रंगात */
-.bubble.incoming {
-  background: #dbeafe !important;
-  border: 1px solid #60a5fa !important;
-  border-left: 4px solid #2563eb !important;
-  color: #1e3a8a !important;
-  margin-right: auto;
-}
-
 .chat-item strong { display: block; margin-bottom: 5px; font-size: 14px; }
 
 .chat-item .small { margin-top: 4px; }
@@ -824,6 +805,18 @@ td, th {
         <canvas id="liveMessageChart" height="100" aria-label="Daily incoming and outgoing message chart"></canvas>
 
         <div id="dailyReports">Report will appear here.</div>
+
+      </div>
+
+      <div class="panel" id="incomingChartPanel">
+
+        <h3>Incoming Messages — Live Chart</h3>
+
+        <div class="small" id="incomingChartUpdatedAt">फक्त Incoming Messages · Auto-refresh every 3 seconds</div>
+
+        <canvas id="incomingMessageChart" height="100" aria-label="Daily incoming messages only chart"></canvas>
+
+        <div id="incomingDailyReports">Incoming message report will appear here.</div>
 
       </div>
 
@@ -1868,25 +1861,19 @@ function getChatGroups() {
 }
 
 function isOutgoingMessage(message) {
-  /*
-   * Worker/DB मधून direction वेगवेगळ्या स्वरूपात येऊ शकते:
-   * outgoing, sent, outbound किंवा "outgoing delivered".
-   * Incoming/received/inbound असलेले messages outgoing समजू नयेत.
-   */
-  const direction = String(
-    message.direction ||
-    message.message_direction ||
-    message.type ||
-    ""
-  ).trim().toLowerCase();
 
-  if (/\b(outgoing|outbound|sent)\b/.test(direction)) return true;
-  if (/\b(incoming|inbound|received)\b/.test(direction)) return false;
+  const direction = String(message.direction || "").toLowerCase();
 
-  // Direction field नसल्यास WhatsApp incoming message मध्ये sender "from" असतो.
-  if (message.from && !message.to) return false;
+  return [
 
-  return false;
+    "outgoing",
+
+    "sent",
+
+    "outbound"
+
+  ].includes(direction);
+
 }
 
 function getMessageText(message) {
@@ -1936,8 +1923,6 @@ function renderChatList() {
     const latest = chat.messages[chat.messages.length - 1];
 
     const active = chat.phone === selectedChatNumber;
-    // Latest message customer कडून आलेला असेल तर chat list निळी highlight करा.
-    const latestIsIncoming = latest ? !isOutgoingMessage(latest) : false;
 
     const preview = getMessageText(latest);
 
@@ -1953,7 +1938,7 @@ function renderChatList() {
 
         type="button"
 
-        class="chat-item ${active ? "active" : ""} ${latestIsIncoming ? "has-incoming" : ""}"
+        class="chat-item ${active ? "active" : ""}"
 
         data-chat-phone="${escapeHTML(chat.phone)}"
 
@@ -3781,6 +3766,69 @@ function drawLiveMessageChart(daily = []) {
 
 }
 
+function drawIncomingMessageChart(daily = []) {
+
+  const canvas = $("incomingMessageChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const rows = Array.isArray(daily) ? [...daily].reverse() : [];
+  const width = Math.max(canvas.clientWidth || 600, 320);
+  const height = 230;
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+
+  if (!rows.length) {
+    ctx.fillStyle = "#64748b";
+    ctx.font = "14px sans-serif";
+    ctx.fillText("Incoming chart data will appear when /reports returns daily records.", 10, 30);
+    if ($("incomingDailyReports")) $("incomingDailyReports").textContent = "No incoming daily report data available.";
+    return;
+  }
+
+  const pad = { l: 42, r: 12, t: 14, b: 42 };
+  const plotW = width - pad.l - pad.r;
+  const plotH = height - pad.t - pad.b;
+  const max = Math.max(1, ...rows.map(row => Number(row.incoming || 0)));
+  ctx.strokeStyle = "#dbeafe";
+  ctx.fillStyle = "#64748b";
+  ctx.font = "10px sans-serif";
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + plotH * i / 4;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(width - pad.r, y); ctx.stroke();
+    ctx.fillText(String(Math.round(max * (4 - i) / 4)), 4, y + 3);
+  }
+
+  const slot = plotW / rows.length;
+  const barW = Math.max(3, Math.min(22, slot * 0.55));
+  rows.forEach((row, i) => {
+    const x = pad.l + i * slot + slot / 2;
+    const incoming = Number(row.incoming || 0);
+    const barH = incoming / max * plotH;
+    ctx.fillStyle = "#2563eb";
+    ctx.fillRect(x - barW / 2, pad.t + plotH - barH, barW, barH);
+    if (rows.length <= 14 || i % Math.ceil(rows.length / 10) === 0) {
+      ctx.fillStyle = "#64748b";
+      ctx.save(); ctx.translate(x, height - 8); ctx.rotate(-Math.PI / 5);
+      ctx.fillText(String(row.date || row.day || "").slice(5), 0, 0); ctx.restore();
+    }
+  });
+
+  ctx.fillStyle = "#2563eb"; ctx.fillRect(pad.l, height - 16, 8, 8);
+  ctx.fillStyle = "#334155"; ctx.fillText("Incoming Messages", pad.l + 12, height - 9);
+  setStatus("incomingChartUpdatedAt", "Incoming-only chart refreshed: " + new Date().toLocaleTimeString("en-IN") + " · 3 sec auto refresh");
+
+  if ($("incomingDailyReports")) {
+    $("incomingDailyReports").innerHTML = rows.slice().reverse().map(row =>
+      `<div class="number-row"><b>${escapeHTML(row.date || row.day || "-")}</b><div>Incoming: ${escapeHTML(row.incoming ?? 0)}</div></div>`
+    ).join("");
+  }
+}
+
 async function loadDashboard() {
 
   if (dashboardRefreshInProgress) return;
@@ -3813,6 +3861,7 @@ async function loadDashboard() {
     const daily = Array.isArray(reportData.daily) ? reportData.daily : [];
 
     drawLiveMessageChart(daily);
+    drawIncomingMessageChart(daily);
 
     if ($("dailyReports")) $("dailyReports").innerHTML = daily.length ? daily.map(item => `<div class="number-row"><b>${escapeHTML(item.date || item.day || "-")}</b><div>Total: ${escapeHTML(item.total ?? item.count ?? 0)} · Incoming: ${escapeHTML(item.incoming ?? 0)} · Outgoing: ${escapeHTML(item.outgoing ?? 0)}</div></div>`).join("") : "No daily report data available. Check the selected project's /reports endpoint.";
 
