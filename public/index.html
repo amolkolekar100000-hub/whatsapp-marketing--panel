@@ -388,14 +388,21 @@ td, th {
 
 }
 
-/* Latest message incoming असल्यास Live Chat list मध्ये blue highlight */
-.chat-item.has-incoming:not(.active) {
+/* फक्त न वाचलेल्या incoming chat ला blue highlight */
+.chat-item.has-unread:not(.active) {
   background: #dbeafe !important;
   box-shadow: inset 4px 0 #2563eb;
 }
 
-.chat-item.has-incoming:not(.active):hover {
+.chat-item.has-unread:not(.active):hover {
   background: #bfdbfe !important;
+}
+
+.chat-item.has-unread strong::after {
+  content: "  UNREAD";
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 /* Incoming message bubbles नेहमी स्पष्ट निळ्या रंगात */
@@ -1907,87 +1914,99 @@ function getMessageText(message) {
 
 }
 
+function readStateKey(phone, project = currentProject) {
+  return "ak_chat_last_read:" + project + ":" + normalizePhone(phone);
+}
+
+function getLastReadIncomingTime(phone, project = currentProject) {
+  const value = Number(localStorage.getItem(readStateKey(phone, project)) || 0);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function getLatestIncomingMessage(chat) {
+  return (chat?.messages || [])
+    .filter((message) => !isOutgoingMessage(message))
+    .sort((a, b) => getMessageTime(b) - getMessageTime(a))[0] || null;
+}
+
+function markChatAsRead(phone) {
+  const normalizedPhone = normalizePhone(phone);
+  const chat = getChatGroups().find((item) => item.phone === normalizedPhone);
+  if (!chat) return;
+
+  const latestIncoming = getLatestIncomingMessage(chat);
+  if (latestIncoming) {
+    const incomingTime = getMessageTime(latestIncoming);
+    const previousReadTime = getLastReadIncomingTime(normalizedPhone);
+    if (incomingTime > previousReadTime) {
+      localStorage.setItem(readStateKey(normalizedPhone), String(incomingTime));
+    }
+  }
+
+  unreadChats[currentProject + ":" + normalizedPhone] = false;
+  updateUnreadCount();
+}
+
+function updateUnreadCount() {
+  const chats = getChatGroups();
+  let unread = 0;
+  unreadChats = {};
+  chats.forEach((chat) => {
+    const latestIncoming = getLatestIncomingMessage(chat);
+    const isUnread = Boolean(
+      latestIncoming &&
+      getMessageTime(latestIncoming) > getLastReadIncomingTime(chat.phone)
+    );
+    unreadChats[currentProject + ":" + chat.phone] = isUnread;
+    if (isUnread) unread++;
+  });
+  if ($("unreadCount")) $("unreadCount").textContent = unread.toLocaleString("en-IN");
+}
+
 function renderChatList() {
-
   const list = $("chatList");
-
   if (!list) return;
 
   const chats = getChatGroups();
+  updateUnreadCount();
 
   if (!chats.length) {
-
-    list.innerHTML = `
-
-      <div class="small">
-
-        No conversations found. Refresh to check for new messages.
-
-      </div>
-
-    `;
-
+    list.innerHTML = '<div class="small">No conversations found. Refresh to check for new messages.</div>';
     return;
-
   }
 
   list.innerHTML = chats.map((chat) => {
-
     const latest = chat.messages[chat.messages.length - 1];
-
+    const latestIncoming = getLatestIncomingMessage(chat);
     const active = chat.phone === selectedChatNumber;
-    // Latest message customer कडून आलेला असेल तर chat list निळी highlight करा.
-    const latestIsIncoming = latest ? !isOutgoingMessage(latest) : false;
-
+    const isUnread = Boolean(
+      latestIncoming &&
+      getMessageTime(latestIncoming) > getLastReadIncomingTime(chat.phone)
+    );
     const preview = getMessageText(latest);
-
-    const time = latest
-
-      ? formatDate(latest.created_at || latest.timestamp)
-
-      : "";
+    const time = latest ? formatDate(latest.created_at || latest.timestamp) : "";
 
     return `
-
-      <button
-
-        type="button"
-
-        class="chat-item ${active ? "active" : ""} ${latestIsIncoming ? "has-incoming" : ""}"
-
-        data-chat-phone="${escapeHTML(chat.phone)}"
-
-      >
-
+      <button type="button"
+        class="chat-item ${active ? "active" : ""} ${isUnread ? "has-unread" : ""}"
+        data-chat-phone="${escapeHTML(chat.phone)}">
         <strong>${escapeHTML(chat.name)}</strong>
-
         <div class="small">${escapeHTML(chat.phone)}</div>
-
         <div class="small">${escapeHTML(preview)}</div>
-
         <div class="small">${escapeHTML(time)}</div>
-
-      </button>
-
-    `;
-
+      </button>`;
   }).join("");
 
   list.querySelectorAll("[data-chat-phone]").forEach((button) => {
-
-    button.addEventListener("click", () => {
-
-      selectChat(button.dataset.chatPhone);
-
-    });
-
+    button.addEventListener("click", () => selectChat(button.dataset.chatPhone));
   });
-
 }
 
 function selectChat(phone) {
 
   selectedChatNumber = normalizePhone(phone);
+  // Client ची chat उघडली की त्या वेळेपर्यंतचे incoming messages Read म्हणून mark करा.
+  markChatAsRead(selectedChatNumber);
 
   $("chatLayout")?.classList.add("chat-open");
 
@@ -2140,6 +2159,11 @@ async function loadChats() {
     if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
 
     messages = allMessages;
+
+    // सध्या उघडलेल्या chat मध्ये नवीन incoming आले असतील तर ते पाहिलेले समजून Read करा.
+    if (selectedChatNumber && $("inbox")?.classList.contains("active")) {
+      markChatAsRead(selectedChatNumber);
+    }
 
     renderChatList();
 
