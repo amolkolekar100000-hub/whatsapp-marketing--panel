@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
  
  
@@ -5935,6 +5937,10 @@ td, th {
  
  
       <option value="3rd New Launch">3rd New Launch</option>
+           <option value="4th New Launch">4th New Launch</option>
+           <option value="5th New Launch">5th New Launch</option>
+       <option value="4th New Launch">4th New Launch</option>
+       <option value="5th New Launch">5th New Launch</option>
  
  
  
@@ -12222,7 +12228,10 @@ function getProjectWorkerUrl(project) {
  
  
  
-    "3rd New Launch": "https://ak-properties-new-launch-3.amolkolekar100000.workers.dev"
+    "3rd New Launch": "https://ak-properties-new-launch-3.amolkolekar100000.workers.dev",
+    // Configure dedicated Workers for these projects in API Settings.
+    "4th New Launch": "",
+    "5th New Launch": ""
  
  
  
@@ -12254,7 +12263,7 @@ function getProjectWorkerUrl(project) {
  
  
  
-  if (project === "3rd New Launch" && !(saved || projectDefaults[project])) return "";
+  if ((project === "3rd New Launch" || project === "4th New Launch" || project === "5th New Launch") && !(saved || projectDefaults[project])) return "";
  
  
  
@@ -12366,7 +12375,7 @@ async function apiRequest(path, options = {}, projectOverride = null) {
  
  
  
-    throw new Error("3rd New Launch Worker URL configure करा: API Settings → Project Settings.");
+    throw new Error(project + " Worker URL configure करा: API Settings → Project Settings.");
  
  
  
