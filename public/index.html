@@ -7742,6 +7742,10 @@ td, th {
  
  
  
+          <div class="message-paging-controls" style="display:flex;gap:10px;align-items:center;justify-content:center;padding:8px 10px;flex-wrap:wrap;">
+            <span class="small" id="chatPagingInfo">Showing latest messages</span>
+            <button type="button" id="loadOlderChatButton" hidden>Load Older Messages (Next 200)</button>
+          </div>
           <div class="chat-reply">
  
  
@@ -9543,6 +9547,11 @@ td, th {
  
  
         </div>
+        <div class="message-paging-controls" style="display:flex;gap:10px;align-items:center;justify-content:flex-end;padding:10px 0;flex-wrap:wrap;">
+          <span class="small" id="historyPagingInfo">Showing loaded messages</span>
+          <button type="button" id="loadOlderHistoryButton" hidden>Load Older Messages (Next 200)</button>
+        </div>
+ 
  
  
  
@@ -17181,501 +17190,89 @@ let chatLoadSequence = 0;
  
  
  
-async function loadChats() {
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  const loadId = ++chatLoadSequence;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  const projectForLoad = currentProject;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  setStatus("chatStatus", "Loading full WhatsApp message history for " + projectForLoad + "...");
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  try {
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    const allMessages = [];
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    const pageSize = 1000;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    let offset = 0;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    while (true) {
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      const data = await apiRequest(`/messages?limit=${pageSize}&offset=${offset}`, {}, projectForLoad);
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      const page = extractArray(data, ["data", "messages", "results"]);
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      if (!Array.isArray(page) || !page.length) break;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      allMessages.push(...page);
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      offset += page.length;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      setStatus("chatStatus", `History loading: ${allMessages.length.toLocaleString("en-IN")} messages`);
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      if (page.length < pageSize) break;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    messages = allMessages;
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    renderChatList();
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    renderSelectedChat();
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    renderIncoming2List();
- 
- 
- 
- 
- 
- 
- 
-    renderIncoming2Conversation();
- 
- 
- 
- 
- 
- 
- 
-    renderHistory();
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    setStatus("chatStatus", `Full history loaded: ${getChatGroups().length.toLocaleString("en-IN")} chats · ${messages.length.toLocaleString("en-IN")} messages`);
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  } catch (error) {
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    if (loadId === chatLoadSequence && projectForLoad === currentProject) {
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      setStatus("chatStatus", "Unable to load full history for " + projectForLoad + ": " + error.message);
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+let chatPageSize = 200;
+let chatNextOffset = 0;
+let chatHasMore = false;
+let chatOlderLoading = false;
+ 
+function updateMessagePagingButtons() {
+  const chatButton = $("loadOlderChatButton");
+  const historyButton = $("loadOlderHistoryButton");
+  const label = `Load Older Messages (Next ${chatPageSize})`;
+  [chatButton, historyButton].forEach((button) => {
+    if (!button) return;
+    button.hidden = !chatHasMore;
+    button.disabled = chatOlderLoading;
+    button.textContent = chatOlderLoading ? "Loading older messages..." : label;
+  });
+  const countText = `Showing ${messages.length.toLocaleString("en-IN")} loaded messages`;
+  if ($("chatPagingInfo")) $("chatPagingInfo").textContent = countText;
+  if ($("historyPagingInfo")) $("historyPagingInfo").textContent = countText;
 }
  
+async function loadChats() {
+  const loadId = ++chatLoadSequence;
+  const projectForLoad = currentProject;
+  chatNextOffset = 0;
+  chatHasMore = false;
+  chatOlderLoading = false;
+  messages = [];
+  updateMessagePagingButtons();
+  setStatus("chatStatus", "Loading latest 200 WhatsApp messages for " + projectForLoad + "...");
+  try {
+    const data = await apiRequest(`/messages?limit=${chatPageSize}&offset=0`, {}, projectForLoad);
+    const page = extractArray(data, ["data", "messages", "results"]);
+    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
+    messages = Array.isArray(page) ? page : [];
+    chatNextOffset = messages.length;
+    chatHasMore = messages.length === chatPageSize;
+    renderChatList();
+    renderSelectedChat();
+    renderIncoming2List();
+    renderIncoming2Conversation();
+    renderHistory();
+    updateMessagePagingButtons();
+    setStatus("chatStatus", `Latest messages loaded: ${getChatGroups().length.toLocaleString("en-IN")} chats · ${messages.length.toLocaleString("en-IN")} messages. Load older messages when needed.`);
+  } catch (error) {
+    if (loadId === chatLoadSequence && projectForLoad === currentProject) {
+      setStatus("chatStatus", "Unable to load latest messages for " + projectForLoad + ": " + error.message);
+    }
+  }
+}
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+async function loadOlderMessages() {
+  if (chatOlderLoading || !chatHasMore) return;
+  const loadId = chatLoadSequence;
+  const projectForLoad = currentProject;
+  chatOlderLoading = true;
+  updateMessagePagingButtons();
+  try {
+    const data = await apiRequest(`/messages?limit=${chatPageSize}&offset=${chatNextOffset}`, {}, projectForLoad);
+    const page = extractArray(data, ["data", "messages", "results"]);
+    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
+    const older = Array.isArray(page) ? page : [];
+    if (older.length) {
+      const seen = new Set(messages.map((m) => m.message_id || `${m.wa_id}|${m.timestamp}|${m.direction}|${m.message}`));
+      for (const item of older) {
+        const key = item.message_id || `${item.wa_id}|${item.timestamp}|${item.direction}|${item.message}`;
+        if (!seen.has(key)) messages.push(item);
+      }
+      chatNextOffset += older.length;
+    }
+    chatHasMore = older.length === chatPageSize;
+    renderChatList();
+    renderSelectedChat();
+    renderIncoming2List();
+    renderIncoming2Conversation();
+    renderHistory();
+    setStatus("chatStatus", `Loaded ${messages.length.toLocaleString("en-IN")} messages so far${chatHasMore ? ". More older messages are available." : ". All available messages are loaded."}`);
+  } catch (error) {
+    setStatus("chatStatus", "Unable to load older messages: " + error.message);
+  } finally {
+    chatOlderLoading = false;
+    updateMessagePagingButtons();
+  }
+}
  
 /* REFRESH CHAT HISTORY */
  
@@ -17694,6 +17291,8 @@ async function loadChats() {
  
  
 $("refreshChatsButton")?.addEventListener("click", loadChats);
+$("loadOlderChatButton")?.addEventListener("click", loadOlderMessages);
+$("loadOlderHistoryButton")?.addEventListener("click", loadOlderMessages);
  
  
  
@@ -22787,8 +22386,8 @@ async function loadReportsAndHistory() {
  
   await loadDashboard();
  
-  // Load every paginated message before rendering Reports / Message History.
-  await loadChats();
+  // Load only the latest page for the History table when no messages are cached.
+  if (!messages.length) await loadChats();
  
  
  
