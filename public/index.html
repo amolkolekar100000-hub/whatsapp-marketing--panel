@@ -7744,7 +7744,7 @@ td, th {
  
           <div class="message-paging-controls" style="display:flex;gap:10px;align-items:center;justify-content:center;padding:8px 10px;flex-wrap:wrap;">
             <span class="small" id="chatPagingInfo">Showing latest messages</span>
-            <button type="button" id="loadOlderChatButton" hidden>Load Older Messages (Next 200)</button>
+            <button type="button" id="loadOlderChatButton" hidden>Load Older Messages (Next 1000)</button>
           </div>
           <div class="chat-reply">
  
@@ -9549,7 +9549,7 @@ td, th {
         </div>
         <div class="message-paging-controls" style="display:flex;gap:10px;align-items:center;justify-content:flex-end;padding:10px 0;flex-wrap:wrap;">
           <span class="small" id="historyPagingInfo">Showing loaded messages</span>
-          <button type="button" id="loadOlderHistoryButton" hidden>Load Older Messages (Next 200)</button>
+          <button type="button" id="loadOlderHistoryButton" hidden>Load Older Messages (Next 1000)</button>
         </div>
  
  
@@ -17190,7 +17190,7 @@ let chatLoadSequence = 0;
  
  
  
-let chatPageSize = 200;
+let chatPageSize = 1000;
 let chatNextOffset = 0;
 let chatHasMore = false;
 let chatOlderLoading = false;
@@ -17218,7 +17218,7 @@ async function loadChats() {
   chatOlderLoading = false;
   messages = [];
   updateMessagePagingButtons();
-  setStatus("chatStatus", "Loading latest 200 WhatsApp messages for " + projectForLoad + "...");
+  setStatus("chatStatus", "Loading latest 1000 WhatsApp messages for " + projectForLoad + "...");
   try {
     const data = await apiRequest(`/messages?limit=${chatPageSize}&offset=0`, {}, projectForLoad);
     const page = extractArray(data, ["data", "messages", "results"]);
