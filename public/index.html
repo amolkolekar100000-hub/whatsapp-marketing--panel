@@ -7745,6 +7745,7 @@ td, th {
           <div class="message-paging-controls" style="display:flex;gap:10px;align-items:center;justify-content:center;padding:8px 10px;flex-wrap:wrap;">
             <span class="small" id="chatPagingInfo">Showing latest messages</span>
             <button type="button" id="loadOlderChatButton" hidden>Load Older Messages (Next 1000)</button>
+            <button type="button" id="loadAllMessagesButton" hidden>Load All Messages</button>
           </div>
           <div class="chat-reply">
  
@@ -17194,17 +17195,26 @@ let chatPageSize = 1000;
 let chatNextOffset = 0;
 let chatHasMore = false;
 let chatOlderLoading = false;
+let allMessagesLoading = false;
  
 function updateMessagePagingButtons() {
   const chatButton = $("loadOlderChatButton");
   const historyButton = $("loadOlderHistoryButton");
+  const allButton = $("loadAllMessagesButton");
   const label = `Load Older Messages (Next ${chatPageSize})`;
   [chatButton, historyButton].forEach((button) => {
     if (!button) return;
     button.hidden = !chatHasMore;
-    button.disabled = chatOlderLoading;
-    button.textContent = chatOlderLoading ? "Loading older messages..." : label;
+    button.disabled = chatOlderLoading || allMessagesLoading;
+    button.textContent = chatOlderLoading || allMessagesLoading ? "Loading older messages..." : label;
   });
+  if (allButton) {
+    allButton.hidden = !chatHasMore;
+    allButton.disabled = chatOlderLoading || allMessagesLoading;
+    allButton.textContent = allMessagesLoading
+      ? `Loading all messages... ${messages.length.toLocaleString("en-IN")} loaded`
+      : "Load All Messages";
+  }
   const countText = `Showing ${messages.length.toLocaleString("en-IN")} loaded messages`;
   if ($("chatPagingInfo")) $("chatPagingInfo").textContent = countText;
   if ($("historyPagingInfo")) $("historyPagingInfo").textContent = countText;
@@ -17241,15 +17251,16 @@ async function loadChats() {
 }
  
 async function loadOlderMessages() {
-  if (chatOlderLoading || !chatHasMore) return;
+  if (chatOlderLoading || !chatHasMore) return false;
   const loadId = chatLoadSequence;
   const projectForLoad = currentProject;
+  const previousOffset = chatNextOffset;
   chatOlderLoading = true;
   updateMessagePagingButtons();
   try {
     const data = await apiRequest(`/messages?limit=${chatPageSize}&offset=${chatNextOffset}`, {}, projectForLoad);
     const page = extractArray(data, ["data", "messages", "results"]);
-    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
+    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return false;
     const older = Array.isArray(page) ? page : [];
     if (older.length) {
       const seen = new Set(messages.map((m) => m.message_id || `${m.wa_id}|${m.timestamp}|${m.direction}|${m.message}`));
@@ -17266,10 +17277,39 @@ async function loadOlderMessages() {
     renderIncoming2Conversation();
     renderHistory();
     setStatus("chatStatus", `Loaded ${messages.length.toLocaleString("en-IN")} messages so far${chatHasMore ? ". More older messages are available." : ". All available messages are loaded."}`);
+    return chatNextOffset > previousOffset;
   } catch (error) {
     setStatus("chatStatus", "Unable to load older messages: " + error.message);
+    return false;
   } finally {
     chatOlderLoading = false;
+    updateMessagePagingButtons();
+  }
+}
+ 
+async function loadAllMessages() {
+  if (allMessagesLoading || chatOlderLoading || !chatHasMore) return;
+  const projectForLoad = currentProject;
+  const loadId = chatLoadSequence;
+  allMessagesLoading = true;
+  updateMessagePagingButtons();
+  setStatus("chatStatus", `Loading all messages for ${projectForLoad}. ${messages.length.toLocaleString("en-IN")} loaded so far...`);
+  try {
+    while (chatHasMore && loadId === chatLoadSequence && projectForLoad === currentProject) {
+      const before = chatNextOffset;
+      const advanced = await loadOlderMessages();
+      if (!advanced || chatNextOffset <= before) break;
+      updateMessagePagingButtons();
+      setStatus("chatStatus", `Loading all messages for ${projectForLoad}: ${messages.length.toLocaleString("en-IN")} loaded...`);
+      if (chatHasMore) await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    if (loadId === chatLoadSequence && projectForLoad === currentProject) {
+      setStatus("chatStatus", chatHasMore
+        ? `Loaded ${messages.length.toLocaleString("en-IN")} messages. More remain; press Load All Messages again to continue.`
+        : `All available messages loaded: ${messages.length.toLocaleString("en-IN")} messages.`);
+    }
+  } finally {
+    allMessagesLoading = false;
     updateMessagePagingButtons();
   }
 }
@@ -17292,6 +17332,7 @@ async function loadOlderMessages() {
  
 $("refreshChatsButton")?.addEventListener("click", loadChats);
 $("loadOlderChatButton")?.addEventListener("click", loadOlderMessages);
+$("loadAllMessagesButton")?.addEventListener("click", loadAllMessages);
 $("loadOlderHistoryButton")?.addEventListener("click", loadOlderMessages);
  
  
