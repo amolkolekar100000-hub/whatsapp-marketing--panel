@@ -1,5 +1,5 @@
-
-
+ 
+ 
 <!DOCTYPE html>
  
  
@@ -22786,6 +22786,9 @@ async function loadReportsAndHistory() {
  
  
   await loadDashboard();
+ 
+  // Load every paginated message before rendering Reports / Message History.
+  await loadChats();
  
  
  
