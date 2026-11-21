@@ -5729,18 +5729,9 @@ td, th {
  
  
  
-/* INCOMING HISTORY - separate page; Live Chat 2 styles and behavior untouched */
-.incoming-history-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0;padding:12px;background:#fff;border:1px solid #dce5e1;border-radius:8px}
-.incoming-history-toolbar input,.incoming-history-toolbar select{max-width:260px;margin:0}
-.incoming-history-wrap{width:100%;overflow:auto;background:#fff;border:1px solid #dce5e1;border-radius:8px}
-.incoming-history-table{width:100%;min-width:900px;border-collapse:collapse;table-layout:fixed}
-.incoming-history-table th{position:sticky;top:0;background:#075e50;color:#fff;text-align:left;padding:11px}
-.incoming-history-table td{padding:9px;border:1px solid #e3e9e6;vertical-align:top;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.4}
-.incoming-history-table tbody tr:nth-child(even){background:#f7faf8}
-.incoming-history-table .sent-cell{background:#e7f8eb;color:#174f2b;border-radius:6px}
-.incoming-history-table .reply-cell{background:#e7f1ff;color:#174b85;border-radius:6px}
-.incoming-history-empty{padding:16px;color:#64736d}
- 
+.history-reply-item { padding: 4px 0; margin: 2px 0; color: #145a43; white-space: normal; min-width: 180px; }
+.history-reply-item span { display: block; color: #718078; font-size: 11px; margin-bottom: 2px; }
+#historyTable td { vertical-align: top; }
 </style>
  
  
@@ -6060,7 +6051,6 @@ td, th {
  
  
     <button type="button" data-page="reports">Reports / History</button>
-    <button type="button" data-page="incominghistory">Incoming History</button>
  
  
  
@@ -7756,10 +7746,6 @@ td, th {
  
  
  
-          <div class="message-paging-controls" style="display:flex;gap:10px;align-items:center;justify-content:center;padding:8px 10px;flex-wrap:wrap;">
-            <span class="small" id="chatPagingInfo">Showing latest messages</span>
-            <button type="button" id="loadOlderChatButton" hidden>Load Older Messages (Next 1000)</button>
-          </div>
           <div class="chat-reply">
  
  
@@ -8192,27 +8178,15 @@ td, th {
  
  
  
-    
-</section>
+    </section>
  
-<!-- INCOMING HISTORY: independent tab below Reports / History -->
-<section class="view" id="incominghistory">
-  <h2>Incoming History</h2>
-  <div class="status" id="incomingHistoryStatus">Select a client to view sent messages and customer replies.</div>
-  <div class="incoming-history-toolbar">
-    <input type="search" id="incomingHistorySearch" placeholder="Search phone number..." aria-label="Search phone number">
-    <select id="incomingHistoryClient" aria-label="Select client">
-      <option value="">Select a client...</option>
-    </select>
-    <button type="button" id="incomingHistoryRefresh">Refresh</button>
-    <button type="button" id="incomingHistoryLoadOlder">Load Older Messages</button>
-  </div>
-  <div id="incomingHistoryTableArea" class="incoming-history-wrap">
-    <div class="incoming-history-empty">Select a client to see the conversation history.</div>
-  </div>
-</section>
  
-<!-- CONTACTS -->
+ 
+ 
+ 
+ 
+ 
+      <!-- CONTACTS -->
  
  
  
@@ -9412,6 +9386,22 @@ td, th {
  
  
  
+                <th>Reply</th>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
                 <th>Direction</th>
  
  
@@ -9573,11 +9563,6 @@ td, th {
  
  
         </div>
-        <div class="message-paging-controls" style="display:flex;gap:10px;align-items:center;justify-content:flex-end;padding:10px 0;flex-wrap:wrap;">
-          <span class="small" id="historyPagingInfo">Showing loaded messages</span>
-          <button type="button" id="loadOlderHistoryButton" hidden>Load Older Messages (Next 1000)</button>
-        </div>
- 
  
  
  
@@ -12883,9 +12868,6 @@ function showPage(pageId) {
  
  
   if (pageId === "inbox" || pageId === "incoming2") loadChats();
-  if (pageId === "incominghistory") {
-    loadChats().then(() => renderIncomingHistoryPage());
-  }
  
  
  
@@ -17219,89 +17201,501 @@ let chatLoadSequence = 0;
  
  
  
-let chatPageSize = 1000;
-let chatNextOffset = 0;
-let chatHasMore = false;
-let chatOlderLoading = false;
- 
-function updateMessagePagingButtons() {
-  const chatButton = $("loadOlderChatButton");
-  const historyButton = $("loadOlderHistoryButton");
-  const label = `Load Older Messages (Next ${chatPageSize})`;
-  [chatButton, historyButton].forEach((button) => {
-    if (!button) return;
-    button.hidden = !chatHasMore;
-    button.disabled = chatOlderLoading;
-    button.textContent = chatOlderLoading ? "Loading older messages..." : label;
-  });
-  const countText = `Showing ${messages.length.toLocaleString("en-IN")} loaded messages`;
-  if ($("chatPagingInfo")) $("chatPagingInfo").textContent = countText;
-  if ($("historyPagingInfo")) $("historyPagingInfo").textContent = countText;
-}
- 
 async function loadChats() {
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   const loadId = ++chatLoadSequence;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   const projectForLoad = currentProject;
-  chatNextOffset = 0;
-  chatHasMore = false;
-  chatOlderLoading = false;
-  messages = [];
-  updateMessagePagingButtons();
-  setStatus("chatStatus", "Loading latest 1000 WhatsApp messages for " + projectForLoad + "...");
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  setStatus("chatStatus", "Loading full WhatsApp message history for " + projectForLoad + "...");
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   try {
-    const data = await apiRequest(`/messages?limit=${chatPageSize}&offset=0`, {}, projectForLoad);
-    const page = extractArray(data, ["data", "messages", "results"]);
-    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
-    messages = Array.isArray(page) ? page : [];
-    chatNextOffset = messages.length;
-    chatHasMore = messages.length === chatPageSize;
-    renderChatList();
-    renderSelectedChat();
-    renderIncoming2List();
-    renderIncoming2Conversation();
-    renderHistory();
-    updateMessagePagingButtons();
-    setStatus("chatStatus", `Latest messages loaded: ${getChatGroups().length.toLocaleString("en-IN")} chats · ${messages.length.toLocaleString("en-IN")} messages. Load older messages when needed.`);
-  } catch (error) {
-    if (loadId === chatLoadSequence && projectForLoad === currentProject) {
-      setStatus("chatStatus", "Unable to load latest messages for " + projectForLoad + ": " + error.message);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    const allMessages = [];
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    const pageSize = 1000;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    let offset = 0;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    while (true) {
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      const data = await apiRequest(`/messages?limit=${pageSize}&offset=${offset}`, {}, projectForLoad);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      const page = extractArray(data, ["data", "messages", "results"]);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      if (!Array.isArray(page) || !page.length) break;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      allMessages.push(...page);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      offset += page.length;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      setStatus("chatStatus", `History loading: ${allMessages.length.toLocaleString("en-IN")} messages`);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      if (page.length < pageSize) break;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
     }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    messages = allMessages;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    renderChatList();
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    renderSelectedChat();
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    renderIncoming2List();
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    renderIncoming2Conversation();
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    renderHistory();
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    setStatus("chatStatus", `Full history loaded: ${getChatGroups().length.toLocaleString("en-IN")} chats · ${messages.length.toLocaleString("en-IN")} messages`);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  } catch (error) {
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    if (loadId === chatLoadSequence && projectForLoad === currentProject) {
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+      setStatus("chatStatus", "Unable to load full history for " + projectForLoad + ": " + error.message);
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 }
  
-async function loadOlderMessages() {
-  if (chatOlderLoading || !chatHasMore) return;
-  const loadId = chatLoadSequence;
-  const projectForLoad = currentProject;
-  chatOlderLoading = true;
-  updateMessagePagingButtons();
-  try {
-    const data = await apiRequest(`/messages?limit=${chatPageSize}&offset=${chatNextOffset}`, {}, projectForLoad);
-    const page = extractArray(data, ["data", "messages", "results"]);
-    if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
-    const older = Array.isArray(page) ? page : [];
-    if (older.length) {
-      const seen = new Set(messages.map((m) => m.message_id || `${m.wa_id}|${m.timestamp}|${m.direction}|${m.message}`));
-      for (const item of older) {
-        const key = item.message_id || `${item.wa_id}|${item.timestamp}|${item.direction}|${item.message}`;
-        if (!seen.has(key)) messages.push(item);
-      }
-      chatNextOffset += older.length;
-    }
-    chatHasMore = older.length === chatPageSize;
-    renderChatList();
-    renderSelectedChat();
-    renderIncoming2List();
-    renderIncoming2Conversation();
-    renderHistory();
-    setStatus("chatStatus", `Loaded ${messages.length.toLocaleString("en-IN")} messages so far${chatHasMore ? ". More older messages are available." : ". All available messages are loaded."}`);
-  } catch (error) {
-    setStatus("chatStatus", "Unable to load older messages: " + error.message);
-  } finally {
-    chatOlderLoading = false;
-    updateMessagePagingButtons();
-  }
-}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
 /* REFRESH CHAT HISTORY */
  
@@ -17320,8 +17714,6 @@ async function loadOlderMessages() {
  
  
 $("refreshChatsButton")?.addEventListener("click", loadChats);
-$("loadOlderChatButton")?.addEventListener("click", loadOlderMessages);
-$("loadOlderHistoryButton")?.addEventListener("click", loadOlderMessages);
  
  
  
@@ -21853,594 +22245,69 @@ $("sendTestButton")?.addEventListener("click", () => {
  
  
  
-/* INCOMING HISTORY PAGE - uses the existing loaded messages and project API */
-function renderIncomingHistoryPage() {
-  const select = $("incomingHistoryClient");
-  const search = $("incomingHistorySearch");
-  const area = $("incomingHistoryTableArea");
-  if (!select || !area) return;
- 
-  const previous = select.value;
-  const groups = getChatGroups().sort((a, b) => String(a.phone).localeCompare(String(b.phone)));
-  const query = String(search?.value || "").trim().toLowerCase();
-  const filtered = groups.filter(g =>
-    !query || String(g.phone).toLowerCase().includes(query) || String(g.name || "").toLowerCase().includes(query)
-  );
- 
-  select.innerHTML = '<option value="">Select a client...</option>' +
-    filtered.map(g => `<option value="${escapeHTML(g.phone)}">${escapeHTML(g.name || g.phone)} — ${escapeHTML(g.phone)}</option>`).join("");
-  if (filtered.some(g => g.phone === previous)) select.value = previous;
- 
-  setStatus("incomingHistoryStatus", `${filtered.length.toLocaleString("en-IN")} clients · ${messages.length.toLocaleString("en-IN")} messages loaded for ${currentProject}. Use Load Older Messages for earlier records.`);
-  renderIncomingHistoryTable();
-}
- 
-function renderIncomingHistoryTable() {
-  const area = $("incomingHistoryTableArea");
-  const phone = normalizePhone($("incomingHistoryClient")?.value || "");
-  if (!area) return;
-  if (!phone) {
-    area.innerHTML = '<div class="incoming-history-empty">Select a client to see Date, Phone Number, My Sent Message and Customer Reply.</div>';
-    return;
-  }
- 
-  const group = getChatGroups().find(g => normalizePhone(g.phone) === phone);
-  const conversation = (group?.messages || []).slice().sort((a,b) => getMessageTime(a) - getMessageTime(b));
-  if (!conversation.length) {
-    area.innerHTML = '<div class="incoming-history-empty">No messages found for this phone number in the currently loaded records.</div>';
-    return;
-  }
- 
-  const rows = [];
-  let pendingOutgoing = [];
-  conversation.forEach(message => {
-    const text = getMessageText(message) || "[Media / attachment]";
-    if (isOutgoingMessage(message)) {
-      pendingOutgoing.push({text, time: getMessageTime(message), status: message.status || "Sent"});
-    } else {
-      rows.push({
-        date: message.created_at || message.timestamp || message.sent_at || getMessageTime(message),
-        phone,
-        sent: pendingOutgoing.map(x => x.text).join("\\n\\n"),
-        reply: text,
-        sentStatus: pendingOutgoing.map(x => x.status).join(", "),
-        replyStatus: message.status || "Received"
-      });
-      pendingOutgoing = [];
-    }
-  });
-  pendingOutgoing.forEach(item => rows.push({date:item.time, phone, sent:item.text, reply:"", sentStatus:item.status, replyStatus:""}));
-  rows.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
- 
-  area.innerHTML = `<table class="incoming-history-table">
-    <thead><tr>
-      <th style="width:165px">Date &amp; Time</th>
-      <th style="width:155px">Phone Number</th>
-      <th style="width:38%">My Sent Message (You)</th>
-      <th>Customer Reply (Incoming)</th>
-    </tr></thead>
-    <tbody>${rows.map(row => `<tr>
-      <td>${escapeHTML(formatDate(row.date))}</td>
-      <td>${escapeHTML(row.phone)}</td>
-      <td><div class="sent-cell">${row.sent ? escapeHTML(row.sent) : "—"}</div>${row.sentStatus ? `<small>${escapeHTML(row.sentStatus)}</small>` : ""}</td>
-      <td><div class="reply-cell">${row.reply ? escapeHTML(row.reply) : "Awaiting customer reply"}</div>${row.replyStatus ? `<small>${escapeHTML(row.replyStatus)}</small>` : ""}</td>
-    </tr>`).join("")}</tbody>
-  </table>`;
-}
- 
-$("incomingHistoryClient")?.addEventListener("change", renderIncomingHistoryTable);
-$("incomingHistorySearch")?.addEventListener("input", () => {
-  const current = $("incomingHistoryClient")?.value || "";
-  renderIncomingHistoryPage();
-  if (current && $("incomingHistoryClient")) $("incomingHistoryClient").value = current;
-  renderIncomingHistoryTable();
-});
-$("incomingHistoryRefresh")?.addEventListener("click", async () => {
-  await loadChats();
-  renderIncomingHistoryPage();
-});
-$("incomingHistoryLoadOlder")?.addEventListener("click", async () => {
-  await loadOlderMessages();
-  renderIncomingHistoryPage();
-});
- 
 function renderHistory() {
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
   const table = $("historyTable");
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
   if (!table) return;
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  const search = (
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    $("historySearch")?.value || ""
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  ).toLowerCase();
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  const filtered = messages.filter((message) => {
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    const searchable = [
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      message.wa_id,
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      message.name,
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      getMessageText(message),
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      message.direction,
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      message.status,
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      message.created_at,
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      message.timestamp
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    ].join(" ").toLowerCase();
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    return searchable.includes(search);
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+  // Pair each outgoing message with later incoming replies from the same phone,
+  // up to the next outgoing message. Live Chat 2 remains untouched.
+  const repliesByOutgoing = new Map();
+  const byPhone = new Map();
+  (Array.isArray(messages) ? messages : []).forEach((message) => {
+    const phone = getMessagePhone(message);
+    if (!phone) return;
+    if (!byPhone.has(phone)) byPhone.set(phone, []);
+    byPhone.get(phone).push(message);
+  });
+  byPhone.forEach((phoneMessages) => {
+    phoneMessages.sort((a, b) => getMessageTime(a) - getMessageTime(b));
+    let currentOutgoing = null;
+    phoneMessages.forEach((message) => {
+      if (isOutgoingMessage(message)) {
+        currentOutgoing = message;
+        if (!repliesByOutgoing.has(message)) repliesByOutgoing.set(message, []);
+      } else if (currentOutgoing) {
+        repliesByOutgoing.get(currentOutgoing).push(message);
+      }
+    });
   });
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+  const search = String($("historySearch")?.value || "").toLowerCase();
+  const filtered = (Array.isArray(messages) ? messages : []).filter((message) => {
+    const replies = repliesByOutgoing.get(message) || [];
+    const searchable = [
+      message.wa_id, message.name, getMessageText(message),
+      replies.map(getMessageText).join(" "), message.direction,
+      message.status, message.created_at, message.timestamp
+    ].join(" ").toLowerCase();
+    return searchable.includes(search);
+  });
  
   table.innerHTML = filtered.length
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    ? filtered.map((message) => `
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-        <tr>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-          <td>${escapeHTML(
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-            formatDate(message.created_at || message.timestamp)
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-          )}</td>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-          <td>${escapeHTML(message.wa_id || "-")}</td>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-          <td>${escapeHTML(getMessageText(message))}</td>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-          <td>${escapeHTML(message.direction || "-")}</td>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-          <td>${escapeHTML(message.status || "-")}</td>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-        </tr>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-      `).join("")
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-    : '<tr><td colspan="5">No matching messages found.</td></tr>';
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+    ? filtered.map((message) => {
+        const outgoing = isOutgoingMessage(message);
+        const replies = repliesByOutgoing.get(message) || [];
+        const replyHTML = outgoing
+          ? (replies.length
+              ? replies.map((reply) =>
+                  `<div class="history-reply-item"><span>${escapeHTML(formatDate(reply.created_at || reply.timestamp || reply.sent_at))}</span>${escapeHTML(getMessageText(reply))}</div>`
+                ).join("")
+              : '<span class="small">No Reply Yet</span>')
+          : '<span class="small">-</span>';
+        return `
+          <tr>
+            <td>${escapeHTML(formatDate(message.created_at || message.timestamp))}</td>
+            <td>${escapeHTML(message.wa_id || getMessagePhone(message) || "-")}</td>
+            <td>${escapeHTML(getMessageText(message))}</td>
+            <td>${replyHTML}</td>
+            <td>${escapeHTML(message.direction || "-")}</td>
+            <td>${escapeHTML(message.status || "-")}</td>
+          </tr>
+        `;
+      }).join("")
+    : '<tr><td colspan="6">No matching messages found.</td></tr>';
 }
+ 
  
  
  
@@ -22506,8 +22373,8 @@ async function loadReportsAndHistory() {
  
   await loadDashboard();
  
-  // Load only the latest page for the History table when no messages are cached.
-  if (!messages.length) await loadChats();
+  // Load every paginated message before rendering Reports / Message History.
+  await loadChats();
  
  
  
