@@ -665,6 +665,7 @@ td, th {
  
 /* LIVE CHAT 2: incoming messages only */
  
+.project-scope{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 12px;padding:9px 12px;border:1px solid #cfe0d8;border-radius:8px;background:#eef8f3;color:#174f3b;font-weight:700}.project-scope .worker-state{font-weight:400;color:#52665d;font-size:12px}
 .incoming2-layout { display:grid; grid-template-columns:300px minmax(0,1fr); height:calc(100vh - 220px); min-height:520px; background:#fff; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
  
 .incoming2-list { overflow:auto; border-right:1px solid var(--border); background:#fff; }
@@ -967,6 +968,7 @@ td, th {
     <section class="view" id="inbox">
  
       <h2>Live Chat / Inbox</h2>
+      <div class="project-scope" id="liveChatProjectScope">Project: New Launch <span class="worker-state">Checking project Worker...</span></div>
  
       <div class="status" id="chatStatus">
  
@@ -1059,6 +1061,7 @@ td, th {
     <section class="view" id="incoming2">
  
       <h2>Live Chat 2 (Incoming Messages)</h2>
+      <div class="project-scope" id="incoming2ProjectScope">Project: New Launch <span class="worker-state">Checking project Worker...</span></div>
  
       <div class="status" id="incoming2Status">Only client incoming messages will appear here.</div>
  
@@ -1626,6 +1629,18 @@ function getProjectWorkerUrl(project) {
  
 }
  
+function updateProjectScopeLabels(project = currentProject) {
+  const baseUrl = getProjectWorkerUrl(project);
+  const workerText = baseUrl
+    ? `Worker: ${baseUrl.replace(/^https?:\/\//, "")}`
+    : "Worker URL not configured — set it in API Settings → Project Settings";
+  ["liveChatProjectScope", "incoming2ProjectScope"].forEach((id) => {
+    const el = $(id);
+    if (!el) return;
+    el.innerHTML = `<span>Project: ${escapeHTML(project)}</span><span class="worker-state">${escapeHTML(workerText)}</span>`;
+  });
+}
+ 
 async function apiRequest(path, options = {}, projectOverride = null) {
  
   const project = projectOverride || currentProject;
@@ -1738,6 +1753,7 @@ document.querySelectorAll("nav button[data-page]").forEach((button) => {
 function applyProjectSelection(project) {
  
   currentProject = project || "New Launch";
+  updateProjectScopeLabels(currentProject);
  
   const headerSelect = $("projectSelect");
  
@@ -2543,7 +2559,9 @@ async function loadChats() {
   chatOlderLoading = false;
   messages = [];
   updateMessagePagingButtons();
-  setStatus("chatStatus", "Loading latest 1000 WhatsApp messages for " + projectForLoad + "...");
+  updateProjectScopeLabels(projectForLoad);
+ 
+  setStatus("chatStatus", "Loading latest 1000 WhatsApp messages for " + projectForLoad + " from its assigned Worker...");
   try {
     const data = await apiRequest(`/messages?limit=${chatPageSize}&offset=0`, {}, projectForLoad);
     const page = extractArray(data, ["data", "messages", "results"]);
@@ -3809,21 +3827,16 @@ $("saveProjectButton")?.addEventListener("click", () => {
   const key = "ak_project_worker_" + project;
  
   if (!value) {
- 
+    if (project === "4th New Launch" || project === "5th New Launch") {
+      setStatus("projectStatus", project + " साठी स्वतंत्र Cloudflare Worker URL आवश्यक आहे. URL भरून Save करा; मुख्य Worker वापरला जाणार नाही.");
+      showToast("या Project साठी स्वतंत्र Worker URL आवश्यक आहे.");
+      return;
+    }
     localStorage.removeItem(key);
- 
-    setStatus(
- 
-      "projectStatus",
- 
-      "या project साठी मुख्य Worker URL वापरला जाईल."
- 
-    );
- 
+    updateProjectScopeLabels(currentProject);
+    setStatus("projectStatus", "Saved default Worker mapping will be used for " + project + ".");
     showToast("Project settings saved.");
- 
     return;
- 
   }
  
   try {
@@ -3847,6 +3860,8 @@ $("saveProjectButton")?.addEventListener("click", () => {
   }
  
   localStorage.setItem(key, value.replace(/\/+$/, ""));
+ 
+  if (project === currentProject) updateProjectScopeLabels(currentProject);
  
   setStatus("projectStatus", project + " settings सेव्ह झाल्या.");
  
