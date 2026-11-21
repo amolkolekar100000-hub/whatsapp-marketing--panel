@@ -1063,7 +1063,7 @@ td, th {
       <h2>Live Chat 2 (Incoming Messages)</h2>
       <div class="project-scope" id="incoming2ProjectScope">Project: New Launch <span class="worker-state">Checking project Worker...</span></div>
  
-      <div class="status" id="incoming2Status">Only client incoming messages will appear here.</div>
+      <div class="status" id="incoming2Status">All available incoming messages for the selected project load automatically. Older pages are fetched in the background; 3-second refresh resumes after the initial full load.</div>
  
       <div class="incoming2-layout" id="incoming2Layout">
  
@@ -1772,6 +1772,14 @@ function applyProjectSelection(project) {
   // Clear previous account data from the visible chat before loading the new project.
  
   messages = [];
+  messagesProject = currentProject;
+  chatNextOffset = 0;
+  chatHasMore = false;
+  chatAllPagesLoaded = false;
+  // Cancel any background pagination belonging to the previously selected project.
+  chatFullLoadSequence = 0;
+  chatFullLoadInProgress = false;
+  chatOlderLoading = false;
  
   selectedChatNumber = "";
  
@@ -2535,6 +2543,10 @@ let chatPageSize = 1000;
 let chatNextOffset = 0;
 let chatHasMore = false;
 let chatOlderLoading = false;
+let chatFullLoadInProgress = false;
+let chatFullLoadSequence = 0;
+let chatAllPagesLoaded = false;
+let messagesProject = "";
  
 function updateMessagePagingButtons() {
   const chatButton = $("loadOlderChatButton");
@@ -2551,34 +2563,153 @@ function updateMessagePagingButtons() {
   if ($("historyPagingInfo")) $("historyPagingInfo").textContent = countText;
 }
  
+function getStableMessageKey(message) {
+  return String(
+    message.message_id ||
+    message.id ||
+    [
+      getMessagePhone(message),
+      getMessageTime(message),
+      message.direction || message.message_direction || message.type || "",
+      getMessageText(message),
+      message.status || ""
+    ].join("|")
+  );
+}
+ 
+function mergeMessagePages(existing, incoming) {
+  const merged = Array.isArray(existing) ? existing.slice() : [];
+  const seen = new Set(merged.map(getStableMessageKey));
+  for (const item of (Array.isArray(incoming) ? incoming : [])) {
+    const key = getStableMessageKey(item);
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push(item);
+    }
+  }
+  return merged;
+}
+ 
+/* Automatically fetch every /messages page so Live Chat 2 shows all incoming history. */
+async function loadAllOlderMessagesInBackground(loadId, projectForLoad) {
+  if (!chatHasMore) return;
+ 
+  chatFullLoadInProgress = true;
+  chatFullLoadSequence = loadId;
+  chatOlderLoading = true;
+  updateMessagePagingButtons();
+  setStatus("chatStatus", "Loading all messages for " + projectForLoad + " so Live Chat 2 can show every incoming message...");
+ 
+  try {
+    while (
+      chatHasMore &&
+      loadId === chatLoadSequence &&
+      projectForLoad === currentProject &&
+      chatFullLoadSequence === loadId
+    ) {
+      const data = await apiRequest(
+        `/messages?limit=${chatPageSize}&offset=${chatNextOffset}`,
+        {},
+        projectForLoad
+      );
+      const page = extractArray(data, ["data", "messages", "results"]);
+      if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
+ 
+      const older = Array.isArray(page) ? page : [];
+      if (!older.length) {
+        chatHasMore = false;
+        chatAllPagesLoaded = true;
+        break;
+      }
+ 
+      messages = mergeMessagePages(messages, older);
+      chatNextOffset += older.length;
+      chatHasMore = older.length === chatPageSize;
+      if (!chatHasMore) chatAllPagesLoaded = true;
+ 
+      renderChatList();
+      renderSelectedChat();
+      renderIncoming2List();
+      renderIncoming2Conversation();
+      renderHistory();
+      updateMessagePagingButtons();
+ 
+      setStatus(
+        "chatStatus",
+        `Loaded ${messages.length.toLocaleString("en-IN")} messages for ${projectForLoad}. ` +
+        (chatHasMore ? "Continuing to load older messages automatically..." : "All available message pages are loaded.")
+      );
+ 
+      if (chatHasMore) await new Promise(resolve => setTimeout(resolve, 120));
+    }
+  } catch (error) {
+    if (loadId === chatLoadSequence && projectForLoad === currentProject) {
+      setStatus("chatStatus", "Some older messages could not be loaded: " + error.message + ". Use Load Older Messages to retry.");
+    }
+  } finally {
+    if (chatFullLoadSequence === loadId) {
+      chatFullLoadInProgress = false;
+      chatOlderLoading = false;
+      updateMessagePagingButtons();
+    }
+  }
+}
+ 
 async function loadChats() {
   const loadId = ++chatLoadSequence;
   const projectForLoad = currentProject;
-  chatNextOffset = 0;
-  chatHasMore = false;
-  chatOlderLoading = false;
-  messages = [];
+  const sameProject = messagesProject === projectForLoad && messages.length > 0;
+  const previousHasMore = chatHasMore;
+  const previousAllLoaded = chatAllPagesLoaded;
+ 
+  if (!sameProject) {
+    messages = [];
+    chatNextOffset = 0;
+    chatHasMore = false;
+    chatAllPagesLoaded = false;
+    messagesProject = projectForLoad;
+  }
+ 
   updateMessagePagingButtons();
   updateProjectScopeLabels(projectForLoad);
+  setStatus("chatStatus", "Loading latest WhatsApp messages for " + projectForLoad + " from its assigned Worker...");
  
-  setStatus("chatStatus", "Loading latest 1000 WhatsApp messages for " + projectForLoad + " from its assigned Worker...");
   try {
     const data = await apiRequest(`/messages?limit=${chatPageSize}&offset=0`, {}, projectForLoad);
     const page = extractArray(data, ["data", "messages", "results"]);
     if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
-    messages = Array.isArray(page) ? page : [];
-    chatNextOffset = messages.length;
-    chatHasMore = messages.length === chatPageSize;
+ 
+    if (sameProject) {
+      messages = mergeMessagePages(messages, page);
+      chatHasMore = previousAllLoaded ? false : (previousHasMore || page.length === chatPageSize);
+      chatAllPagesLoaded = previousAllLoaded;
+      chatNextOffset = Math.max(chatNextOffset, messages.length);
+    } else {
+      messages = Array.isArray(page) ? page : [];
+      chatNextOffset = messages.length;
+      chatHasMore = messages.length === chatPageSize;
+      chatAllPagesLoaded = !chatHasMore;
+    }
+ 
     renderChatList();
     renderSelectedChat();
     renderIncoming2List();
     renderIncoming2Conversation();
     renderHistory();
     updateMessagePagingButtons();
-    setStatus("chatStatus", `Latest messages loaded: ${getChatGroups().length.toLocaleString("en-IN")} chats · ${messages.length.toLocaleString("en-IN")} messages. Load older messages when needed.`);
+ 
+    setStatus(
+      "chatStatus",
+      `Loaded ${messages.length.toLocaleString("en-IN")} messages for ${projectForLoad}. ` +
+      (chatHasMore ? "Loading all older pages automatically for Live Chat 2..." : "All available message pages are loaded.")
+    );
+ 
+    if (chatHasMore && !chatFullLoadInProgress) {
+      void loadAllOlderMessagesInBackground(loadId, projectForLoad);
+    }
   } catch (error) {
     if (loadId === chatLoadSequence && projectForLoad === currentProject) {
-      setStatus("chatStatus", "Unable to load latest messages for " + projectForLoad + ": " + error.message);
+      setStatus("chatStatus", "Unable to load messages for " + projectForLoad + ": " + error.message);
     }
   }
 }
@@ -2595,14 +2726,11 @@ async function loadOlderMessages() {
     if (loadId !== chatLoadSequence || projectForLoad !== currentProject) return;
     const older = Array.isArray(page) ? page : [];
     if (older.length) {
-      const seen = new Set(messages.map((m) => m.message_id || `${m.wa_id}|${m.timestamp}|${m.direction}|${m.message}`));
-      for (const item of older) {
-        const key = item.message_id || `${item.wa_id}|${item.timestamp}|${item.direction}|${item.message}`;
-        if (!seen.has(key)) messages.push(item);
-      }
+      messages = mergeMessagePages(messages, older);
       chatNextOffset += older.length;
     }
     chatHasMore = older.length === chatPageSize;
+    chatAllPagesLoaded = !chatHasMore;
     renderChatList();
     renderSelectedChat();
     renderIncoming2List();
@@ -2783,7 +2911,7 @@ let chatRefreshInProgress = false;
  
 async function refreshChatHistory() {
  
-  if (chatRefreshInProgress) return;
+  if (chatRefreshInProgress || chatFullLoadInProgress) return;
  
   chatRefreshInProgress = true;
  
